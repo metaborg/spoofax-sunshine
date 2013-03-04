@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.messages;
+package org.spoofax.sunshine.framework.messages;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

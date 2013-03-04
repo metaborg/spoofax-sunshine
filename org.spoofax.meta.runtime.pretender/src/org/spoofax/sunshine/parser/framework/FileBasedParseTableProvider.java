@@ -7,6 +7,10 @@ import java.io.InputStream;
 import org.spoofax.jsglr.client.ParseTable;
 import org.spoofax.sunshine.Environment;
 
+/**
+ * @author Vlad Vergu <v.a.vergu add tudelft.nl>
+ *
+ */
 public class FileBasedParseTableProvider implements IParseTableProvider {
 
 	private final File file;

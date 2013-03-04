@@ -9,12 +9,7 @@ import java.io.InputStreamReader;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.client.imploder.IToken;
 import org.spoofax.jsglr.io.FileTools;
-import org.spoofax.jsglr.shared.BadTokenException;
-import org.spoofax.jsglr.shared.SGLRException;
-import org.spoofax.jsglr.shared.TokenExpectedException;
-import org.spoofax.sunshine.messages.IMessageProducer;
-import org.strategoxt.imp.runtime.parser.CustomDisambiguator;
-import org.strategoxt.imp.runtime.stratego.SourceAttachment;
+import org.spoofax.sunshine.parser.jsglr.SourceAttachment;
 
 /**
  * An abstract imploding SGLR parser class.
@@ -22,7 +17,7 @@ import org.strategoxt.imp.runtime.stratego.SourceAttachment;
  * @author Lennart Kats <L.C.L.Kats add tudelft.nl>
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  */
-public abstract class ASGLRI implements IParser, IMessageProducer {
+public abstract class ASGLRI implements IParser {
 
 	protected IParserConfig config;
 
@@ -32,16 +27,7 @@ public abstract class ASGLRI implements IParser, IMessageProducer {
 
 	private boolean implodeEnabled = true;
 
-	public ASGLRI() {
-	}
-
-	@Override
-	public IParserConfig getConfiguration() {
-		return config;
-	}
-
-	@Override
-	public void setConfiguration(IParserConfig config) {
+	public ASGLRI(IParserConfig config) {
 		this.config = config;
 	}
 

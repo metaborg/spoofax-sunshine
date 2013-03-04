@@ -2,8 +2,8 @@ package org.strategoxt.imp.runtime.parser.ast;
 
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getLeftToken;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getRightToken;
+import static org.spoofax.sunshine.parser.jsglr.SourceAttachment.getResource;
 import static org.spoofax.terms.SimpleTermVisitor.tryGetListIterator;
-import static org.strategoxt.imp.runtime.stratego.SourceAttachment.getResource;
 
 import java.util.Iterator;
 

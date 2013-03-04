@@ -1,24 +1,24 @@
 package org.spoofax.sunshine.parser.jsglr;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.client.Asfix2TreeBuilder;
 import org.spoofax.jsglr.client.Disambiguator;
 import org.spoofax.jsglr.client.FilterException;
+import org.spoofax.jsglr.client.ParseException;
 import org.spoofax.jsglr.client.imploder.ITreeFactory;
 import org.spoofax.jsglr.client.imploder.TermTreeFactory;
 import org.spoofax.jsglr.client.imploder.TreeBuilder;
 import org.spoofax.jsglr.io.SGLR;
 import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.SGLRException;
+import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.messages.IMessage;
-import org.spoofax.sunshine.messages.Message;
-import org.spoofax.sunshine.messages.MessageSeverity;
-import org.spoofax.sunshine.messages.MessageType;
+import org.spoofax.sunshine.framework.messages.Message;
+import org.spoofax.sunshine.framework.messages.MessageSeverity;
+import org.spoofax.sunshine.framework.messages.MessageType;
+import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.parser.framework.ASGLRI;
 import org.spoofax.sunshine.parser.framework.IParserConfig;
 import org.spoofax.sunshine.parser.framework.ParserException;
@@ -38,8 +38,6 @@ public class JSGLRI extends ASGLRI {
 
 	private int cursorLocation = Integer.MAX_VALUE;
 
-	private final Collection<IMessage> messages = new LinkedList<IMessage>();
-
 	// Initialization and parsing
 
 	public void setCursorLocation(int cursorLocation) {
@@ -47,15 +45,11 @@ public class JSGLRI extends ASGLRI {
 	}
 
 	public JSGLRI(IParserConfig config) throws ParserException {
-		this.config = config;
+		super(config);
 		final TermTreeFactory factory = new TermTreeFactory(new ParentTermFactory(Environment.INSTANCE().termFactory));
 		this.parser = new SGLR(new TreeBuilder(factory), config.getParseTableProvider().getParseTable());
 		resetState();
 	}
-
-	// public SGLR getParser() {
-	// return parser;
-	// }
 
 	/**
 	 * @see SGLR#setUseStructureRecovery(boolean)
@@ -64,14 +58,6 @@ public class JSGLRI extends ASGLRI {
 		this.useRecovery = useRecovery;
 		parser.setUseStructureRecovery(useRecovery);
 	}
-
-	// public Disambiguator getDisambiguator() {
-	// return disambiguator;
-	// }
-	//
-	// public void setDisambiguator(Disambiguator disambiguator) {
-	// this.disambiguator = disambiguator;
-	// }
 
 	/**
 	 * Resets the state of this parser, reinitializing the SGLR instance
@@ -97,7 +83,6 @@ public class JSGLRI extends ASGLRI {
 	protected IStrategoTerm doParse(String input, String filename) throws ParserException {
 		IStrategoTerm result = null;
 		ParserException toThrow = null;
-		messages.clear();
 		try {
 			try {
 				result = (IStrategoTerm) parser.parse(input, filename, config.getStartSymbol(), true, cursorLocation);
@@ -113,6 +98,12 @@ public class JSGLRI extends ASGLRI {
 					throw e;
 				}
 			}
+		} catch (TokenExpectedException e) {
+			toThrow = new ParserException(e);
+		} catch (BadTokenException e) {
+			;
+		} catch (ParseException e) {
+			toThrow = new ParserException(e);
 		} catch (SGLRException e) {
 			toThrow = new ParserException(e);
 		} finally {
@@ -124,7 +115,7 @@ public class JSGLRI extends ASGLRI {
 				msg.severity = MessageSeverity.ERROR;
 				msg.file = filename;
 				msg.msg = badTokenException.getMessage();
-				messages.add(msg);
+				MessageService.INSTANCE().addMessage(msg);
 			}
 		}
 
@@ -133,11 +124,6 @@ public class JSGLRI extends ASGLRI {
 		}
 
 		return result;
-	}
-
-	@Override
-	public Collection<IMessage> getMessages() {
-		return new LinkedList<IMessage>(messages);
 	}
 
 }

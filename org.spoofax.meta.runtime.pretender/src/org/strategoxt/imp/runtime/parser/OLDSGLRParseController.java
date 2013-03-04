@@ -44,7 +44,7 @@ public class OLDSGLRParseController implements IParserConfig {
 	
 	private final SWTSafeLock parseLock = new SWTSafeLock(true);
 	
-	private final Language language;
+	private final ILanguage language;
 	
 	private final ILanguageSyntaxProperties syntaxProperties;
 	
@@ -186,7 +186,7 @@ public class OLDSGLRParseController implements IParserConfig {
      * @param language      The name of the language, as registered in the {@link LanguageRegistry}.
      * @param startSymbol	The start symbol of this grammar, or null.
      */
-    public OLDSGLRParseController(Language language, ParseTableProvider table, ILanguageSyntaxProperties syntaxProperties,
+    public OLDSGLRParseController(ILanguage language, ParseTableProvider table, ILanguageSyntaxProperties syntaxProperties,
 			String startSymbol) {
     	
     	this.language = language;
@@ -202,7 +202,7 @@ public class OLDSGLRParseController implements IParserConfig {
     }
     
     @Deprecated
-    public OLDSGLRParseController(Language language, ParseTable table, ILanguageSyntaxProperties syntaxProperties,
+    public OLDSGLRParseController(ILanguage language, ParseTable table, ILanguageSyntaxProperties syntaxProperties,
 			String startSymbol) {
     	this(language, new ParseTableProvider(table), syntaxProperties, startSymbol);
     }
@@ -210,14 +210,14 @@ public class OLDSGLRParseController implements IParserConfig {
     /**
      * Creates a new SGLRParseController, throwing any parse table loading exceptions as runtime exceptions.
      * 
-     * @deprecated Use {@link #SGLRParseController(Language, ParseTable, ILanguageSyntaxProperties, String)} instead.
+     * @deprecated Use {@link #SGLRParseController(ILanguage, ParseTable, ILanguageSyntaxProperties, String)} instead.
      */
     @Deprecated
-    public OLDSGLRParseController(Language language, ILanguageSyntaxProperties syntaxProperties, String startSymbol) {
+    public OLDSGLRParseController(ILanguage language, ILanguageSyntaxProperties syntaxProperties, String startSymbol) {
     	this(language, getTableSwallowExceptions(language), syntaxProperties, startSymbol);
     }
 
-    private static ParseTableProvider getTableSwallowExceptions(Language language) {
+    private static ParseTableProvider getTableSwallowExceptions(ILanguage language) {
 		try {
 			return Environment.getParseTableProvider(language);
 		} catch (Exception e) {
@@ -437,7 +437,7 @@ public class OLDSGLRParseController implements IParserConfig {
 	
 	// Language information
 
-	public Language getLanguage() {
+	public ILanguage getLanguage() {
 		return language;
 	}
 	

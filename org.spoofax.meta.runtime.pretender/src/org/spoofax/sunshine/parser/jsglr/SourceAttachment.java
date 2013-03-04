@@ -1,4 +1,4 @@
-package org.strategoxt.imp.runtime.stratego;
+package org.spoofax.sunshine.parser.jsglr;
 
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.hasImploderOrigin;
 import static org.spoofax.terms.attachments.OriginAttachment.getOrigin;

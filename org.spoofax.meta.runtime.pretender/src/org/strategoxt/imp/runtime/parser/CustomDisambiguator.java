@@ -5,11 +5,11 @@ import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getLeftToken;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getRightToken;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getTokenizer;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.putImploderAttachment;
+import static org.spoofax.sunshine.parser.jsglr.SourceAttachment.getFile;
+import static org.spoofax.sunshine.parser.jsglr.SourceAttachment.getParseController;
+import static org.spoofax.sunshine.parser.jsglr.SourceAttachment.getResource;
 import static org.spoofax.terms.TermVisitor.tryGetListIterator;
 import static org.spoofax.terms.attachments.OriginAttachment.getOrigin;
-import static org.strategoxt.imp.runtime.stratego.SourceAttachment.getFile;
-import static org.strategoxt.imp.runtime.stratego.SourceAttachment.getParseController;
-import static org.strategoxt.imp.runtime.stratego.SourceAttachment.getResource;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -20,13 +20,13 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.client.imploder.IToken;
 import org.spoofax.jsglr.client.imploder.ImploderAttachment;
 import org.spoofax.jsglr.client.imploder.Tokenizer;
+import org.spoofax.sunshine.parser.jsglr.SourceAttachment;
 import org.spoofax.terms.attachments.OriginAttachment;
 import org.spoofax.terms.attachments.ParentAttachment;
 import org.strategoxt.imp.runtime.Environment;
 import org.strategoxt.imp.runtime.dynamicloading.BadDescriptorException;
 import org.strategoxt.imp.runtime.dynamicloading.Descriptor;
 import org.strategoxt.imp.runtime.services.StrategoObserver;
-import org.strategoxt.imp.runtime.stratego.SourceAttachment;
 
 /**
  * A class that uses the language runtime to disambiguate an AST.

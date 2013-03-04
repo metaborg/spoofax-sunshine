@@ -1,6 +1,4 @@
-package org.spoofax.sunshine.messages;
-
-import java.io.File;
+package org.spoofax.sunshine.framework.messages;
 
 import org.spoofax.jsglr.client.imploder.IToken;
 
@@ -15,4 +13,5 @@ public interface IMessage {
 	String message();
 	IToken left();
 	IToken right();
+	Throwable getAttachedException();
 }

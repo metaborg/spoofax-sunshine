@@ -4,9 +4,9 @@ import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getElementSor
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getLeftToken;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getRightToken;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getSort;
+import static org.spoofax.sunshine.parser.jsglr.SourceAttachment.getParseController;
 import static org.spoofax.terms.Term.isTermList;
 import static org.spoofax.terms.attachments.ParentAttachment.getParent;
-import static org.strategoxt.imp.runtime.stratego.SourceAttachment.getParseController;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;

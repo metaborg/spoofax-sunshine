@@ -11,7 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.sunshine.messages.IMessage;
+import org.spoofax.sunshine.framework.language.AdHocLanguage;
+import org.spoofax.sunshine.framework.messages.IMessage;
+import org.spoofax.sunshine.framework.services.AnalysisException;
+import org.spoofax.sunshine.framework.services.AnalysisService;
+import org.spoofax.sunshine.framework.services.LanguageService;
+import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider;
 import org.spoofax.sunshine.parser.framework.ParserException;
 import org.spoofax.sunshine.parser.jsglr.JSGLRConfig;
@@ -37,33 +42,36 @@ public class SunshineFront {
 	public static void main(String[] args) {
 		final SunshineFront front = new SunshineFront();
 		front.parseArgs(args);
-		front.analyze();
+		front.initializeLanguage();
+		front.analyzeFiles();
 	}
-
-	private void analyze() {
+	
+	private void analyzeFiles() {
 		for (String trg : file_targets) {
-			parse(trg);
+			analyzeFile(trg);
 		}
 	}
-
-	private void parse(String filename) {
-		final String startSymbol = "Start";
-		final FileBasedParseTableProvider tblProvider = new FileBasedParseTableProvider(new File(language_tbl), true);
-		final File file = new File(filename);
-		final JSGLRConfig config = new JSGLRConfig(startSymbol, tblProvider, 5000);
+	
+	private void analyzeFile(String filename) {
 		try {
-			final JSGLRI parser = new JSGLRI(config);
-			IStrategoTerm ast = parser.parse(new FileInputStream(file), filename);
-			System.out.println(ast.toString());
-			Collection<IMessage> msgs = parser.getMessages();
+			final IStrategoTerm ast = AnalysisService.INSTANCE().getAnalyzedAst(new File(filename));
+			Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
+			if(ast == null){
+				System.err.println("Analysis failed");
+			}else{
+				System.out.println(ast);
+			}
 			for (IMessage msg : msgs) {
 				System.err.println(msg);
 			}
-		} catch (ParserException e) {
-			throw new RuntimeException(e);
-		} catch (FileNotFoundException e) {
+		} catch (AnalysisException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void initializeLanguage(){
+		final AdHocLanguage lang = new AdHocLanguage("Entity", new String[] { ".ent" }, "Start", new File(language_tbl));
+		LanguageService.INSTANCE().registerLanguage(lang);
 	}
 
 	private void parseArgs(String[] args) throws IllegalArgumentException {
