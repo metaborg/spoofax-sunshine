@@ -25,7 +25,8 @@ import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.SGLRException;
 import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.sunshine.parser.framework.IParserConfig;
-import org.spoofax.sunshine.parser.jsglr.JSGLRI;
+import org.spoofax.sunshine.parser.impl.JSGLRI;
+import org.spoofax.sunshine.parser.impl.JSGLRParseErrorHandler;
 import org.strategoxt.imp.runtime.parser.ast.AstNodeLocator;
 import org.strategoxt.imp.runtime.parser.tokens.SGLRTokenIterator;
 import org.strategoxt.meta.runtime.pretender.services.StrategoObserver;
@@ -48,7 +49,7 @@ public class OLDSGLRParseController implements IParserConfig {
 	
 	private final ILanguageSyntaxProperties syntaxProperties;
 	
-	private final ParseErrorHandler errorHandler = new ParseErrorHandler(this);
+	private final JSGLRParseErrorHandler errorHandler = new JSGLRParseErrorHandler(this);
 	
 	private volatile IStrategoTerm currentAst;
 	
@@ -113,7 +114,7 @@ public class OLDSGLRParseController implements IParserConfig {
 		return parseLock;
 	}
 	
-	public ParseErrorHandler getErrorHandler() {
+	public JSGLRParseErrorHandler getErrorHandler() {
 		return errorHandler;
 	}
 	
@@ -412,13 +413,13 @@ public class OLDSGLRParseController implements IParserConfig {
 			scheduleObserverUpdate(errorHandler);
 	}
 
-	private void reportException(ParseErrorHandler errorHandler, Exception e) {
+	private void reportException(JSGLRParseErrorHandler errorHandler, Exception e) {
 		errorHandler.clearErrors();
 		errorHandler.setRecoveryFailed(true);
 		errorHandler.reportException(getCurrentTokenizer(), e);
 	}
 
-	private void scheduleObserverUpdate(ParseErrorHandler errorHandler) {
+	private void scheduleObserverUpdate(JSGLRParseErrorHandler errorHandler) {
 		// We bypass the UniversalEditor IModelListener for this,
 		// allowing a bit more (timing) control and ease of use (wrt dynamic reloading)
 		try {

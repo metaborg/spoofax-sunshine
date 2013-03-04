@@ -1,4 +1,4 @@
-package org.spoofax.sunshine.parser.jsglr;
+package org.spoofax.sunshine.parser.impl;
 
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.hasImploderOrigin;
 import static org.spoofax.terms.attachments.OriginAttachment.getOrigin;

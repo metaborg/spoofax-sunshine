@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider;
+import org.spoofax.sunshine.parser.framework.IParseTableProvider;
+
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
@@ -16,14 +19,14 @@ public class AdHocLanguage implements ILanguage {
 	public final String name;
 	public final String[] extens;
 	public final String startSymbol;
-	public final File parseTable;
+	public final FileBasedParseTableProvider parseTableProvider;
 
 	public AdHocLanguage(String name, String[] extens, String startSymbol, File parseTable) {
 		this.name = name;
 		this.extens = new String[extens.length];
 		System.arraycopy(extens, 0, this.extens, 0, extens.length);
 		this.startSymbol = startSymbol;
-		this.parseTable = parseTable;
+		this.parseTableProvider = new FileBasedParseTableProvider(parseTable);
 	}
 
 	@Override
@@ -42,8 +45,9 @@ public class AdHocLanguage implements ILanguage {
 	}
 
 	@Override
-	public File getParseTable() {
-		return this.parseTable;
+	public IParseTableProvider getParseTableProvider() {
+		return this.parseTableProvider;
 	}
+
 
 }

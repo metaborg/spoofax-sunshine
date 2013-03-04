@@ -9,7 +9,7 @@ import org.spoofax.jsglr.client.imploder.IToken;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class Message implements IMessage {
+public class TokenMessage implements IMessage {
 
 	public MessageType type;
 	public MessageSeverity severity;
@@ -24,6 +24,7 @@ public class Message implements IMessage {
 		if (obj instanceof IMessage) {
 			IMessage o = (IMessage) obj;
 			boolean equal = true;
+			equal &= file.equals(o.file());
 			equal &= equal && left == null ? o.left() == null : left.compareTo(o.left()) == 0;
 			equal &= right == null ? o.right() == null : right.compareTo(o.right()) == 0;
 			equal &= type == o.type();

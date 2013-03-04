@@ -1,4 +1,4 @@
-package org.strategoxt.imp.runtime.parser;
+package org.spoofax.sunshine.parser.impl;
 
 import static java.lang.Math.min;
 import static org.spoofax.jsglr.client.imploder.AbstractTokenizer.findLeftMostTokenOnSameLine;
@@ -27,11 +27,12 @@ import org.spoofax.jsglr.client.imploder.ITokenizer;
 import org.spoofax.jsglr.client.imploder.Token;
 import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.TokenExpectedException;
-import org.spoofax.sunshine.parser.jsglr.JSGLRI;
+import org.spoofax.sunshine.parser.framework.IParseController;
 import org.spoofax.terms.TermVisitor;
 import org.strategoxt.imp.generator.sdf2imp;
 import org.strategoxt.imp.generator.simplify_ambiguity_report_0_0;
 import org.strategoxt.imp.runtime.Environment;
+import org.strategoxt.imp.runtime.parser.OLDSGLRParseController;
 import org.strategoxt.imp.runtime.parser.ast.AstMessageBatch;
 import org.strategoxt.imp.runtime.parser.ast.AstMessageHandler;
 import org.strategoxt.imp.runtime.services.StrategoObserver;
@@ -45,7 +46,7 @@ import org.strategoxt.stratego_sglr.stratego_sglr;
  * @author Lennart Kats <L.C.L.Kats add tudelft.nl>
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  */
-public class ParseErrorHandler {
+public class JSGLRParseErrorHandler {
 	
 //	public static final int PARSE_ERROR_DELAY = min(StrategoObserver.OBSERVER_DELAY + 50, 800);
 //	
@@ -60,7 +61,7 @@ public class ParseErrorHandler {
 	
 	private final AstMessageHandler handler = new AstMessageHandler(AstMessageHandler.PARSE_MARKER_TYPE);
 
-	private final OLDSGLRParseController source;
+	private final JSGLRParseController source;
 	
 	private volatile boolean isRecoveryFailed = true;
 	
@@ -68,7 +69,7 @@ public class ParseErrorHandler {
 	
 	private boolean rushNextUpdate;
 
-	public ParseErrorHandler(OLDSGLRParseController source) {
+	public JSGLRParseErrorHandler(JSGLRParseController source) {
 		this.source = source;
 	}
 	
@@ -172,7 +173,7 @@ public class ParseErrorHandler {
 		
 		if (!Environment.getStrategoLock().isHeldByCurrentThread()) {
 			// ^ avoid potential deadlock (occurs when parsing a file for the first time, when it's probably safe)
-			synchronized (ParseErrorHandler.class) {
+			synchronized (JSGLRParseErrorHandler.class) {
 				Environment.getStrategoLock().lock();
 				try {
 					if (asyncAmbReportingContext == null) {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.parser.jsglr;
+package org.spoofax.sunshine.parser.impl;
 
 import org.spoofax.sunshine.parser.framework.IParseTableProvider;
 import org.spoofax.sunshine.parser.framework.IParserConfig;

@@ -4,8 +4,6 @@
 package org.spoofax.sunshine;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,14 +11,9 @@ import java.util.List;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.framework.language.AdHocLanguage;
 import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.services.AnalysisException;
 import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
-import org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider;
-import org.spoofax.sunshine.parser.framework.ParserException;
-import org.spoofax.sunshine.parser.jsglr.JSGLRConfig;
-import org.spoofax.sunshine.parser.jsglr.JSGLRI;
 
 /**
  * @author Vlad Vergu
@@ -45,31 +38,27 @@ public class SunshineFront {
 		front.initializeLanguage();
 		front.analyzeFiles();
 	}
-	
+
 	private void analyzeFiles() {
 		for (String trg : file_targets) {
 			analyzeFile(trg);
 		}
 	}
-	
+
 	private void analyzeFile(String filename) {
-		try {
-			final IStrategoTerm ast = AnalysisService.INSTANCE().getAnalyzedAst(new File(filename));
-			Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
-			if(ast == null){
-				System.err.println("Analysis failed");
-			}else{
-				System.out.println(ast);
-			}
-			for (IMessage msg : msgs) {
-				System.err.println(msg);
-			}
-		} catch (AnalysisException e) {
-			throw new RuntimeException(e);
+		final IStrategoTerm ast = AnalysisService.INSTANCE().getAnalyzedAst(new File(filename));
+		if (ast == null) {
+			System.out.println("No AST produced");
+		} else {
+			System.out.println(ast);
+		}
+		Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
+		for (IMessage msg : msgs) {
+			System.err.println(msg);
 		}
 	}
 
-	private void initializeLanguage(){
+	private void initializeLanguage() {
 		final AdHocLanguage lang = new AdHocLanguage("Entity", new String[] { ".ent" }, "Start", new File(language_tbl));
 		LanguageService.INSTANCE().registerLanguage(lang);
 	}
