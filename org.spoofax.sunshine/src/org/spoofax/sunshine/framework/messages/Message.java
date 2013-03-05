@@ -15,8 +15,8 @@ public class Message implements IMessage {
 	public MessageSeverity severity;
 	public String file;
 	public String msg;
-	private Throwable exception;
-	private ARegion region;
+	public Throwable exception;
+	public ARegion region;
 
 	@Override
 	public MessageType type() {

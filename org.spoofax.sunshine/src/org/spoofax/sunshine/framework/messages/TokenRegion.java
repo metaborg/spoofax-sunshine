@@ -14,6 +14,9 @@ public class TokenRegion extends ARegion {
 	private IToken left, right;
 
 	public TokenRegion(IToken left, IToken right) {
+		if (left == null || right == null) {
+			assert false;
+		}
 		this.left = left;
 		this.right = right;
 	}
