@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project org.spoofax.sunshine">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/dist/sunshine.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="org.spoofax.sunshine.SunshineFront"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/lib/strategoxt.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/lib/commons-io-2.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/lib/sdf2imp.jar"/>
+        </jar>
+    </target>
+</project>

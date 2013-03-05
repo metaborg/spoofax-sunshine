@@ -27,7 +27,7 @@ public class AnalysisService {
 		return INSTANCE;
 	}
 
-	public IStrategoTerm getAnalyzedAst(File f) {
+	public IStrategoTerm analyze(File f) {
 		return getAnalysisController(f).getAnalyzedAst();
 	}
 

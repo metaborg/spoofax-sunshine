@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.sunshine.framework.language.AdHocLanguage;
+import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
 import org.spoofax.sunshine.framework.messages.IMessage;
 import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.LanguageService;
@@ -46,7 +46,7 @@ public class SunshineFront {
 	}
 
 	private void analyzeFile(String filename) {
-		final IStrategoTerm ast = AnalysisService.INSTANCE().getAnalyzedAst(new File(filename));
+		final IStrategoTerm ast = AnalysisService.INSTANCE().analyze(new File(filename));
 		if (ast == null) {
 			System.out.println("No AST produced");
 		} else {
@@ -59,7 +59,7 @@ public class SunshineFront {
 	}
 
 	private void initializeLanguage() {
-		final AdHocLanguage lang = new AdHocLanguage("Entity", new String[] { ".ent" }, "Start", new File(language_tbl));
+		final AdHocJarBasedLanguage lang = new AdHocJarBasedLanguage("Entity", new String[] { ".ent" }, "Start", new File(language_tbl), "editor-analyze", new File(language_jar));
 		LanguageService.INSTANCE().registerLanguage(lang);
 	}
 

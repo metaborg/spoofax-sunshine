@@ -14,24 +14,25 @@ import org.spoofax.sunshine.parser.framework.IParseTableProvider;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class AdHocLanguage implements ILanguage {
+public class AdHocJarBasedLanguage extends ALanguage {
 
-	public final String name;
+	
 	public final String[] extens;
 	public final String startSymbol;
 	public final FileBasedParseTableProvider parseTableProvider;
+	public final String analysisFunction;
+	public final File[] jarfiles;
 
-	public AdHocLanguage(String name, String[] extens, String startSymbol, File parseTable) {
-		this.name = name;
+	public AdHocJarBasedLanguage(String name, String[] extens, String startSymbol, File parseTable, String analysisFunction,
+			File jarfile) {
+		super(name, LanguageNature.JAR_NATURE);
 		this.extens = new String[extens.length];
 		System.arraycopy(extens, 0, this.extens, 0, extens.length);
 		this.startSymbol = startSymbol;
 		this.parseTableProvider = new FileBasedParseTableProvider(parseTable);
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
+		this.analysisFunction = analysisFunction;
+		assert jarfile.getName().endsWith(".jar");
+		this.jarfiles = new File[] { jarfile };
 	}
 
 	@Override
@@ -49,5 +50,14 @@ public class AdHocLanguage implements ILanguage {
 		return this.parseTableProvider;
 	}
 
+	@Override
+	public String getAnalysisFunction() {
+		return analysisFunction;
+	}
+
+	@Override
+	public File[] getCompilerFiles() {
+		return this.jarfiles;
+	}
 
 }
