@@ -1,6 +1,5 @@
 package org.spoofax.sunshine.parser.impl;
 
-import java.io.File;
 import java.util.Set;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
@@ -16,10 +15,6 @@ import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.SGLRException;
 import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.framework.messages.TokenMessage;
-import org.spoofax.sunshine.framework.messages.MessageSeverity;
-import org.spoofax.sunshine.framework.messages.MessageType;
-import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.parser.framework.AParser;
 import org.spoofax.sunshine.parser.framework.IParserConfig;
 import org.spoofax.sunshine.parser.framework.ParserException;
@@ -39,8 +34,8 @@ public class JSGLRI extends AParser {
 
 	private int cursorLocation = Integer.MAX_VALUE;
 
-	private boolean implodeEnabled;
-	
+	private boolean implodeEnabled = true;
+
 	// Initialization and parsing
 
 	public void setCursorLocation(int cursorLocation) {
@@ -58,8 +53,8 @@ public class JSGLRI extends AParser {
 		this.useRecovery = useRecovery;
 		parser.setUseStructureRecovery(useRecovery);
 	}
-	
-	public void setImplodeEnabled(boolean implode){
+
+	public void setImplodeEnabled(boolean implode) {
 		this.implodeEnabled = implode;
 		resetState();
 	}
@@ -87,7 +82,6 @@ public class JSGLRI extends AParser {
 	@Override
 	protected IStrategoTerm doParse(String input, String filename) throws ParserException {
 		IStrategoTerm result = null;
-		ParserException toThrow = null;
 		try {
 			try {
 				result = (IStrategoTerm) parser.parse(input, filename, config.getStartSymbol(), true, cursorLocation);
@@ -103,32 +97,15 @@ public class JSGLRI extends AParser {
 					throw e;
 				}
 			}
-		} catch (TokenExpectedException e) {
-			toThrow = new ParserException(e);
-		} catch (BadTokenException e) {
-			;
-		} catch (ParseException e) {
-			toThrow = new ParserException(e);
 		} catch (SGLRException e) {
-			toThrow = new ParserException(e);
-		} finally {
-			// TODO proper message collection
-			Set<BadTokenException> errors = parser.getCollectedErrors();
-			for (BadTokenException badTokenException : errors) {
-				final TokenMessage msg = new TokenMessage();
-				msg.type = MessageType.PARSER_MESSAGE;
-				msg.severity = MessageSeverity.ERROR;
-				msg.file = filename;
-				msg.msg = badTokenException.getMessage();
-				MessageService.INSTANCE().addMessage(msg);
-			}
-		}
-
-		if (toThrow != null) {
-			throw toThrow;
+			throw new ParserException(e);
 		}
 
 		return result;
+	}
+
+	public Set<BadTokenException> getCollectedErrors() {
+		return parser.getCollectedErrors();
 	}
 
 }

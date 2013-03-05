@@ -13,7 +13,9 @@ import org.spoofax.jsglr.client.imploder.ImploderAttachment;
 import org.spoofax.jsglr.client.imploder.NullTokenizer;
 import org.spoofax.jsglr.io.FileTools;
 import org.spoofax.sunshine.framework.language.ILanguage;
+import org.spoofax.sunshine.framework.messages.MessageType;
 import org.spoofax.sunshine.framework.services.LanguageService;
+import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.parser.framework.IParseController;
 import org.spoofax.sunshine.parser.framework.IParser;
 import org.spoofax.sunshine.parser.framework.IParserConfig;
@@ -58,26 +60,40 @@ public class JSGLRParseController implements IParseController {
 	@Override
 	public IStrategoTerm parse() {
 		String contents;
+		final String filename = this.file.getPath();
 		try {
 			if(parser == null){
 				parser = new JSGLRI(parserConfig);
 			}
 			contents = FileTools.loadFileAsString(new BufferedReader(new InputStreamReader(new FileInputStream(
 					this.file))));
-			final String filename = this.file.getAbsolutePath();
-
+			
 			currentTokenizer = new NullTokenizer(contents, filename);
 			currentAst = parser.parse(contents, filename);
 			currentTokenizer = ImploderAttachment.getTokenizer(currentAst);
 			
-		} catch (FileNotFoundException e) {
-			errorHandler.reportException(currentTokenizer, e);
+			MessageService.INSTANCE().clearMessages(filename, MessageType.PARSER_MESSAGE);
+			errorHandler.setRecoveryFailed(false);
+			errorHandler.gatherNonFatalErrors(currentAst);
+			
 		} catch (IOException e) {
-			errorHandler.reportException(currentTokenizer, e);
+			reportException(e);
 		} catch (ParserException e) {
-			errorHandler.reportException(currentTokenizer, e);
+			reportException((Exception) e.getCause());
 		}
 		return currentAst;
+	}
+	
+	private void reportException(Exception e){
+		final String filename = this.file.getPath();
+		MessageService.INSTANCE().clearMessages(filename, MessageType.PARSER_MESSAGE);
+		errorHandler.setRecoveryFailed(true);
+		errorHandler.reportException(currentTokenizer, e);
+	}
+
+	@Override
+	public IParser getParser() {
+		return parser;
 	}
 
 }

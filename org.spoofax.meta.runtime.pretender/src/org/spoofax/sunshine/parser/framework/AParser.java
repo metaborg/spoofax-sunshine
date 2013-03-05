@@ -23,6 +23,11 @@ public abstract class AParser implements IParser {
 		this.config = config;
 	}
 	
+	@Override
+	public IParserConfig getConfig() {
+		return config;
+	}
+	
 	/**
 	 * Parse an input, returning the AST and initializing the parse stream.
 	 * 

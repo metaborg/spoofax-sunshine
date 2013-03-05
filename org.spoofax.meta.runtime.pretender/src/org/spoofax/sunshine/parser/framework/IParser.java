@@ -12,5 +12,5 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 public interface IParser {
 
 	IStrategoTerm parse(String input, String filename) throws ParserException;
-
+	IParserConfig getConfig();
 }

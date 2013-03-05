@@ -1,6 +1,5 @@
 package org.spoofax.sunshine.framework.messages;
 
-import org.spoofax.jsglr.client.imploder.IToken;
 
 /**
  * 
@@ -11,7 +10,6 @@ public interface IMessage {
 	MessageSeverity severity();
 	String file();
 	String message();
-	IToken left();
-	IToken right();
+	ARegion region();
 	Throwable getAttachedException();
 }
