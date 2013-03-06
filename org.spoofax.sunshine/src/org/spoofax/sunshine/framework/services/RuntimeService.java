@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.spoofax.interpreter.library.LoggingIOAgent;
 import org.spoofax.jsglr.client.imploder.ImploderOriginTermFactory;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.language.ALanguage;
@@ -67,7 +68,7 @@ public class RuntimeService {
 		// TODO load overrides and contexts
 		final HybridInterpreter interp = new HybridInterpreter(proto, new String[0]);
 		interp.getCompiledContext().getExceptionHandler().setEnabled(false);
-		return null;
+		return interp;
 	}
 
 	private HybridInterpreter createPrototypeRuntime(ALanguage lang) {
@@ -79,10 +80,12 @@ public class RuntimeService {
 		// TODO register stratego parallel ???
 		compiledCtx.registerComponent("stratego_lib");
 		compiledCtx.registerComponent("stratego_sglr");
-
+		
 		// TODO register the JSGLR library
 		// TODO register Spoofax-specific primitives
 
+		interp.setIOAgent(new LoggingIOAgent());
+		
 		switch (lang.getNature()) {
 		case CTREE_NATURE:
 			loadCompilerCTree(interp, lang);

@@ -87,9 +87,11 @@ public class Message implements IMessage {
 		str.append(msg);
 		return str.toString();
 	}
+
 	
 	
-	public static Message newParseError(String file, IToken left, IToken right, String msg){
+	
+	public static Message newParseError(String file, IToken left, IToken right, String msg) {
 		final Message message = new Message();
 		message.type = MessageType.PARSER_MESSAGE;
 		message.severity = MessageSeverity.ERROR;
@@ -98,27 +100,41 @@ public class Message implements IMessage {
 		message.msg = msg;
 		return message;
 	}
-	
-	public static Message newParseWarning(String file, IToken left, IToken right, String msg){
+
+	public static Message newParseWarning(String file, IToken left, IToken right, String msg) {
 		final Message message = newParseError(file, left, right, msg);
 		message.severity = MessageSeverity.WARNING;
 		return message;
 	}
 	
-	public static Message newParseErrorAtTop(String file, String msg){
+	private static Message newAtTop(String file, String msg, MessageType type, MessageSeverity severity) {
 		final Message message = new Message();
-		message.type = MessageType.PARSER_MESSAGE;
-		message.severity = MessageSeverity.ERROR;
+		message.type = type;
+		message.severity = severity;
 		message.file = file;
 		message.msg = msg;
 		message.region = new PositionRegion(0, 0, 1, 0);
 		return message;
 	}
-	
-	public static Message newParseWarningAtTop(String file, String msg){
-		final Message message = newParseErrorAtTop(file, msg);
-		message.severity = MessageSeverity.WARNING;
-		return message;
+
+	private static Message newErrorAtTop(String file, String msg, MessageType type) {
+		return newAtTop(file, msg, type, MessageSeverity.ERROR);
+	}
+
+	private static Message newWarningAtTop(String file, String msg, MessageType type) {
+		return newAtTop(file, msg, type, MessageSeverity.WARNING);
+	}
+
+	public static Message newParseErrorAtTop(String file, String msg) {
+		return newErrorAtTop(file, msg, MessageType.PARSER_MESSAGE);
+	}
+
+	public static Message newParseWarningAtTop(String file, String msg) {
+		return newWarningAtTop(file, msg, MessageType.PARSER_MESSAGE);
+	}
+
+	public static Message newAnalysisErrorAtTop(String file, String msg) {
+		return newErrorAtTop(file, msg, MessageType.ANALYSIS_MESSAGE);
 	}
 
 }

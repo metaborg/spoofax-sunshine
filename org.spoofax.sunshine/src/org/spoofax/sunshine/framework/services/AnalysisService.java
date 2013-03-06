@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.sunshine.analysis.DummyAnalysisController;
+import org.spoofax.sunshine.analysis.SingleFileCachingAnalysisController;
 import org.spoofax.sunshine.analysis.IAnalysisController;
 
 /**
@@ -34,7 +34,7 @@ public class AnalysisService {
 	private IAnalysisController getAnalysisController(File f) {
 		IAnalysisController controller = controllers.get(f);
 		if (controller == null) {
-			controller = new DummyAnalysisController(f);
+			controller = new SingleFileCachingAnalysisController(f);
 			controllers.put(f, controller);
 		}
 		return controller;

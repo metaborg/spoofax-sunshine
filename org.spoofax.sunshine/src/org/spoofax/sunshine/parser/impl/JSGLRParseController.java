@@ -57,8 +57,7 @@ public class JSGLRParseController implements IParseController {
 		return this.currentAst;
 	}
 
-	@Override
-	public IStrategoTerm parse() {
+	private IStrategoTerm parse() {
 		String contents;
 		final String filename = this.file.getPath();
 		try {

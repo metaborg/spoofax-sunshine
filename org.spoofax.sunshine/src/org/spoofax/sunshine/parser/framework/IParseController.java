@@ -14,6 +14,5 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 public interface IParseController {
 	File getFile();
 	IStrategoTerm getCurrentAst();
-	IStrategoTerm parse();
 	IParser getParser();
 }

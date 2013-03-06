@@ -3,7 +3,6 @@ package org.spoofax.sunshine.parser.framework;
 import java.io.File;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.sunshine.parser.impl.SourceAttachment;
 
 /**
  * An abstract imploding SGLR parser class.

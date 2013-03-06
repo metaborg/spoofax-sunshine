@@ -53,6 +53,6 @@ public class ParseService {
 			controller = new JSGLRParseController(file);
 			controllers.put(file, controller);
 		}
-		return controller.parse();
+		return controller.getCurrentAst();
 	}
 }

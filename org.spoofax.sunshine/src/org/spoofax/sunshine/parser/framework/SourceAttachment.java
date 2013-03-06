@@ -1,11 +1,10 @@
-package org.spoofax.sunshine.parser.impl;
+package org.spoofax.sunshine.parser.framework;
 
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.hasImploderOrigin;
 import static org.spoofax.terms.attachments.OriginAttachment.getOrigin;
 import java.io.File;
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.jsglr.client.imploder.ImploderAttachment;
-import org.spoofax.sunshine.parser.framework.IParserConfig;
 import org.spoofax.terms.attachments.AbstractTermAttachment;
 import org.spoofax.terms.attachments.ParentAttachment;
 import org.spoofax.terms.attachments.TermAttachmentType;
@@ -36,7 +35,7 @@ public class SourceAttachment extends AbstractTermAttachment {
 		assert resource != null;
 	}
 
-	public File getResource() {
+	public File getFile() {
 		return resource;
 	}
 
