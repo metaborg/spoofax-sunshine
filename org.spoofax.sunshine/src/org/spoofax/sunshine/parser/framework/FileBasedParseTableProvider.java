@@ -18,13 +18,13 @@ public class FileBasedParseTableProvider implements IParseTableProvider {
 	
 	private ParseTable table;
 	
-	public FileBasedParseTableProvider(File f){
-		this.file = f;
-		this.caching = true;
+	public FileBasedParseTableProvider(File file){
+		this(file, true);
 	}
 	
-	public FileBasedParseTableProvider(File f, boolean caching) {
-		this.file = f;
+	public FileBasedParseTableProvider(File file, boolean caching) {
+		assert file != null;
+		this.file = file;
 		this.caching = caching;
 	}
 	

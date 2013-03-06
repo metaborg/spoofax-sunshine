@@ -91,7 +91,7 @@ public class RuntimeService {
 			loadCompilerJar(interp, lang);
 			break;
 		default:
-			throw new RuntimeException("Unsupported language nature " + lang.nature);
+			throw new RuntimeException("Unsupported language nature " + lang.getNature());
 		}
 
 		prototypes.put(lang, interp);

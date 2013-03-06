@@ -1,22 +1,20 @@
 /**
  * 
  */
-package org.spoofax.sunshine.parser.impl;
+package org.spoofax.sunshine.parser.framework;
 
-import org.spoofax.sunshine.parser.framework.IParseTableProvider;
-import org.spoofax.sunshine.parser.framework.IParserConfig;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class JSGLRConfig implements IParserConfig {
+public class ParserConfig implements IParserConfig {
 
 	private final String startSymbol;
 	private final IParseTableProvider parseTableProvider;
 	private final int timeout;
 
-	public JSGLRConfig(String startSymbol, IParseTableProvider provider, int timeout) {
+	public ParserConfig(String startSymbol, IParseTableProvider provider, int timeout) {
 		this.startSymbol = startSymbol;
 		this.parseTableProvider = provider;
 		this.timeout = timeout;

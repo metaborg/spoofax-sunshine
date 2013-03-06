@@ -26,12 +26,19 @@ public class AdHocJarBasedLanguage extends ALanguage {
 	public AdHocJarBasedLanguage(String name, String[] extens, String startSymbol, File parseTable, String analysisFunction,
 			File jarfile) {
 		super(name, LanguageNature.JAR_NATURE);
+
+		assert name != null && name.length() > 0;
+		assert extens != null && extens.length > 0;
+		assert startSymbol != null && startSymbol.length() > 0;
+		assert parseTable != null;
+		assert analysisFunction != null && analysisFunction.length() > 0;
+		assert jarfile != null && jarfile.getName().endsWith(".jar");
+		
 		this.extens = new String[extens.length];
 		System.arraycopy(extens, 0, this.extens, 0, extens.length);
 		this.startSymbol = startSymbol;
 		this.parseTableProvider = new FileBasedParseTableProvider(parseTable);
 		this.analysisFunction = analysisFunction;
-		assert jarfile.getName().endsWith(".jar");
 		this.jarfiles = new File[] { jarfile };
 	}
 

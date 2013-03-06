@@ -18,6 +18,7 @@ import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.parser.framework.IParseController;
 import org.spoofax.sunshine.parser.framework.IParser;
 import org.spoofax.sunshine.parser.framework.IParserConfig;
+import org.spoofax.sunshine.parser.framework.ParserConfig;
 import org.spoofax.sunshine.parser.framework.ParserException;
 
 /**
@@ -38,7 +39,7 @@ public class JSGLRParseController implements IParseController {
 	public JSGLRParseController(File f) {
 		this.file = f;
 		final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(f);
-		parserConfig = new JSGLRConfig(lang.getStartSymbol(), lang.getParseTableProvider(),
+		parserConfig = new ParserConfig(lang.getStartSymbol(), lang.getParseTableProvider(),
 				PARSE_TIMEOUT);
 		errorHandler = new JSGLRParseErrorHandler(this);
 	}

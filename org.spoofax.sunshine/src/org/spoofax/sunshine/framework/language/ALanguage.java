@@ -14,8 +14,8 @@ import org.spoofax.sunshine.parser.framework.IParseTableProvider;
  */
 public abstract class ALanguage {
 
-	public final String name;
-	public final LanguageNature nature;
+	protected final String name;
+	protected final LanguageNature nature;
 
 	protected ALanguage(String name, LanguageNature nature) {
 		assert name != null && name.length() > 0;

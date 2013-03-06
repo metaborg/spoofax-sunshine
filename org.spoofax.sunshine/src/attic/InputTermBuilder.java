@@ -1,4 +1,4 @@
-package org.spoofax.sunshine.framework.language;
+package attic;
 
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getLeftToken;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getRightToken;
