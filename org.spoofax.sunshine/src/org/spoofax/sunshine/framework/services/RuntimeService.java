@@ -7,9 +7,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.spoofax.interpreter.library.LoggingIOAgent;
 import org.spoofax.jsglr.client.imploder.ImploderOriginTermFactory;
 import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.SunshineIOAgent;
 import org.spoofax.sunshine.framework.language.ALanguage;
 import org.spoofax.sunshine.prims.SunshineLibrary;
 import org.strategoxt.HybridInterpreter;
@@ -29,7 +29,7 @@ public class RuntimeService {
 	private static RuntimeService INSTANCE;
 
 	private final Map<ALanguage, HybridInterpreter> prototypes = new HashMap<ALanguage, HybridInterpreter>();
-
+	
 	private RuntimeService() {
 	}
 
@@ -59,6 +59,7 @@ public class RuntimeService {
 	 *            The language for which to create a new interpreter.
 	 * @return A new interpret for the given language. All of the language's files (
 	 *         {@link ALanguage#getCompilerFiles()} are loaded into the interpreter.
+	 *
 	 */
 	public HybridInterpreter getRuntime(ALanguage lang) {
 		HybridInterpreter proto = prototypes.get(lang);
@@ -76,16 +77,17 @@ public class RuntimeService {
 		final HybridInterpreter interp = new HybridInterpreter(new ImploderOriginTermFactory(
 				Environment.INSTANCE().termFactory));
 		final Context compiledCtx = interp.getCompiledContext();
-
+		final SunshineIOAgent agent = new SunshineIOAgent();
+		agent.setLanguage(lang);
+		
 		compiledCtx.getExceptionHandler().setEnabled(false);
 		// TODO register stratego parallel ???
 		compiledCtx.registerComponent("stratego_lib");
 		compiledCtx.registerComponent("stratego_sglr");
 		
 		// TODO register the JSGLR library
-		// TODO register Spoofax-specific primitives
 		compiledCtx.addOperatorRegistry(new SunshineLibrary());
-		interp.setIOAgent(new LoggingIOAgent());
+		interp.setIOAgent(agent);
 		
 		switch (lang.getNature()) {
 		case CTREE_NATURE:

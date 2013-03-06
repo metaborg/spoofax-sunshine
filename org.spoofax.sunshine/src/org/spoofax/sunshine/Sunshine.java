@@ -18,7 +18,7 @@ import org.spoofax.sunshine.framework.services.MessageService;
  * @author Vlad Vergu
  * 
  */
-public class SunshineFront {
+public class Sunshine {
 
 	private final static String LANG_JAR = "--lang-jar";
 	private final static String LANG_TBL = "--lang-tbl";
@@ -34,23 +34,29 @@ public class SunshineFront {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final SunshineFront front = new SunshineFront();
+		final Sunshine front = new Sunshine();
 		front.parseArgs(args);
 		front.initialize();
-		front.analyzeFiles();
+		boolean success = front.analyzeFiles();
+		if(success){
+			System.exit(0);
+		}else{
+			System.exit(1);
+		}
 	}
 
-	private void analyzeFiles() {
+	private boolean analyzeFiles() {
 		final Collection<File> files = new LinkedList<File>();
 		for (String fn : file_targets) {
 			files.add(new File(fn));
 		}
 		AnalysisService.INSTANCE().analyze(files);
 		Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
-		System.out.println("Done with " + msgs.size() + " errors");
+		System.err.println("Done with " + msgs.size() + " messages");
 		for (IMessage msg : msgs) {
 			System.err.println(msg);
 		}
+		return msgs.size() == 0;
 	}
 
 	private void initialize() {

@@ -99,20 +99,44 @@ public class Message implements IMessage {
 		return str.toString();
 	}
 
-	public static Message newParseError(String file, IToken left, IToken right, String msg) {
+	public static Message newMessage(String file, IToken left, IToken right, String msg, MessageSeverity severity,
+			MessageType type) {
 		final Message message = new Message();
-		message.type = MessageType.PARSER_MESSAGE;
-		message.severity = MessageSeverity.ERROR;
+		message.type = type;
+		message.severity = severity;
 		message.file = file;
 		message.region = new TokenRegion(left, right);
 		message.msg = msg;
 		return message;
 	}
 
+	public static Message newParseMessage(String file, IToken left, IToken right, String msg, MessageSeverity severity) {
+		return newMessage(file, left, right, msg, MessageSeverity.ERROR, MessageType.PARSER_MESSAGE);
+	}
+
+	public static Message newParseError(String file, IToken left, IToken right, String msg) {
+		return newParseMessage(file, left, right, msg, MessageSeverity.ERROR);
+	}
+
 	public static Message newParseWarning(String file, IToken left, IToken right, String msg) {
-		final Message message = newParseError(file, left, right, msg);
-		message.severity = MessageSeverity.WARNING;
-		return message;
+		return newParseMessage(file, left, right, msg, MessageSeverity.WARNING);
+	}
+
+	public static Message newAnalysisMessage(String file, IToken left, IToken right, String msg,
+			MessageSeverity severity) {
+		return newMessage(file, left, right, msg, MessageSeverity.ERROR, MessageType.ANALYSIS_MESSAGE);
+	}
+
+	public static Message newAnalysisError(String file, IToken left, IToken right, String msg) {
+		return newAnalysisMessage(file, left, right, msg, MessageSeverity.ERROR);
+	}
+
+	public static Message newAnalysisWarning(String file, IToken left, IToken right, String msg) {
+		return newAnalysisMessage(file, left, right, msg, MessageSeverity.WARNING);
+	}
+
+	public static Message newAnalysisNote(String file, IToken left, IToken right, String msg) {
+		return newAnalysisMessage(file, left, right, msg, MessageSeverity.NOTE);
 	}
 
 	private static Message newAtTop(String file, String msg, MessageType type, MessageSeverity severity) {
@@ -143,6 +167,10 @@ public class Message implements IMessage {
 
 	public static Message newAnalysisErrorAtTop(String file, String msg) {
 		return newErrorAtTop(file, msg, MessageType.ANALYSIS_MESSAGE);
+	}
+
+	public static Message newAnalysisWarningAtTop(String file, String msg) {
+		return newWarningAtTop(file, msg, MessageType.ANALYSIS_MESSAGE);
 	}
 
 }

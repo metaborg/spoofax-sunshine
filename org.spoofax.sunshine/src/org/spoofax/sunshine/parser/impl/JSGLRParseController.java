@@ -54,10 +54,11 @@ public class JSGLRParseController implements IParseController {
 
 	@Override
 	public IStrategoTerm getCurrentAst() {
-		if (currentAst == null) {
-			parse();
-		}
-		return this.currentAst;
+//		if (currentAst == null) {
+//			parse();
+//		}
+//		return this.currentAst;
+		return parse();
 	}
 
 	private IStrategoTerm parse() {
@@ -80,8 +81,10 @@ public class JSGLRParseController implements IParseController {
 			
 		} catch (IOException e) {
 			reportException(e);
+			currentAst = null;
 		} catch (ParserException e) {
 			reportException((Exception) e.getCause());
+			currentAst = null;
 		}
 		return currentAst;
 	}

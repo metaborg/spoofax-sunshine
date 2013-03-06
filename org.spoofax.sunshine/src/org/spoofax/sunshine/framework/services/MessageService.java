@@ -4,6 +4,7 @@
 package org.spoofax.sunshine.framework.services;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,6 +43,15 @@ public class MessageService {
 	 */
 	public void addMessage(IMessage msg) {
 		messages.add(msg);
+	}
+	
+	/**
+	 * Add all {@link IMessage} in the collection to the recorded messages.  Multiple equal messages (
+	 * {@link IMessage#equals(Object)}) are only stored once.
+	 * @param messages
+	 */
+	public void addMessage(Collection<IMessage> messages) {
+		this.messages.addAll(messages);
 	}
 
 	/**
