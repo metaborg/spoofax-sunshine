@@ -3,6 +3,9 @@
  */
 package org.spoofax.sunshine.framework.messages;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.spoofax.jsglr.client.imploder.IToken;
 
 /**
@@ -85,12 +88,16 @@ public class Message implements IMessage {
 		str.append(" ");
 		str.append("\n\t");
 		str.append(msg);
+		if (exception != null) {
+			str.append("Caused by:\n");
+			final StringWriter sw = new StringWriter();
+			final PrintWriter pw = new PrintWriter(sw);
+			exception.printStackTrace(pw);
+			str.append(sw.toString());
+		}
 		return str.toString();
 	}
 
-	
-	
-	
 	public static Message newParseError(String file, IToken left, IToken right, String msg) {
 		final Message message = new Message();
 		message.type = MessageType.PARSER_MESSAGE;
@@ -106,7 +113,7 @@ public class Message implements IMessage {
 		message.severity = MessageSeverity.WARNING;
 		return message;
 	}
-	
+
 	private static Message newAtTop(String file, String msg, MessageType type, MessageSeverity severity) {
 		final Message message = new Message();
 		message.type = type;

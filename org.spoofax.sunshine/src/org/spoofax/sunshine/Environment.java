@@ -3,6 +3,9 @@
  */
 package org.spoofax.sunshine;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
@@ -16,7 +19,8 @@ public class Environment {
 
 	public final ITermFactory termFactory;
 	public final ParseTableManager parseTableMgr;
-
+	public File projectDir;
+	
 	private Environment() {
 		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
 		this.parseTableMgr = new ParseTableManager(termFactory);
@@ -29,6 +33,14 @@ public class Environment {
 			INSTANCE = new Environment();
 		}
 		return INSTANCE;
+	}
+	
+	public void setProjectDir(File pdir){
+		try {
+			projectDir = pdir.getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

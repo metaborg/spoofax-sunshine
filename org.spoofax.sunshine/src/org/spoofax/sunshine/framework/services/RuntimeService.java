@@ -112,6 +112,7 @@ public class RuntimeService {
 				jar = jar.isAbsolute() ? jar : jar.getAbsoluteFile();
 				classpath[idx] = jar.toURI().toURL();
 			}
+			System.out.println("Loading from classpath:");
 			interp.loadJars(classpath);
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Failed to load jar", e);

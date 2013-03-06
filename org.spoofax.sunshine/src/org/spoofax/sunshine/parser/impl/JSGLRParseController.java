@@ -39,6 +39,9 @@ public class JSGLRParseController implements IParseController {
 	public JSGLRParseController(File f) {
 		this.file = f;
 		final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(f);
+		if(lang == null){
+			throw new RuntimeException("No language registered for file " + f.getPath());
+		}
 		parserConfig = new ParserConfig(lang.getStartSymbol(), lang.getParseTableProvider(),
 				PARSE_TIMEOUT);
 		errorHandler = new JSGLRParseErrorHandler(this);

@@ -41,5 +41,19 @@ public abstract class ALanguage {
 	public abstract File[] getCompilerFiles();
 
 	public abstract String getAnalysisFunction();
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ALanguage) {
+			ALanguage ol = (ALanguage) obj;
+			return getName().equals(ol.getName());
+		}
+		return super.equals(obj);
+	}
 
+	@Override
+	public int hashCode() {
+		return getName().hashCode() + 42;
+	}
+	
 }
