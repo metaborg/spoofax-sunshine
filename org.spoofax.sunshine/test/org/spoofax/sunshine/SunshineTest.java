@@ -8,11 +8,12 @@ import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguageTest;
 import org.spoofax.sunshine.framework.messages.MessageTest;
 import org.spoofax.sunshine.framework.messages.PositionRegionTest;
 import org.spoofax.sunshine.framework.messages.TokenRegionTest;
+import org.spoofax.sunshine.parser.framework.AParserTest;
 import org.spoofax.sunshine.parser.framework.FileBasedParseTableProviderTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ MessageTest.class, PositionRegionTest.class, TokenRegionTest.class, ALanguageTest.class,
-		AdHocJarBasedLanguageTest.class, FileBasedParseTableProviderTest.class })
+		AdHocJarBasedLanguageTest.class, FileBasedParseTableProviderTest.class, AParserTest.class })
 public class SunshineTest {
 
 }
