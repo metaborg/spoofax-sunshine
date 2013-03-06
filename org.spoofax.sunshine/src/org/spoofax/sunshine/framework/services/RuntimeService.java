@@ -11,6 +11,7 @@ import org.spoofax.interpreter.library.LoggingIOAgent;
 import org.spoofax.jsglr.client.imploder.ImploderOriginTermFactory;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.language.ALanguage;
+import org.spoofax.sunshine.prims.SunshineLibrary;
 import org.strategoxt.HybridInterpreter;
 import org.strategoxt.IncompatibleJarException;
 import org.strategoxt.NoInteropRegistererJarException;
@@ -83,7 +84,7 @@ public class RuntimeService {
 		
 		// TODO register the JSGLR library
 		// TODO register Spoofax-specific primitives
-
+		compiledCtx.addOperatorRegistry(new SunshineLibrary());
 		interp.setIOAgent(new LoggingIOAgent());
 		
 		switch (lang.getNature()) {
@@ -112,7 +113,6 @@ public class RuntimeService {
 				jar = jar.isAbsolute() ? jar : jar.getAbsoluteFile();
 				classpath[idx] = jar.toURI().toURL();
 			}
-			System.out.println("Loading from classpath:");
 			interp.loadJars(classpath);
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Failed to load jar", e);

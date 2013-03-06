@@ -17,6 +17,7 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.language.ALanguage;
+import org.spoofax.sunshine.framework.messages.Message;
 import org.strategoxt.HybridInterpreter;
 
 /**
@@ -96,8 +97,11 @@ public class AnalysisService {
 	}
 
 	private void reportAnalysisException(Collection<File> files, Throwable t) {
-		System.out.println("Analysis failed: ");
-		t.printStackTrace();
+		assert !files.isEmpty();
+		final File oneFile = files.iterator().next();
+		final Message msg = Message.newAnalysisErrorAtTop(oneFile.getPath(), "Analysis crashed");
+		msg.exception = t;
+		MessageService.INSTANCE().addMessage(msg);
 	}
 
 }

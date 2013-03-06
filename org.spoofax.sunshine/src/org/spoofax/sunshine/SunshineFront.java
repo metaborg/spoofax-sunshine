@@ -13,7 +13,6 @@ import org.spoofax.sunshine.framework.messages.IMessage;
 import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
-import org.strategoxt.imp.generator.project_name_option_0_0;
 
 /**
  * @author Vlad Vergu
@@ -132,10 +131,10 @@ public class SunshineFront {
 	/*
 	 * General:
 	 * 
-	 * PretenderFront [LANGUAGE-OPTS] [FILE_TO_RUN_AGAINST]
+	 * PretenderFront [LANGUAGE-OPTS] [PROJECT] [FILE_TO_RUN_AGAINST]
 	 * 
-	 * Language argument: --lang-jar [foobar.jar] --lang-tbl [foobar.tbl] ... --lang-esv
-	 * [foobar.main.packed.esv]
+	 * Language argument: --lang-jar [foobar.jar, foobar2.jar] --lang-tbl [foobar.tbl] --proj-dir
+	 * ../../proj --targets [file1,file2]
 	 */
 
 }

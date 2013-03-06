@@ -88,8 +88,9 @@ public class Message implements IMessage {
 		str.append(" ");
 		str.append("\n\t");
 		str.append(msg);
+		str.append("\n");
 		if (exception != null) {
-			str.append("Caused by:\n");
+			str.append("\tCaused by:\n");
 			final StringWriter sw = new StringWriter();
 			final PrintWriter pw = new PrintWriter(sw);
 			exception.printStackTrace(pw);
