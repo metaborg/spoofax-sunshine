@@ -16,7 +16,7 @@ Many. This is most likely an incomplete list:
 ## Usage
 Basically:
 
-   java -cp sunshine.jar Sunshine LANGUAGE_OPTS PROJECT FILES
+    java -cp sunshine.jar Sunshine LANGUAGE_OPTS PROJECT FILES
 
 ### Parameters
 Below, bold parameters are compulsory.
