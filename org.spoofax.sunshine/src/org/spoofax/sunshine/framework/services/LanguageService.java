@@ -82,7 +82,7 @@ public class LanguageService {
 	 * @see #getLanguageByExten(String)
 	 */
 	public ALanguage getLanguageByExten(File file) {
-		return getLanguageByExten("." + FilenameUtils.getExtension(file.getName()));
+		return getLanguageByExten(FilenameUtils.getExtension(file.getName()));
 	}
 
 }
