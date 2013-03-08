@@ -24,14 +24,18 @@ Below, bold parameters are compulsory.
 #### LANGUAGE_OPTS
 All of the following are compulsory:
 
+* **--lang-name** The name of the language
+* **--extens** a list of file extensions supported by the language (e.g. cs, txt), without the leading period.
 * **--lang-jar** (relative) paths to Jar files shipped with the language (typically LANG-java.jar & LANG.jar)
 * **--lang-tbl** (relative) path to the parse table for the language (typically LANG.tbl)
 
 #### PROJ_DIR
 * **--proj-dir** The (relative) base path for all files to be analysed. This can be the root of an Eclipse project or just a normal directory.
+* *--pao* Only parsing instead of full analysis.
 
 #### FILES
 * **--targets** A (space separated) list of paths to files to be analysed. The paths must be relative to the PROJ_DIR.
+* *--all* Ignores the specified **--targets** and processes all files with a supported extension
 
 ### Hack for parsing
 If you want to also get parse errors you need to change all calls to `parse-file` to something else which calls the Sunshine `parse-file` primitive, for example:

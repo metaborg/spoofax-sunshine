@@ -49,5 +49,6 @@ public class QueueStrategyPrimitive extends AbstractPrimitive {
 		
 		return true;
 	}
-
+	
 }
+

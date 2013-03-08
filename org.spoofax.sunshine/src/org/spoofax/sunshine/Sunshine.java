@@ -15,6 +15,7 @@ import org.spoofax.sunshine.framework.messages.IMessage;
 import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
+import org.spoofax.sunshine.framework.services.ParseService;
 import org.spoofax.sunshine.framework.services.QueableAnalysisService;
 
 /**
@@ -28,12 +29,16 @@ public class Sunshine {
 	private final static String PROJ_DIR = "--proj-dir";
 	private final static String TRG_FILE = "--targets";
 	private final static String TRG_ALL = "--all";
+	private final static String PARSE_ONLY = "--pao";
+	private final static String EXT_ENS = "--extens";
+	private final static String LANG_NAME = "--lang-name";
 
-	private static final String[] extens = new String[] { "cs" };
-	private static final String langname = "CSharp";
 	private static final String observer_fun = "editor-analyze";
 
+	private final List<String> extens = new LinkedList<String>();
+	private String langname;
 	private boolean all_targets;
+	private boolean parse_only;
 	private final List<String> language_jars = new LinkedList<String>();;
 	private String language_tbl;
 	private final List<String> file_targets = new LinkedList<String>();
@@ -46,23 +51,22 @@ public class Sunshine {
 		final Sunshine front = new Sunshine();
 		front.parseArgs(args);
 		front.initialize();
-		boolean success = front.analyzeFiles();
+		boolean success = front.doTheWork();
 		if (success) {
 			System.exit(0);
 		} else {
 			System.exit(1);
 		}
+
 	}
 
-	private boolean analyzeFiles() {
-		final Collection<File> files = new LinkedList<File>();
-		for (String fn : file_targets) {
-			files.add(new File(fn));
-		}
+	private boolean doTheWork() {
 		long sTime = System.currentTimeMillis();
-//		AnalysisService.INSTANCE().analyze(files);
-		QueableAnalysisService.INSTANCE().enqueueAnalysis(files);
-		QueableAnalysisService.INSTANCE().analyzeQueue();
+		if (parse_only) {
+			parse();
+		} else {
+			analyze();
+		}
 		long eTime = System.currentTimeMillis();
 		Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
 		for (IMessage msg : msgs) {
@@ -73,13 +77,28 @@ public class Sunshine {
 		return msgs.size() == 0;
 	}
 
+	private void parse() {
+		for (String trg : file_targets) {
+			ParseService.INSTANCE().parse(new File(trg));
+		}
+	}
+
+	private void analyze() {
+		final Collection<File> files = new LinkedList<File>();
+		for (String fn : file_targets) {
+			files.add(new File(fn));
+		}
+		QueableAnalysisService.INSTANCE().enqueueAnalysis(files);
+		QueableAnalysisService.INSTANCE().analyzeQueue();
+	}
+
 	private void initialize() {
 		Environment.INSTANCE().setProjectDir(new File(project_dir));
 		final Collection<File> jars = new LinkedList<File>();
 		for (String fn : language_jars) {
 			jars.add(new File(fn));
 		}
-		final AdHocJarBasedLanguage lang = new AdHocJarBasedLanguage(langname, extens, "Start", new File(language_tbl),
+		final AdHocJarBasedLanguage lang = new AdHocJarBasedLanguage(langname, extens.toArray(new String[0]), "Start", new File(language_tbl),
 				observer_fun, jars.toArray(new File[0]));
 		LanguageService.INSTANCE().registerLanguage(lang);
 	}
@@ -89,7 +108,9 @@ public class Sunshine {
 		boolean lang_tbl_next = false;
 		boolean trg_file_next = false;
 		boolean proj_dir_next = false;
-
+		boolean extens_next = false;
+		boolean lang_name_next = false;
+		
 		List<String> lang_jars = new LinkedList<String>();
 		String lang_tbl = null;
 		String projdir = null;
@@ -101,26 +122,60 @@ public class Sunshine {
 				lang_tbl_next = false;
 				trg_file_next = false;
 				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
 			} else if (a.equals(LANG_TBL)) {
 				lang_jar_next = false;
 				lang_tbl_next = true;
 				trg_file_next = false;
 				proj_dir_next = false;
-			} else if (a.equals(TRG_FILE)) {
+				extens_next = false;
+				lang_name_next = false;
+			} else if (a.equals(LANG_NAME)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				trg_file_next = false;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = true;
+			}else if (a.equals(TRG_FILE)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				trg_file_next = true;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
 			} else if (a.equals(PROJ_DIR)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				trg_file_next = false;
 				proj_dir_next = true;
+				extens_next = false;
+				lang_name_next = false;
 			} else if (a.equals(TRG_ALL)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				trg_file_next = false;
 				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
 				this.all_targets = true;
+			} else if (a.equals(EXT_ENS)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				trg_file_next = false;
+				proj_dir_next = false;
+				extens_next = true;
+				lang_name_next = false;
+				this.all_targets = true;
+			} else if (a.equals(PARSE_ONLY)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				trg_file_next = false;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
+				this.parse_only = true;
 			} else {
 				if (lang_jar_next) {
 					lang_jars.add(a);
@@ -130,6 +185,10 @@ public class Sunshine {
 					targets.add(a);
 				} else if (proj_dir_next) {
 					projdir = a;
+				} else if(extens_next){
+					extens.add(a);
+				} else if(lang_name_next){
+					langname = a;
 				}
 			}
 		}
@@ -141,6 +200,10 @@ public class Sunshine {
 			throw new IllegalArgumentException("Missing target files");
 		} else if (projdir == null) {
 			throw new IllegalArgumentException("Missing --proj-dir argument");
+		} else if (extens.isEmpty()) {
+			throw new IllegalArgumentException("Missing --extens argument");
+		} else if (langname == null) {
+			throw new IllegalArgumentException("Missing --lang-name argument");
 		}
 
 		this.language_jars.addAll(lang_jars);
@@ -151,10 +214,10 @@ public class Sunshine {
 		if (this.all_targets) {
 			this.file_targets.clear();
 			final File project_dirf = new File(project_dir);
-			Iterator<File> files = FileUtils.iterateFiles(project_dirf, extens, true);
-			while(files.hasNext()){
+			Iterator<File> files = FileUtils.iterateFiles(project_dirf, extens.toArray(new String[0]), true);
+			while (files.hasNext()) {
 				final String f = project_dirf.toURI().relativize(files.next().toURI()).toString();
-//				this.file_targets.add(files.next().getPath());
+				// this.file_targets.add(files.next().getPath());
 				this.file_targets.add(f);
 			}
 		}
