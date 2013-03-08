@@ -15,6 +15,7 @@ import org.spoofax.sunshine.framework.messages.IMessage;
 import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
+import org.spoofax.sunshine.framework.services.QueableAnalysisService;
 
 /**
  * @author Vlad Vergu
@@ -59,7 +60,9 @@ public class Sunshine {
 			files.add(new File(fn));
 		}
 		long sTime = System.currentTimeMillis();
-		AnalysisService.INSTANCE().analyze(files);
+//		AnalysisService.INSTANCE().analyze(files);
+		QueableAnalysisService.INSTANCE().enqueueAnalysis(files);
+		QueableAnalysisService.INSTANCE().analyzeQueue();
 		long eTime = System.currentTimeMillis();
 		Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
 		for (IMessage msg : msgs) {

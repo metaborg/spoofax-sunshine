@@ -31,9 +31,9 @@ import org.strategoxt.HybridInterpreter;
  */
 public class AnalysisService {
 
-	private static AnalysisService INSTANCE;
+	private static volatile AnalysisService INSTANCE;
 
-	private AnalysisService() {
+	protected AnalysisService() {
 	}
 
 	public static final AnalysisService INSTANCE() {

@@ -27,11 +27,11 @@ public abstract class ALanguage {
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public LanguageNature getNature() {
 		return nature;
 	}
-	
+
 	public abstract Collection<String> getFileExtensions();
 
 	public abstract String getStartSymbol();
@@ -41,7 +41,11 @@ public abstract class ALanguage {
 	public abstract File[] getCompilerFiles();
 
 	public abstract String getAnalysisFunction();
-	
+
+	public abstract void overrideAnalysisFunction(String newFunction);
+
+	public abstract void restoreAnalysisFunction();
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ALanguage) {
@@ -55,5 +59,5 @@ public abstract class ALanguage {
 	public int hashCode() {
 		return getName().hashCode() + 42;
 	}
-	
+
 }

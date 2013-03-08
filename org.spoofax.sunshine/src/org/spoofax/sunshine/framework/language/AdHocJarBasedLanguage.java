@@ -22,7 +22,8 @@ public class AdHocJarBasedLanguage extends ALanguage {
 	public final FileBasedParseTableProvider parseTableProvider;
 	public final String analysisFunction;
 	public final File[] jarfiles;
-
+	public String overrideAnalysisFunction;
+	
 	public AdHocJarBasedLanguage(String name, String[] extens, String startSymbol, File parseTable, String analysisFunction,
 			File[] jars) {
 		super(name, LanguageNature.JAR_NATURE);
@@ -60,6 +61,9 @@ public class AdHocJarBasedLanguage extends ALanguage {
 
 	@Override
 	public String getAnalysisFunction() {
+		if(overrideAnalysisFunction != null){
+			return overrideAnalysisFunction;
+		}
 		return analysisFunction;
 	}
 
@@ -67,5 +71,15 @@ public class AdHocJarBasedLanguage extends ALanguage {
 	public File[] getCompilerFiles() {
 		return this.jarfiles;
 	}
+	
+	@Override
+	public void overrideAnalysisFunction(String newFunction) {
+		overrideAnalysisFunction = newFunction;
+	}
 
+	@Override
+	public void restoreAnalysisFunction() {
+		overrideAnalysisFunction = null;
+	}
+	
 }
