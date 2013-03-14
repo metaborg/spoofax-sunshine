@@ -119,6 +119,8 @@ public class AnalysisService {
 		assert isTermTuple(tup);
 		assert tup.getSubtermCount() == 4;
 
+		System.out.println("Storing results");
+		
 		final IAnalysisResult result = new TupleBasedAnalysisResult(file, tup);
 		results.put(file, result);
 		MessageService.INSTANCE().addMessage(result.getMessages());

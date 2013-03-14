@@ -5,7 +5,9 @@ package org.spoofax.sunshine.framework.services;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.spoofax.sunshine.framework.language.ALanguage;
@@ -83,6 +85,16 @@ public class LanguageService {
 	 */
 	public ALanguage getLanguageByExten(File file) {
 		return getLanguageByExten(FilenameUtils.getExtension(file.getName()));
+	}
+
+	/**
+	 * Retrieve a copy of the {@link Set} of extensions that are provided by the languages
+	 * registered with this service.
+	 * 
+	 * @return
+	 */
+	public Set<String> getSupportedExtens() {
+		return new HashSet<String>(exten2lang.keySet());
 	}
 
 }
