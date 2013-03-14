@@ -16,10 +16,16 @@ Many. This is most likely an incomplete list:
 ## Usage
 Basically:
 
-    java -cp sunshine.jar Sunshine LANGUAGE_OPTS PROJECT FILES
+    java -cp sunshine.jar Sunshine [DEAMON] LANGUAGE_OPTS PROJECT
+
+This will cause Sunshine to start and analyse all of the files it can handle in the given project.
 
 ### Parameters
 Below, bold parameters are compulsory.
+
+#### DAEMON
+
+* *--daemon* if provided Sunshine will not exit after completing the analysis, but will stay running. Upon pressing an Enter (return) Sunshine will queue analysis of the files that have changed since the last analysis. Exit Sunshine with Ctrl-C.
 
 #### LANGUAGE_OPTS
 All of the following are compulsory:
@@ -32,10 +38,6 @@ All of the following are compulsory:
 #### PROJ_DIR
 * **--proj-dir** The (relative) base path for all files to be analysed. This can be the root of an Eclipse project or just a normal directory.
 * *--pao* Only parsing instead of full analysis.
-
-#### FILES
-* **--targets** A (space separated) list of paths to files to be analysed. The paths must be relative to the PROJ_DIR.
-* *--all* Ignores the specified **--targets** and processes all files with a supported extension
 
 ### Hack for parsing
 If you want to also get parse errors you need to change all calls to `parse-file` to something else which calls the Sunshine `parse-file` primitive, for example:
