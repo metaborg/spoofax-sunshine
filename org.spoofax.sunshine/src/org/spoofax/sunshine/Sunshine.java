@@ -5,15 +5,12 @@ package org.spoofax.sunshine;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.apache.commons.io.FileUtils;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
 import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
@@ -51,8 +48,9 @@ public class Sunshine {
 		final Sunshine front = new Sunshine();
 		front.parseArgs(args);
 		front.initialize();
-//		front.warmup();
+		front.warmup();
 		front.work();
+		System.exit(0);
 	}
 
 	private void warmup() {
@@ -70,6 +68,7 @@ public class Sunshine {
 			MessageService.INSTANCE().clearMessages();
 			end = System.currentTimeMillis();
 		}
+		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
 		MessageService.INSTANCE().clearMessages();
 		System.out.println("Warm up completed. Last duration: " + (end - begin) + " ms");
 	}
@@ -77,6 +76,7 @@ public class Sunshine {
 	private void work() {
 		Scanner sc = new Scanner(System.in);
 		do {
+			long begin = 0, end = 0;
 			final Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
 			System.out.println("Processing " + files.size() + " changed files:");
 			for (File file : files) {
@@ -85,13 +85,15 @@ public class Sunshine {
 			if (parse_only) {
 				parse(files);
 			} else {
+				begin = System.currentTimeMillis();
 				analyze(files);
+				end = System.currentTimeMillis();
 			}
 			final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
-			System.out.println("Completed. " + msgs.size() + " messages produced.");
 			for (IMessage msg : msgs) {
-				System.err.println(msg);
+				System.out.println(msg);
 			}
+			System.out.println("Completed in " + (end - begin) + " ms. " + msgs.size() + " messages produced.");
 			MessageService.INSTANCE().clearMessages();
 		} while (daemon && sc.nextLine() != null);
 	}

@@ -60,7 +60,10 @@ public class FileMonitoringService {
 	 * {@link LanguageService}. Therefore reported files are guaranteed to have a {@link ALanguage}
 	 * that can handle them.
 	 * 
-	 * @return
+	 * @return A collection of {@link File} that have changed since last call. All files are
+	 *         relative to {@link Environment#projectDir} but are not parented to it, i.e.
+	 *         {@link File#exists()} will return false unless the working directory is
+	 *         {@link Environment#projectDir}.
 	 */
 	public Collection<File> getChanges() {
 		final File projectDir = Environment.INSTANCE().projectDir;
@@ -70,9 +73,10 @@ public class FileMonitoringService {
 		final Collection<File> files = new LinkedList<File>();
 		long newestAge = cutoffTime;
 		while (fileIter.hasNext()) {
-			final File f = fileIter.next();
-			files.add(f);
-			final long modtime = f.lastModified();
+			final File af = fileIter.next();
+			File rf = new File(projectDir.toURI().relativize(af.toURI()).toString());
+			files.add(rf);
+			final long modtime = af.lastModified();
 			if (modtime > newestAge) {
 				newestAge = modtime;
 			}
