@@ -23,8 +23,10 @@ import org.spoofax.sunshine.framework.services.QueableAnalysisService;
  */
 public class Sunshine {
 
+	private final static String DBG_WARM = "--warmup";
 	private final static String LANG_JAR = "--lang-jar";
 	private final static String LANG_TBL = "--lang-tbl";
+	private final static String LANG_SSYMB = "--start-symbol";
 	private final static String PROJ_DIR = "--proj-dir";
 	private final static String PARSE_ONLY = "--pao";
 	private final static String EXT_ENS = "--extens";
@@ -35,11 +37,13 @@ public class Sunshine {
 	private final List<String> extens = new LinkedList<String>();
 	private final List<String> language_jars = new LinkedList<String>();;
 	private String language_tbl;
+	private String language_startsymb;
 	private String langname;
 	private String project_dir;
 	private boolean parse_only;
 
 	private boolean daemon;
+	private int warmups;
 
 	/**
 	 * @param args
@@ -54,10 +58,10 @@ public class Sunshine {
 	}
 
 	private void warmup() {
-		System.out.println("Warming up");
+		System.out.println("Warming up " + warmups + " rounds.");
 		long begin = 0;
 		long end = 0;
-		for (int i = 10; i > 0; i--) {
+		for (int i = warmups; i > 0; i--) {
 			begin = System.currentTimeMillis();
 			final Collection<File> files = FileMonitoringService.INSTANCE().getChangesNoPersist();
 			if (parse_only) {
@@ -67,6 +71,7 @@ public class Sunshine {
 			}
 			MessageService.INSTANCE().clearMessages();
 			end = System.currentTimeMillis();
+			System.out.println("Round " + (warmups - i + 1) + " done in " + (end - begin) + " ms");
 		}
 		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
 		MessageService.INSTANCE().clearMessages();
@@ -115,7 +120,7 @@ public class Sunshine {
 		for (String fn : language_jars) {
 			jars.add(new File(fn));
 		}
-		final AdHocJarBasedLanguage lang = new AdHocJarBasedLanguage(langname, extens.toArray(new String[0]), "Start",
+		final AdHocJarBasedLanguage lang = new AdHocJarBasedLanguage(langname, extens.toArray(new String[0]), language_startsymb ,
 				new File(language_tbl), observer_fun, jars.toArray(new File[0]));
 		LanguageService.INSTANCE().registerLanguage(lang);
 	}
@@ -126,11 +131,14 @@ public class Sunshine {
 		boolean proj_dir_next = false;
 		boolean extens_next = false;
 		boolean lang_name_next = false;
-
+		boolean lang_startsymb_next = false;
+		boolean dbg_warmups_next = false;
+		
 		List<String> lang_jars = new LinkedList<String>();
 		String lang_tbl = null;
 		String projdir = null;
-
+		String startsymb = null;
+		int warmups = 0;
 		for (String a : args) {
 			if (a.equals(LANG_JAR)) {
 				lang_jar_next = true;
@@ -138,37 +146,65 @@ public class Sunshine {
 				proj_dir_next = false;
 				extens_next = false;
 				lang_name_next = false;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
 			} else if (a.equals(LANG_TBL)) {
 				lang_jar_next = false;
 				lang_tbl_next = true;
 				proj_dir_next = false;
 				extens_next = false;
 				lang_name_next = false;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
 			} else if (a.equals(LANG_NAME)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				proj_dir_next = false;
 				extens_next = false;
 				lang_name_next = true;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
 			} else if (a.equals(PROJ_DIR)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				proj_dir_next = true;
 				extens_next = false;
 				lang_name_next = false;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
 			} else if (a.equals(EXT_ENS)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				proj_dir_next = false;
 				extens_next = true;
 				lang_name_next = false;
-			} else if (a.equals(PARSE_ONLY)) {
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
+			} else if (a.equals(LANG_SSYMB)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
+				lang_startsymb_next = true;
+				dbg_warmups_next = false;
+			} else if (a.equals(DBG_WARM)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
+				lang_startsymb_next = false;
+				dbg_warmups_next = true;
+			}else if (a.equals(PARSE_ONLY)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
 				proj_dir_next = false;
 				extens_next = false;
 				lang_name_next = false;
 				this.parse_only = true;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
 			} else if (a.equals(MOD_DAEMON)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -176,6 +212,8 @@ public class Sunshine {
 				extens_next = false;
 				lang_name_next = false;
 				this.daemon = true;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
 			} else {
 				if (lang_jar_next) {
 					lang_jars.add(a);
@@ -187,6 +225,10 @@ public class Sunshine {
 					extens.add(a);
 				} else if (lang_name_next) {
 					langname = a;
+				} else if (lang_startsymb_next) {
+					startsymb = a;
+				} else if (dbg_warmups_next){
+					warmups = Integer.parseInt(a);
 				}
 			}
 		}
@@ -200,17 +242,22 @@ public class Sunshine {
 			throw new IllegalArgumentException("Missing --extens argument");
 		} else if (langname == null) {
 			throw new IllegalArgumentException("Missing --lang-name argument");
+		} else if (startsymb == null) {
+			throw new IllegalArgumentException("Missing --start-symbol argument");
 		}
 
 		this.language_jars.addAll(lang_jars);
 		this.language_tbl = lang_tbl;
 		this.project_dir = projdir;
-
+		this.language_startsymb = startsymb;
+		this.warmups = warmups;
+		
 		System.out.println("Parameters:");
 		System.out.println("\t JARS: " + this.language_jars);
 		System.out.println("\t TBL: " + this.language_tbl);
 		System.out.println("\t PROJ: " + this.project_dir);
 		System.out.println("\t DAEMON: " + this.daemon);
+		System.out.println("\t WARMUPS: " + this.warmups);
 		System.out.println("---------------------------------");
 	}
 }

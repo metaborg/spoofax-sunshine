@@ -26,6 +26,7 @@ Below, bold parameters are compulsory.
 #### DAEMON
 
 * *--daemon* if provided Sunshine will not exit after completing the analysis, but will stay running. Upon pressing an Enter (return) Sunshine will queue analysis of the files that have changed since the last analysis. Exit Sunshine with Ctrl-C.
+* *--warmup INT* the number of rounds of full analysis to perform as a JVM warmup. The default is 0. 
 
 #### LANGUAGE_OPTS
 All of the following are compulsory:
@@ -34,6 +35,7 @@ All of the following are compulsory:
 * **--extens** a list of file extensions supported by the language (e.g. cs, txt), without the leading period.
 * **--lang-jar** (relative) paths to Jar files shipped with the language (typically LANG-java.jar & LANG.jar)
 * **--lang-tbl** (relative) path to the parse table for the language (typically LANG.tbl)
+* **--start-symbol** the start symbol to be used by the parser.
 
 #### PROJ_DIR
 * **--proj-dir** The (relative) base path for all files to be analysed. This can be the root of an Eclipse project or just a normal directory.
