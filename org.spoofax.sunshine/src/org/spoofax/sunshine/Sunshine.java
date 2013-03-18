@@ -134,11 +134,6 @@ public class Sunshine {
 		boolean lang_startsymb_next = false;
 		boolean dbg_warmups_next = false;
 		
-		List<String> lang_jars = new LinkedList<String>();
-		String lang_tbl = null;
-		String projdir = null;
-		String startsymb = null;
-		int warmups = 0;
 		for (String a : args) {
 			if (a.equals(LANG_JAR)) {
 				lang_jar_next = true;
@@ -216,41 +211,35 @@ public class Sunshine {
 				dbg_warmups_next = false;
 			} else {
 				if (lang_jar_next) {
-					lang_jars.add(a);
+					language_jars.add(a);
 				} else if (lang_tbl_next) {
-					lang_tbl = a;
+					language_tbl = a;
 				} else if (proj_dir_next) {
-					projdir = a;
+					project_dir = a;
 				} else if (extens_next) {
 					extens.add(a);
 				} else if (lang_name_next) {
 					langname = a;
 				} else if (lang_startsymb_next) {
-					startsymb = a;
+					language_startsymb = a;
 				} else if (dbg_warmups_next){
 					warmups = Integer.parseInt(a);
 				}
 			}
 		}
-		if (lang_jars.isEmpty()) {
+		if (language_jars.isEmpty()) {
 			throw new IllegalArgumentException("Missing --lang-jar argument");
-		} else if (lang_tbl == null) {
+		} else if (language_tbl == null) {
 			throw new IllegalArgumentException("Missing --lang-tbl argument");
-		} else if (projdir == null) {
+		} else if (project_dir == null) {
 			throw new IllegalArgumentException("Missing --proj-dir argument");
 		} else if (extens.isEmpty()) {
 			throw new IllegalArgumentException("Missing --extens argument");
 		} else if (langname == null) {
 			throw new IllegalArgumentException("Missing --lang-name argument");
-		} else if (startsymb == null) {
+		} else if (language_startsymb == null) {
 			throw new IllegalArgumentException("Missing --start-symbol argument");
 		}
-
-		this.language_jars.addAll(lang_jars);
-		this.language_tbl = lang_tbl;
-		this.project_dir = projdir;
-		this.language_startsymb = startsymb;
-		this.warmups = warmups;
 		
 		System.out.println("Parameters:");
 		System.out.println("\t JARS: " + this.language_jars);

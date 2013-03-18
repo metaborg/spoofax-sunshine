@@ -23,9 +23,9 @@ import org.strategoxt.stratego_aterm.stratego_aterm;
 
 /**
  * Builder of Stratego editor service input tuples.
- * 
  * @author Lennart Kats <lennart add lclnet.nl>
  */
+@Deprecated
 public class InputTermBuilder {
 
 	private static final Map<File, IStrategoTerm> EMPTY_MAP = Collections.emptyMap();
