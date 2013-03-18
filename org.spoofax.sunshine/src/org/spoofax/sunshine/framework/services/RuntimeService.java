@@ -70,23 +70,23 @@ public class RuntimeService {
 		// TODO load overrides and contexts
 		final HybridInterpreter interp = new HybridInterpreter(proto, new String[0]);
 		interp.getCompiledContext().getExceptionHandler().setEnabled(false);
+		interp.init();
 		return interp;
 	}
 
 	private HybridInterpreter createPrototypeRuntime(ALanguage lang) {
 		final HybridInterpreter interp = new HybridInterpreter(new ImploderOriginTermFactory(
 				Environment.INSTANCE().termFactory));
-		final Context compiledCtx = interp.getCompiledContext();
+
+		interp.getCompiledContext().getExceptionHandler().setEnabled(false);
+		interp.getCompiledContext().registerComponent("stratego_lib");
+		interp.getCompiledContext().registerComponent("stratego_sglr");
+
+		interp.addOperatorRegistry(new SunshineLibrary());
+		assert interp.getContext().getOperatorRegistry(SunshineLibrary.REGISTRY_NAME) instanceof SunshineLibrary;
+
 		final SunshineIOAgent agent = new SunshineIOAgent();
 		agent.setLanguage(lang);
-		
-		compiledCtx.getExceptionHandler().setEnabled(false);
-		// TODO register stratego parallel ???
-		compiledCtx.registerComponent("stratego_lib");
-		compiledCtx.registerComponent("stratego_sglr");
-		
-		// TODO register the JSGLR library
-		compiledCtx.addOperatorRegistry(new SunshineLibrary());
 		interp.setIOAgent(agent);
 		
 		switch (lang.getNature()) {

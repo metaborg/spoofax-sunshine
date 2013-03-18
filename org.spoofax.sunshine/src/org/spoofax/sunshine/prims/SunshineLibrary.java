@@ -1,6 +1,7 @@
 package org.spoofax.sunshine.prims;
 
 import org.spoofax.interpreter.library.AbstractStrategoOperatorRegistry;
+import org.spoofax.sunshine.parser.prims.ParseFilePrimitive;
 
 /**
  * 

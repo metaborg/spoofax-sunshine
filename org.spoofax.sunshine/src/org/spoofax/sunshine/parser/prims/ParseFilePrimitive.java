@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.prims;
+package org.spoofax.sunshine.parser.prims;
 
 import java.io.File;
 
@@ -21,7 +21,7 @@ public class ParseFilePrimitive extends AbstractPrimitive {
 
 	private static final String NAME = "SSL_EXT_parse_file";
 
-	ParseFilePrimitive() {
+	public ParseFilePrimitive() {
 		super(NAME, 0, 2);
 	}
 
