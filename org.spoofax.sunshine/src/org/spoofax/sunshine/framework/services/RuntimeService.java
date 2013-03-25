@@ -15,7 +15,6 @@ import org.spoofax.sunshine.prims.SunshineLibrary;
 import org.strategoxt.HybridInterpreter;
 import org.strategoxt.IncompatibleJarException;
 import org.strategoxt.NoInteropRegistererJarException;
-import org.strategoxt.lang.Context;
 
 /**
  * Singleton service for the production of language-specific Stratego Interpreters. Precisely one

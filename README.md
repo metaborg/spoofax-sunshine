@@ -7,7 +7,7 @@ Many. This is most likely an incomplete list:
 
 * Only one language at a time
 * No support for concrete object syntax embedding
-* Only analysis is supported. No compilation, no builders.
+* Only analysis and basic builders are supported
 * Completely single-threaded
 * Only supports languages built to Jar, i.e. CTrees not yet supported
 * Not all Spoofax primitives are implemented
@@ -16,14 +16,14 @@ Many. This is most likely an incomplete list:
 ## Usage
 Basically:
 
-    java -cp sunshine.jar Sunshine [DEAMON] LANGUAGE_OPTS PROJECT
+    java -cp sunshine.jar Sunshine [OPTS] LANGUAGE_OPTS PROJECT
 
 This will cause Sunshine to start and analyse all of the files it can handle in the given project.
 
 ### Parameters
 Below, bold parameters are compulsory.
 
-#### DAEMON
+#### OPTS
 
 * *--daemon* if provided Sunshine will not exit after completing the analysis, but will stay running. Upon pressing an Enter (return) Sunshine will queue analysis of the files that have changed since the last analysis. Exit Sunshine with Ctrl-C.
 * *--warmup INT* the number of rounds of full analysis to perform as a JVM warmup. The default is 0. 
@@ -36,10 +36,12 @@ All of the following are compulsory:
 * **--lang-jar** (relative) paths to Jar files shipped with the language (typically LANG-java.jar & LANG.jar)
 * **--lang-tbl** (relative) path to the parse table for the language (typically LANG.tbl)
 * **--start-symbol** the start symbol to be used by the parser.
+* *--builder* the builder to run on the given file (requires *--build-on*)
 
 #### PROJ_DIR
 * **--proj-dir** The (relative) base path for all files to be analysed. This can be the root of an Eclipse project or just a normal directory.
 * *--pao* Only parsing instead of full analysis.
+* *--build-on* the (relative) file to call the builder on (requires *--builder*)
 
 ### Hack for parsing
 If you want to also get parse errors you need to change all calls to `parse-file` to something else which calls the Sunshine `parse-file` primitive, for example:
