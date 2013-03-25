@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine;
+package org.spoofax.sunshine.drivers;
 
 import java.io.File;
 import java.util.Collection;
@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
 import org.spoofax.sunshine.framework.messages.IMessage;
 import org.spoofax.sunshine.framework.services.BuilderService;
@@ -22,7 +23,7 @@ import org.spoofax.sunshine.framework.services.QueableAnalysisService;
  * @author Vlad Vergu
  * 
  */
-public class Sunshine {
+public class SunshineCLIDriver {
 
 	private final static String DBG_WARM = "--warmup";
 	private final static String LANG_JAR = "--lang-jar";
@@ -55,7 +56,7 @@ public class Sunshine {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final Sunshine front = new Sunshine();
+		final SunshineCLIDriver front = new SunshineCLIDriver();
 		front.parseArgs(args);
 		front.initialize();
 		front.warmup();
