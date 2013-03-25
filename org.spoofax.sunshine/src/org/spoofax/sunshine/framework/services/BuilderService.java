@@ -7,12 +7,13 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.framework.language.ALanguage;
 import org.spoofax.sunshine.framework.messages.Message;
-import org.strategoxt.HybridInterpreter;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -83,29 +84,22 @@ public class BuilderService {
 		final IStrategoTerm inputTuple = factory.makeTuple(ast, position, ast, path, projectpath);
 		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
 
-		// do the actual call
-		final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(file);
-		assert runtime != null;
-
-		boolean success = false;
-		Throwable t = null;
-		runtime.setCurrent(inputTuple);
-		try {
-			success = runtime.invoke(builderName);
-		} catch (Exception e) {
-			t = e;
-		}
-
-		// if the call succeeds save the result in the resulting file and return a File for that
-		if (!success) {
-			if (t == null) {
-				reportBuilderFailure(file, "Builder " + builderName + " failed", t);
-			} else {
-				reportBuilderFailure(file, "Builder file w/o exception", null);
-			}
+		final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(file);
+		assert lang != null;
+		
+		IStrategoTerm result = null;
+		try{
+			result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
+		}catch(InterpreterException e){
+			reportBuilderFailure(file, "Builder " + builderName + " failed", e);
 			return null;
 		}
-		final IStrategoTerm result = runtime.current();
+		
+		if(result == null){
+			reportBuilderFailure(file, "Builer " + builderName + "failed w/o exception", null);
+			return null;
+		}
+		
 		assert result != null && result.getSubtermCount() == 2;
 		assert result.getSubterm(0) instanceof IStrategoString;
 		assert result.getSubterm(1) instanceof IStrategoString;
