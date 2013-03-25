@@ -172,5 +172,13 @@ public class Message implements IMessage {
 	public static Message newAnalysisWarningAtTop(String file, String msg) {
 		return newWarningAtTop(file, msg, MessageType.ANALYSIS_MESSAGE);
 	}
+	
+	public static Message newBuilderErrorAtTop(String file, String msg) {
+		return newErrorAtTop(file, msg, MessageType.BUILDER_MESSAGE);
+	}
+
+	public static Message newBuilderWarningAtTop(String file, String msg) {
+		return newWarningAtTop(file, msg, MessageType.BUILDER_MESSAGE);
+	}
 
 }
