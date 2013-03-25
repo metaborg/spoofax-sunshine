@@ -49,6 +49,9 @@ public class BuilderService {
 	 * 	(ast, [], ast, path, project-path)
 	 * </code>
 	 * 
+	 * NB: The current implementation assumes that the result is a StrategoString and will not work
+	 * with a term.
+	 * 
 	 * @param file
 	 *            The file to call the builder on
 	 * @param builderName
@@ -59,13 +62,13 @@ public class BuilderService {
 	 * @return
 	 */
 	public File callBuilder(File file, String builderName, boolean onSourceAST) {
-		assert file != null && file.exists();
+		assert file != null;
 		assert builderName != null && builderName.length() > 0;
 
 		// prepare the builder input tuple
 		IStrategoTerm ast = null;
 		if (onSourceAST) {
-			ast = ParseService.INSTANCE().parse(file);
+			ast = ParseService.INSTANCE().parse(new File(Environment.INSTANCE().projectDir, file.getPath()));
 		} else {
 			assert false : "Builder support on analyzed not yet supported";
 		}
@@ -114,7 +117,7 @@ public class BuilderService {
 		try {
 			FileUtils.writeStringToFile(resultFile, resultContents);
 		} catch (IOException e) {
-			reportBuilderFailure(file, "Builder " + builderName + " failed saving result", e);
+			reportBuilderFailure(file, "Builder " + builderName + " failed to save result", e);
 		}
 
 		return resultFile;
