@@ -6,24 +6,16 @@ package org.spoofax.sunshine.drivers;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
 
-import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.LaunchConfiguration;
+import org.spoofax.sunshine.SunshineMainDriver;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
-import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.services.BuilderService;
-import org.spoofax.sunshine.framework.services.FileMonitoringService;
-import org.spoofax.sunshine.framework.services.LanguageService;
-import org.spoofax.sunshine.framework.services.MessageService;
-import org.spoofax.sunshine.framework.services.ParseService;
-import org.spoofax.sunshine.framework.services.QueableAnalysisService;
 
 /**
  * @author Vlad Vergu
  * 
  */
-public class SunshineCLIDriver {
+public class SunshineCLIEntry {
 
 	private final static String DBG_WARM = "--warmup";
 	private final static String LANG_JAR = "--lang-jar";
@@ -37,110 +29,18 @@ public class SunshineCLIDriver {
 	private final static String CALL_BUILDER = "--builder";
 	private final static String BUILD_ON = "--build-on";
 
-	private static final String observer_fun = "editor-analyze";
-
-	private final List<String> extens = new LinkedList<String>();
-	private final List<String> language_jars = new LinkedList<String>();;
-	private String language_tbl;
-	private String language_startsymb;
-	private String langname;
-	private String project_dir;
-	private String builderName;
-	private String buildOnTarget;
-	private boolean parse_only;
-
-	private boolean daemon;
-	private int warmups;
+	// private static final String observer_fun = "editor-analyze";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final SunshineCLIDriver front = new SunshineCLIDriver();
-		front.parseArgs(args);
-		front.initialize();
-		front.warmup();
-		front.work();
+		SunshineMainDriver driver = new SunshineMainDriver(parseArgs(args));
+		driver.run();
 		System.exit(0);
 	}
 
-	private void warmup() {
-		System.out.println("Warming up " + warmups + " rounds.");
-		long begin = 0;
-		long end = 0;
-		for (int i = warmups; i > 0; i--) {
-			begin = System.currentTimeMillis();
-			final Collection<File> files = FileMonitoringService.INSTANCE().getChangesNoPersist();
-			if (parse_only) {
-				parse(files);
-			} else {
-				analyze(files);
-			}
-			MessageService.INSTANCE().clearMessages();
-			end = System.currentTimeMillis();
-			System.out.println("Round " + (warmups - i + 1) + " done in " + (end - begin) + " ms");
-		}
-		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
-		MessageService.INSTANCE().clearMessages();
-		System.out.println("Warm up completed. Last duration: " + (end - begin) + " ms");
-	}
-
-	private void work() {
-		Scanner sc = new Scanner(System.in);
-		do {
-			long begin = 0, end = 0;
-			final Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
-			if (builderName == null) {
-				System.out.println("Processing " + files.size() + " changed files:");
-				for (File file : files) {
-					System.out.println("\t " + file.getPath());
-				}
-			}
-			begin = System.currentTimeMillis();
-			if (parse_only) {
-				parse(files);
-			} else if (builderName != null) {
-				build(buildOnTarget, builderName);
-			} else {
-				analyze(files);
-			}
-			end = System.currentTimeMillis();
-			final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
-			for (IMessage msg : msgs) {
-				System.out.println(msg);
-			}
-			System.out.println("Completed in " + (end - begin) + " ms. " + msgs.size() + " messages produced.");
-			MessageService.INSTANCE().clearMessages();
-		} while (daemon && sc.nextLine() != null);
-	}
-
-	private static void parse(Collection<File> files) {
-		for (File f : files) {
-			ParseService.INSTANCE().parse(f);
-		}
-	}
-
-	private static void build(String target, String builderName) {
-		BuilderService.INSTANCE().callBuilder(new File(target), builderName, true);
-	}
-
-	private static void analyze(Collection<File> files) {
-		QueableAnalysisService.INSTANCE().enqueueAnalysis(files);
-		QueableAnalysisService.INSTANCE().analyzeQueue();
-	}
-
-	private void initialize() {
-		Environment.INSTANCE().setProjectDir(new File(project_dir));
-		final Collection<File> jars = new LinkedList<File>();
-		for (String fn : language_jars) {
-			jars.add(new File(fn));
-		}
-		final AdHocJarBasedLanguage lang = new AdHocJarBasedLanguage(langname, extens.toArray(new String[0]),
-				language_startsymb, new File(language_tbl), observer_fun, jars.toArray(new File[0]));
-		LanguageService.INSTANCE().registerLanguage(lang);
-	}
-
-	private void parseArgs(String[] args) throws IllegalArgumentException {
+	private static LaunchConfiguration parseArgs(String[] args) throws IllegalArgumentException {
 		boolean lang_jar_next = false;
 		boolean lang_tbl_next = false;
 		boolean proj_dir_next = false;
@@ -151,6 +51,17 @@ public class SunshineCLIDriver {
 		boolean call_builder_next = false;
 		boolean build_on_next = false;
 
+		boolean parse_only = false;
+		boolean daemon = false;
+		Collection<String> language_jars = new LinkedList<String>();
+		String language_tbl = null;
+		String project_dir = null;
+		Collection<String> extens = new LinkedList<String>();
+		String langname = null;
+		String language_startsymb = null;
+		String builderName = null;
+		String buildOnTarget = null;
+		int warmups = 0;
 		for (String a : args) {
 			if (a.equals(LANG_JAR)) {
 				lang_jar_next = true;
@@ -228,7 +139,7 @@ public class SunshineCLIDriver {
 				proj_dir_next = false;
 				extens_next = false;
 				lang_name_next = false;
-				this.parse_only = true;
+				parse_only = true;
 				lang_startsymb_next = false;
 				dbg_warmups_next = false;
 				call_builder_next = false;
@@ -239,7 +150,7 @@ public class SunshineCLIDriver {
 				proj_dir_next = false;
 				extens_next = false;
 				lang_name_next = false;
-				this.daemon = true;
+				daemon = true;
 				lang_startsymb_next = false;
 				dbg_warmups_next = false;
 				call_builder_next = false;
@@ -308,14 +219,22 @@ public class SunshineCLIDriver {
 			throw new IllegalArgumentException("Parse only is incompatible with running a builder");
 		}
 
-		System.out.println("Parameters:");
-		System.out.println("\t JARS: " + this.language_jars);
-		System.out.println("\t TBL: " + this.language_tbl);
-		System.out.println("\t PROJ: " + this.project_dir);
-		System.out.println("\t DAEMON: " + this.daemon);
-		System.out.println("\t WARMUPS: " + this.warmups);
-		System.out.println("\t BUILDER: " + this.builderName);
-		System.out.println("\t BUILDON: " + this.buildOnTarget);
-		System.out.println("---------------------------------");
+		LaunchConfiguration config = new LaunchConfiguration();
+		final Collection<File> jars = new LinkedList<File>();
+		for (String fn : language_jars) {
+			jars.add(new File(fn));
+		}
+		config.languages.add(new AdHocJarBasedLanguage(langname, extens.toArray(new String[extens.size()]),
+				language_startsymb, new File(language_tbl), "editor-analyze", jars.toArray(new File[jars.size()])));
+		config.as_daemon = daemon;
+		config.project_dir = project_dir;
+		config.doParseOnly = parse_only;
+		config.doPreAnalysisBuild = builderName != null;
+		config.preAnalysisBuilder = builderName;
+		if (buildOnTarget != null)
+			config.builderTarget = new File(buildOnTarget);
+		config.doAnalyze = !parse_only;
+		config.invariant();
+		return config;
 	}
 }

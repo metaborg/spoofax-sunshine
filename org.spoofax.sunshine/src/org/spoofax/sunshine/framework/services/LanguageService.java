@@ -4,6 +4,7 @@
 package org.spoofax.sunshine.framework.services;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -53,6 +54,12 @@ public class LanguageService {
 		name2lang.put(lang.getName(), lang);
 		for (String exten : lang.getFileExtensions()) {
 			exten2lang.put(exten, lang);
+		}
+	}
+	
+	public void registerLanguage(Collection<ALanguage> langs){
+		for (ALanguage lang : langs) {
+			registerLanguage(lang);
 		}
 	}
 
