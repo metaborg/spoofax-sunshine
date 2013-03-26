@@ -5,14 +5,14 @@ import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.library.AbstractPrimitive;
 import org.spoofax.interpreter.stratego.Strategy;
 import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.sunshine.framework.services.AnalysisService;
-import org.spoofax.sunshine.parser.framework.SourceAttachment;
+import org.spoofax.sunshine.CompilerException;
 
 /**
  * 
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  *
  */
+@Deprecated
 public class SetMarkersPrimitive extends AbstractPrimitive {
 
 	public SetMarkersPrimitive() {
@@ -23,10 +23,12 @@ public class SetMarkersPrimitive extends AbstractPrimitive {
 	public boolean call(IContext env, Strategy[] svars, IStrategoTerm[] tvars)
 			throws InterpreterException {
 		
-		IStrategoTerm previousTerm = env.current();
-		AnalysisService.INSTANCE().storeResults(SourceAttachment.getResource(tvars[0]), env.current());
-		env.setCurrent(previousTerm);
-
+//		IStrategoTerm previousTerm = env.current();
+//		AnalysisService.INSTANCE().storeResults(SourceAttachment.getResource(tvars[0]), env.current());
+//		env.setCurrent(previousTerm);
+//
+//		return true;
+		System.err.println("WARNING: call to set markers primitive. doing nothing!");
 		return true;
 	}
 

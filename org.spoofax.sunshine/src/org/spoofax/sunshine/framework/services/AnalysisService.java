@@ -1,7 +1,5 @@
 package org.spoofax.sunshine.framework.services;
 
-import static org.spoofax.interpreter.core.Tools.isTermTuple;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,16 +11,17 @@ import org.spoofax.interpreter.core.InterpreterErrorExit;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.core.InterpreterExit;
 import org.spoofax.interpreter.core.UndefinedStrategyException;
+import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoString;
-import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.language.ALanguage;
-import org.spoofax.sunshine.framework.messages.IAnalysisResult;
 import org.spoofax.sunshine.framework.messages.Message;
+import org.spoofax.sunshine.framework.messages.MessageHelper;
 import org.spoofax.sunshine.framework.messages.MessageType;
-import org.spoofax.sunshine.framework.messages.TupleBasedAnalysisResult;
+import org.spoofax.sunshine.framework.messages.ResultApplAnalysisResult;
 import org.strategoxt.HybridInterpreter;
 
 /**
@@ -43,16 +42,15 @@ public class AnalysisService {
 		return INSTANCE;
 	}
 
-	private final Map<File, IAnalysisResult> results = new HashMap<File, IAnalysisResult>();
-
 	/**
 	 * Run analysis on the given file. The {@link ALanguage} is determined by the file extension.
 	 * The analysis function is subsequently obtained from the determined {@link ALanguage}. Wraps
 	 * {@link #analyze(Collection)}.
 	 * 
 	 * @param file
+	 * @throws CompilerException
 	 */
-	public void analyze(File file) {
+	public void analyze(File file) throws CompilerException {
 		analyze(Arrays.asList(file));
 	}
 
@@ -62,8 +60,9 @@ public class AnalysisService {
 	 * 
 	 * @see #analyze(File)
 	 * @param files
+	 * @throws CompilerException
 	 */
-	public void analyze(Collection<File> files) {
+	public void analyze(Collection<File> files) throws CompilerException {
 		final Map<ALanguage, Collection<File>> lang2files = new HashMap<ALanguage, Collection<File>>();
 		for (File file : files) {
 			final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(file);
@@ -78,7 +77,7 @@ public class AnalysisService {
 		}
 	}
 
-	private void analyze(ALanguage lang, Collection<File> files) {
+	private void analyze(ALanguage lang, Collection<File> files) throws CompilerException {
 		final ITermFactory termFactory = Environment.INSTANCE().termFactory;
 		final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(lang);
 		assert runtime != null;
@@ -94,7 +93,13 @@ public class AnalysisService {
 		try {
 			boolean success = runtime.invoke(lang.getAnalysisFunction());
 			if (!success) {
-				reportAnalysisException(files, new RuntimeException("Analysis function failed"));
+				reportAnalysisException(files, new RuntimeException("Analysis function failed w/o exception"));
+			} else {
+				final IStrategoList resultList = (IStrategoList) runtime.current();
+				for (int idx = 0; idx < resultList.getSubtermCount(); idx++) {
+					AnalysisResultsService.INSTANCE().addResult(
+							new ResultApplAnalysisResult((IStrategoAppl) resultList.getSubterm(idx)));
+				}
 			}
 		} catch (InterpreterErrorExit e) {
 			reportAnalysisException(files, e);
@@ -107,21 +112,23 @@ public class AnalysisService {
 		}
 	}
 
-	private void reportAnalysisException(Collection<File> files, Throwable t) {
+	private static void reportAnalysisException(Collection<File> files, Throwable t) throws CompilerException {
 		assert !files.isEmpty();
 		final File oneFile = files.iterator().next();
-		final Message msg = Message.newAnalysisErrorAtTop(oneFile.getPath(), "Analysis crashed");
+		final Message msg = MessageHelper.newAnalysisErrorAtTop(oneFile.getPath(), "Analysis crashed");
 		msg.exception = t;
 		MessageService.INSTANCE().addMessage(msg);
+		t.printStackTrace();
+		throw new CompilerException("Analysis failed", t);
 	}
 
-	public void storeResults(File file, IStrategoTerm tup) {
-		assert isTermTuple(tup);
-		assert tup.getSubtermCount() == 4;
-
-		final IAnalysisResult result = new TupleBasedAnalysisResult(file, tup);
-		results.put(file, result);
-		MessageService.INSTANCE().addMessage(result.getMessages());
-	}
+	// public void storeResults(File file, IStrategoTerm tup) {
+	// assert isTermTuple(tup);
+	// assert tup.getSubtermCount() == 4;
+	//
+	// final IAnalysisResult result = new TupleBasedAnalysisResult(file, tup);
+	// results.put(file, result);
+	// MessageService.INSTANCE().addMessage(result.getMessages());
+	// }
 
 }

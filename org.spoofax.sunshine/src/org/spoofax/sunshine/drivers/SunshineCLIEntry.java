@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.SunshineMainDriver;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
@@ -33,8 +34,9 @@ public class SunshineCLIEntry {
 
 	/**
 	 * @param args
+	 * @throws CompilerException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CompilerException {
 		SunshineMainDriver driver = new SunshineMainDriver(parseArgs(args));
 		driver.run();
 		System.exit(0);
