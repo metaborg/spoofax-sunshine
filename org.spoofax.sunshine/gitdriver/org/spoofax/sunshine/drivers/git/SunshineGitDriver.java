@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
@@ -71,7 +72,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 				System.out.println("Processing: " + files);
 				step(files);
 				FileMonitoringService.INSTANCE().reset();
-				if (idx > 10)
+				if (idx >= 50)
 					break;
 			}
 			git.checkout().setName("master").call();
@@ -88,7 +89,9 @@ public class SunshineGitDriver extends SunshineMainDriver {
 	}
 
 	private void gitCleanVeryHard() throws InterruptedException, IOException {
-		Runtime.getRuntime().exec("git clean -f -f -d", new String[0], git.getRepository().getDirectory()).waitFor();
+		Process proc = Runtime.getRuntime().exec("git clean -f -f -d", new String[0], git.getRepository().getDirectory().getParentFile());
+		proc.waitFor();
+		assert proc.exitValue() == 0;
 	}
 
 	private void gitDeleteBranch(String branchname) throws GitAPIException {
@@ -101,11 +104,11 @@ public class SunshineGitDriver extends SunshineMainDriver {
 
 	private void stepRevision(RevCommit from, RevCommit to) throws GitAPIException, IOException, InterruptedException {
 		git.checkout().setName(to.getName()).setCreateBranch(true).setStartPoint(to).call();
+		gitUpdateSubmodule();
 		gitCleanVeryHard();
 		if (from != null) {
 			gitDeleteBranch(from.getName());
 		}
-		gitUpdateSubmodule();
 	}
 
 	private List<RevCommit> getCommits(boolean ascOrder) {

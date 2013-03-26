@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="test/test-files"/>
 	<classpathentry kind="lib" path="lib/guava-14.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/jsch-0.1.49.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
