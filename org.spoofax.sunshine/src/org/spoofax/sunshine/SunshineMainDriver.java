@@ -8,13 +8,14 @@ import java.util.Collection;
 import java.util.Scanner;
 
 import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.messages.Message;
+import org.spoofax.sunshine.framework.messages.MessageHelper;
+import org.spoofax.sunshine.framework.services.AnalysisResultsService;
+import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.BuilderService;
 import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.framework.services.ParseService;
-import org.spoofax.sunshine.framework.services.QueableAnalysisService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -24,6 +25,7 @@ public class SunshineMainDriver {
 	private LaunchConfiguration config;
 
 	public SunshineMainDriver(LaunchConfiguration config) {
+		Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
 		this.config = config;
 		System.out.println("Configuration: \n" + config);
 	}
@@ -34,7 +36,7 @@ public class SunshineMainDriver {
 		warmup();
 	}
 	
-	public void step(Collection<File> files) {
+	public void step(Collection<File> files) throws CompilerException {
 		if (config.doParseOnly) {
 			parse(files);
 		} else {
@@ -48,7 +50,7 @@ public class SunshineMainDriver {
 					analyze(files);
 				} else {
 					MessageService.INSTANCE().addMessage(
-							Message.newAnalysisErrorAtTop(files.iterator().next().getPath(),
+							MessageHelper.newAnalysisErrorAtTop(files.iterator().next().getPath(),
 									"Analysis failed. Dependency failed."));
 				}
 
@@ -59,14 +61,14 @@ public class SunshineMainDriver {
 
 				if (!success) {
 					MessageService.INSTANCE().addMessage(
-							Message.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
+							MessageHelper.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
 				}
 			}
 		}
 		emitMessages();
 	}
 	
-	public void run() {
+	public void run() throws CompilerException {
 		init();
 		Scanner sc = new Scanner(System.in);
 		do {
@@ -79,6 +81,7 @@ public class SunshineMainDriver {
 	}
 
 	private void emitMessages() {
+		AnalysisResultsService.INSTANCE().commitMessages();
 		final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
 		System.out.println("===============================");
 		for (IMessage msg : msgs) {
@@ -90,6 +93,8 @@ public class SunshineMainDriver {
 	private void reset() {
 		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
 		MessageService.INSTANCE().clearMessages();
+		AnalysisResultsService.INSTANCE().reset();
+		System.gc();
 		// TODO: reset index cache
 	}
 	
@@ -121,8 +126,11 @@ public class SunshineMainDriver {
 	}
 
 	private void analyze(final Collection<File> files) {
-		QueableAnalysisService.INSTANCE().enqueueAnalysis(files);
-		QueableAnalysisService.INSTANCE().analyzeQueue();
+		try {
+			AnalysisService.INSTANCE().analyze(files);
+		} catch (CompilerException e) {
+			throw new RuntimeException("Analysis crashed", e);
+		}
 	}
 
 }

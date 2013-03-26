@@ -15,5 +15,6 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 public interface IAnalysisResult {
 	IStrategoTerm getAst();
 	Collection<IMessage> getMessages();
+	Collection<IStrategoTerm> getRawMessages(MessageSeverity type);
 	File getFile();
 }

@@ -7,13 +7,13 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.language.ALanguage;
-import org.spoofax.sunshine.framework.messages.Message;
+import org.spoofax.sunshine.framework.messages.IAnalysisResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -31,8 +31,6 @@ public class BuilderService {
 		}
 		return INSTANCE;
 	}
-
-	// (Module("search",[]),[],Module("search",[]),"Copy of search.app","/Users/vladvergu/git/yellowgrass")
 
 	/**
 	 * Call a builder on the file's source or analyzed AST. The builder is expected to have the
@@ -61,8 +59,9 @@ public class BuilderService {
 	 *            If <code>true</code> then the builder is called on the source AST, otherwise it is
 	 *            called on the analyzed AST
 	 * @return
+	 * @throws CompilerException
 	 */
-	public File callBuilder(File file, String builderName, boolean onSourceAST) {
+	public File callBuilder(File file, String builderName, boolean onSourceAST) throws CompilerException {
 		assert file != null;
 		assert builderName != null && builderName.length() > 0;
 
@@ -72,10 +71,17 @@ public class BuilderService {
 			ast = ParseService.INSTANCE().parse(new File(Environment.INSTANCE().projectDir, file.getPath()));
 		} else {
 			assert false : "Builder support on analyzed not yet supported";
+			IAnalysisResult analysisResult = AnalysisResultsService.INSTANCE().getResult(file);
+			if (analysisResult == null) {
+				AnalysisService.INSTANCE().analyze(file);
+				analysisResult = AnalysisResultsService.INSTANCE().getResult(file);
+			}
+			// analysis result cannot be null now
+			assert analysisResult != null;
+			ast = analysisResult.getAst();
 		}
 		if (ast == null) {
-			reportBuilderFailure(file, "Builder " + builderName + " failed due to parse error", null);
-			return null;
+			throw new CompilerException("Builder " + builderName + "failed. No input AST available.");
 		}
 		final ITermFactory factory = Environment.INSTANCE().termFactory;
 		final IStrategoTerm position = factory.makeList();
@@ -86,21 +92,12 @@ public class BuilderService {
 
 		final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(file);
 		assert lang != null;
-		
+
 		IStrategoTerm result = null;
-		try{
-			result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
-		}catch(InterpreterException e){
-			reportBuilderFailure(file, "Builder " + builderName + " failed", e);
-			return null;
-		}
-		
-		if(result == null){
-			reportBuilderFailure(file, "Builer " + builderName + "failed w/o exception", null);
-			return null;
-		}
-		
-		assert result != null && result.getSubtermCount() == 2;
+		result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
+
+		assert result != null : "StrategoCallService returned null. BUG!";
+		assert result.getSubtermCount() == 2;
 		assert result.getSubterm(0) instanceof IStrategoString;
 		assert result.getSubterm(1) instanceof IStrategoString;
 
@@ -111,17 +108,10 @@ public class BuilderService {
 		try {
 			FileUtils.writeStringToFile(resultFile, resultContents);
 		} catch (IOException e) {
-			reportBuilderFailure(file, "Builder " + builderName + " failed to save result", e);
+			throw new CompilerException("Builder " + builderName + "failed to save result", e);
 		}
 
 		return resultFile;
-	}
-
-	private void reportBuilderFailure(File file, String message, Throwable t) {
-		assert file != null;
-		final Message msg = Message.newBuilderErrorAtTop(file.getPath(), message);
-		msg.exception = t;
-		MessageService.INSTANCE().addMessage(msg);
 	}
 
 }

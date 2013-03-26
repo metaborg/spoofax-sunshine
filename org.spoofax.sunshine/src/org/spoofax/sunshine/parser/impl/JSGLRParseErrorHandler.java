@@ -23,7 +23,7 @@ import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.TokenExpectedException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.messages.Message;
+import org.spoofax.sunshine.framework.messages.MessageHelper;
 import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.parser.framework.ParserException;
 import org.spoofax.terms.TermVisitor;
@@ -276,26 +276,26 @@ public class JSGLRParseErrorHandler {
 				reportErrorNearOffset(left.getTokenizer(), left.getStartOffset(), message);
 			} else {
 				String message2 = message + getErrorExplanation();
-				final IMessage error = Message.newParseError(filename, left, right, message2);
+				final IMessage error = MessageHelper.newParseError(filename, left, right, message2);
 				MessageService.INSTANCE().addMessage(error);
 			}
 		} else {
 			String message2 = message + getErrorExplanation();
-			final IMessage error = Message.newParseError(filename, left, right, message2);
+			final IMessage error = MessageHelper.newParseError(filename, left, right, message2);
 			MessageService.INSTANCE().addMessage(error);
 		}
 	}
 
 	private void reportWarningAtTokens(final IToken left, final IToken right, final String message) {
 		final String filename = source.getFile().getPath();
-		final IMessage warning = Message.newParseWarning(filename, left, right, message);
+		final IMessage warning = MessageHelper.newParseWarning(filename, left, right, message);
 		MessageService.INSTANCE().addMessage(warning);
 	}
 
 	private void reportErrorAtFirstLine(String message) {
 		final String filename = source.getFile().getPath();
 		final String message2 = message + getErrorExplanation();
-		final IMessage error = Message.newParseErrorAtTop(filename, message2);
+		final IMessage error = MessageHelper.newParseErrorAtTop(filename, message2);
 		MessageService.INSTANCE().addMessage(error);
 	}
 

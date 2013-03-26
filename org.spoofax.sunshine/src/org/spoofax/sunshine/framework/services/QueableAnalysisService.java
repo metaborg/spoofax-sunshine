@@ -10,12 +10,14 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.framework.language.ALanguage;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
+@Deprecated
 public class QueableAnalysisService {
 
 	private final AnalysisService runtime = AnalysisService.INSTANCE();
@@ -42,7 +44,7 @@ public class QueableAnalysisService {
 		queue.add(new QueueEntry(files, null));
 	}
 
-	public void analyzeQueue() {
+	public void analyzeQueue() throws CompilerException {
 		while (queue.peek() != null) {
 			try {
 				final QueueEntry unit = queue.take();
