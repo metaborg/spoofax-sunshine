@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.SunshineMainDriver;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
+import org.spoofax.sunshine.gitdriver.SunshineGitDriver;
 
 /**
  * @author Vlad Vergu
@@ -28,6 +29,7 @@ public class SunshineCLIEntry {
 	private final static String MOD_DAEMON = "--daemon";
 	private final static String CALL_BUILDER = "--builder";
 	private final static String BUILD_ON = "--build-on";
+	private final static String GIT_AUTODRIVE = "--git-autodrive";
 
 	// private static final String observer_fun = "editor-analyze";
 
@@ -35,7 +37,13 @@ public class SunshineCLIEntry {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SunshineMainDriver driver = new SunshineMainDriver(parseArgs(args));
+		LaunchConfiguration config = parseArgs(args);
+		SunshineMainDriver driver = null;
+		if(!config.autogit){
+			driver = new SunshineMainDriver(config);
+		}else{
+			driver = new SunshineGitDriver(config);
+		}
 		driver.run();
 		System.exit(0);
 	}
@@ -53,6 +61,7 @@ public class SunshineCLIEntry {
 
 		boolean parse_only = false;
 		boolean daemon = false;
+		boolean git_autodrive = false;
 		Collection<String> language_jars = new LinkedList<String>();
 		String language_tbl = null;
 		String project_dir = null;
@@ -73,6 +82,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(LANG_TBL)) {
 				lang_jar_next = false;
 				lang_tbl_next = true;
@@ -83,6 +93,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(LANG_NAME)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -93,6 +104,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(PROJ_DIR)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -103,6 +115,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(EXT_ENS)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -113,6 +126,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(LANG_SSYMB)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -123,6 +137,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(DBG_WARM)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -133,6 +148,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = true;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(PARSE_ONLY)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -144,6 +160,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(MOD_DAEMON)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -155,6 +172,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(CALL_BUILDER)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -165,6 +183,7 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = true;
 				build_on_next = false;
+				git_autodrive = false;
 			} else if (a.equals(BUILD_ON)) {
 				lang_jar_next = false;
 				lang_tbl_next = false;
@@ -175,6 +194,18 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = true;
+				git_autodrive = false;
+			} else if (a.equals(GIT_AUTODRIVE)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
+				call_builder_next = false;
+				build_on_next = false;
+				git_autodrive = true;
 			} else {
 				if (lang_jar_next) {
 					language_jars.add(a);
@@ -227,6 +258,7 @@ public class SunshineCLIEntry {
 		config.languages.add(new AdHocJarBasedLanguage(langname, extens.toArray(new String[extens.size()]),
 				language_startsymb, new File(language_tbl), "editor-analyze", jars.toArray(new File[jars.size()])));
 		config.as_daemon = daemon;
+		config.autogit = git_autodrive;
 		config.project_dir = project_dir;
 		config.doParseOnly = parse_only;
 		config.doPreAnalysisBuild = builderName != null;

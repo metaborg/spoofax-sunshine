@@ -31,7 +31,7 @@ public class LaunchConfiguration {
 	
 	/* the file to target when calling a pre/post analysis builder */
 	public File builderTarget;
-	
+	public boolean autogit;
 	
 	@Override
 	public String toString() {
@@ -73,6 +73,7 @@ public class LaunchConfiguration {
 
 	public void invariant() {
 		assert project_dir != null;
+		assert !(autogit && as_daemon);
 		
 		if(doParseOnly){
 			assert !doAnalyze;

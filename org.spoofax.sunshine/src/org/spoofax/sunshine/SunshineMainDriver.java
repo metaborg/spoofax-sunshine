@@ -28,44 +28,52 @@ public class SunshineMainDriver {
 		System.out.println("Configuration: \n" + config);
 	}
 
-	public void run() {
+	public void init() {
 		LanguageService.INSTANCE().registerLanguage(config.languages);
 		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 		warmup();
+	}
+	
+	public void step(Collection<File> files) {
+		if (config.doParseOnly) {
+			parse(files);
+		} else {
+			if (files.size() > 0) {
+				boolean success = !config.doPreAnalysisBuild;
+				if (config.doPreAnalysisBuild) {
+					success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
+							config.preAnalysisBuilder, true) != null;
+				}
+				if (success && config.doAnalyze) {
+					analyze(files);
+				} else {
+					MessageService.INSTANCE().addMessage(
+							Message.newAnalysisErrorAtTop(files.iterator().next().getPath(),
+									"Analysis failed. Dependency failed."));
+				}
+
+				if (success && config.doPostAnalysisBuild) {
+					success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
+							config.postAnalysisBuilder, false) != null;
+				}
+
+				if (!success) {
+					MessageService.INSTANCE().addMessage(
+							Message.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
+				}
+			}
+		}
+		emitMessages();
+	}
+	
+	public void run() {
+		init();
 		Scanner sc = new Scanner(System.in);
 		do {
 			reset();
 			Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
 			System.out.println("Changes: " + files);
-			if (config.doParseOnly) {
-				parse(files);
-			} else {
-				if (files.size() > 0) {
-					boolean success = !config.doPreAnalysisBuild;
-					if (config.doPreAnalysisBuild) {
-						success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
-								config.preAnalysisBuilder, true) != null;
-					}
-					if (success && config.doAnalyze) {
-						analyze(files);
-					} else {
-						MessageService.INSTANCE().addMessage(
-								Message.newAnalysisErrorAtTop(files.iterator().next().getPath(),
-										"Analysis failed. Dependency failed."));
-					}
-
-					if (success && config.doPostAnalysisBuild) {
-						success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
-								config.postAnalysisBuilder, false) != null;
-					}
-
-					if (!success) {
-						MessageService.INSTANCE().addMessage(
-								Message.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
-					}
-				}
-			}
-			emitMessages();
+			step(files);
 		} while (config.as_daemon && sc.nextLine() != null);
 
 	}
