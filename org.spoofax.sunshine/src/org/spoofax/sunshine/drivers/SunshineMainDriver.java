@@ -40,7 +40,7 @@ public class SunshineMainDriver {
 		warmup();
 	}
 
-	private void step(Collection<File> files) throws CompilerException {
+	public void step(Collection<File> files) throws CompilerException {
 		CompilerException crashCause = null;
 		try {
 			if (config.doParseOnly) {
