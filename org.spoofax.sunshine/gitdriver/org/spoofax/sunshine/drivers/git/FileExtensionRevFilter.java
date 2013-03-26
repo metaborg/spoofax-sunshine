@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.gitdriver;
+package org.spoofax.sunshine.drivers.git;
 
 import java.io.IOException;
 import java.text.MessageFormat;
