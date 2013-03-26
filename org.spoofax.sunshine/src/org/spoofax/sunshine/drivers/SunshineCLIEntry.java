@@ -9,7 +9,6 @@ import java.util.LinkedList;
 
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.LaunchConfiguration;
-import org.spoofax.sunshine.SunshineMainDriver;
 import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
 

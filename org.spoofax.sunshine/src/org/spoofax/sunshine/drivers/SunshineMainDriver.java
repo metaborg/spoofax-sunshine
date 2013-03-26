@@ -1,12 +1,16 @@
 /**
  * 
  */
-package org.spoofax.sunshine;
+package org.spoofax.sunshine.drivers;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Scanner;
 
+import org.spoofax.sunshine.CompilerCrashHandler;
+import org.spoofax.sunshine.CompilerException;
+import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.framework.messages.IMessage;
 import org.spoofax.sunshine.framework.messages.MessageHelper;
 import org.spoofax.sunshine.framework.services.AnalysisResultsService;
