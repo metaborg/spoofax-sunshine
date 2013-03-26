@@ -1,19 +1,24 @@
 <project name="sunshine-dependencies" default="download">
 
 	<property name="lib.dir" value="lib" />
-	
+
 	<target name="download" description="--> download external dependencies">
 		<mkdir dir="${lib.dir}" />
 		<mkdir dir="${lib.dir}/tmp" />
-		<get src="http://apache.cs.uu.nl/dist//commons/io/binaries/commons-io-2.4-bin.zip"
-				dest="${lib.dir}/tmp"/>
+		<get src="http://apache.cs.uu.nl/dist//commons/io/binaries/commons-io-2.4-bin.zip" dest="${lib.dir}/tmp" />
 		<unzip src="${lib.dir}/tmp/commons-io-2.4-bin.zip" dest="${lib.dir}/tmp" />
 		<move file="${lib.dir}/tmp/commons-io-2.4/commons-io-2.4.jar" todir="${lib.dir}" />
-		
-		
+
+
 		<get src="http://search.maven.org/remotecontent?filepath=com/google/guava/guava/14.0.1/guava-14.0.1.jar"
-						dest="${lib.dir}/guava-14.0.1.jar"/>
-		
+		     dest="${lib.dir}/guava-14.0.1.jar" />
+
+		<get src="http://downloads.sourceforge.net/project/jsch/jsch.jar/0.1.49/jsch-0.1.49.jar?r=&amp;ts=1364338684&amp;use_mirror=kent"
+		     dest="${lib.dir}/jsch-0.1.49.jar" />
+
+		<get src="http://download.eclipse.org/jgit/maven/org/eclipse/jgit/org.eclipse.jgit/2.3.1.201302201838-r/org.eclipse.jgit-2.3.1.201302201838-r.jar"
+		     dest="${lib.dir}/org.eclipse.jgit-2.3.jar" />
+
 		<delete dir="${lib.dir}/tmp" />
 	</target>
 </project>
