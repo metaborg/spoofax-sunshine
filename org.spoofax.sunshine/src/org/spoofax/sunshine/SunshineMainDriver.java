@@ -39,6 +39,14 @@ public class SunshineMainDriver {
 			reset();
 			Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
 			System.out.println("Changes: " + files);
+			step(files);
+		} while (config.as_daemon && sc.nextLine() != null);
+
+	}
+
+	private void step(Collection<File> files) throws CompilerException {
+		CompilerException crashCause = null;
+		try {
 			if (config.doParseOnly) {
 				parse(files);
 			} else {
@@ -63,13 +71,18 @@ public class SunshineMainDriver {
 
 					if (!success) {
 						MessageService.INSTANCE().addMessage(
-								MessageHelper.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
+								MessageHelper
+										.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
 					}
 				}
 			}
-			emitMessages();
-		} while (config.as_daemon && sc.nextLine() != null);
-
+		} catch (CompilerException cex) {
+			crashCause = cex;
+		}
+		emitMessages();
+		if (crashCause != null) {
+			throw crashCause;
+		}
 	}
 
 	private void emitMessages() {
@@ -89,7 +102,7 @@ public class SunshineMainDriver {
 		System.gc();
 		// TODO: reset index cache
 	}
-	
+
 	private void warmup() {
 		System.out.println("Warming up " + config.warmup_rounds + " rounds.");
 		long begin = 0;
@@ -106,7 +119,7 @@ public class SunshineMainDriver {
 			System.out.println("Round " + (config.warmup_rounds - i + 1) + " done in " + (end - begin) + " ms");
 			reset();
 		}
-		
+
 		MessageService.INSTANCE().clearMessages();
 		System.out.println("Warm up completed. Last duration: " + (end - begin) + " ms");
 	}
