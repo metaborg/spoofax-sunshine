@@ -6,8 +6,10 @@ package org.spoofax.sunshine.drivers.git;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -19,9 +21,11 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.util.FS;
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.drivers.SunshineMainDriver;
+import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 
 /**
@@ -50,7 +54,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 	}
 
 	@Override
-	public void run() {
+	public void run() throws CompilerException {
 		init();
 		List<RevCommit> commits = getCommits(true);
 		final int numCommits = commits.size();
@@ -63,6 +67,10 @@ public class SunshineGitDriver extends SunshineMainDriver {
 				assert current != null;
 				System.out.println("Checking out commit " + (idx + 1) + "/" + numCommits);
 				stepRevision(previous, current);
+				final Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
+				System.out.println("Processing: " + files);
+				step(files);
+				FileMonitoringService.INSTANCE().reset();
 				if (idx > 10)
 					break;
 			}
@@ -118,7 +126,15 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		}
 		if (ascOrder)
 			Collections.reverse(commits);
+		rw.dispose();
 		return commits;
+	}
+	
+	private Collection<File> gitGetModifiedFiles(RevCommit rev){
+		final Collection<File> files = new LinkedList<File>();
+		// TODO
+
+		return files;
 	}
 
 }

@@ -30,7 +30,8 @@ import org.spoofax.sunshine.framework.language.ALanguage;
  * 
  */
 public class FileMonitoringService {
-
+	private static final int INITIAL_CUTOFF = -1;
+	
 	private static FileMonitoringService INSTANCE;
 
 	private final IOFileFilter extensFilter;
@@ -43,7 +44,7 @@ public class FileMonitoringService {
 			extens[idx] = "." + extens[idx];
 		}
 		extensFilter = new SuffixFileFilter(extens);
-		cutoffTime = -1;
+		cutoffTime = INITIAL_CUTOFF;
 	}
 
 	public static FileMonitoringService INSTANCE() {
@@ -51,6 +52,10 @@ public class FileMonitoringService {
 			INSTANCE = new FileMonitoringService();
 		}
 		return INSTANCE;
+	}
+
+	public void reset() {
+		cutoffTime = INITIAL_CUTOFF;
 	}
 
 	/**

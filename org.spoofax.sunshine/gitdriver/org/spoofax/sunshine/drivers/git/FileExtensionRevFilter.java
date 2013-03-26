@@ -4,9 +4,7 @@
 package org.spoofax.sunshine.drivers.git;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -15,12 +13,10 @@ import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.StopWalkException;
-import org.eclipse.jgit.lib.IndexDiff;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
-import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 /**
@@ -55,13 +51,11 @@ public class FileExtensionRevFilter extends RevFilter {
 			RevCommit parentRev = rw.parseCommit(rev.getParent(0).getId());
 			List<DiffEntry> diffs = df.scan(parentRev.getTree(), rev.getTree());
 			for (DiffEntry diffEntry : diffs) {
-				if(FilenameUtils.getExtension(diffEntry.getNewPath()).equals(exten)){
+				if (FilenameUtils.getExtension(diffEntry.getNewPath()).equals(exten)) {
 					return true;
 				}
-//				System.out.println(MessageFormat.format("({0} {1} {2}", diffEntry.getChangeType().name(), diffEntry
-//						.getNewMode().getBits(), diffEntry.getNewPath()));
 			}
-		}else {
+		} else {
 			return true;
 		}
 
