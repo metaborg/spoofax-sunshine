@@ -39,39 +39,48 @@ public class SunshineMainDriver {
 		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 		warmup();
 	}
-	
-	public void step(Collection<File> files) throws CompilerException {
-		if (config.doParseOnly) {
-			parse(files);
-		} else {
-			if (files.size() > 0) {
-				boolean success = !config.doPreAnalysisBuild;
-				if (config.doPreAnalysisBuild) {
-					success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
-							config.preAnalysisBuilder, true) != null;
-				}
-				if (success && config.doAnalyze) {
-					analyze(files);
-				} else {
-					MessageService.INSTANCE().addMessage(
-							MessageHelper.newAnalysisErrorAtTop(files.iterator().next().getPath(),
-									"Analysis failed. Dependency failed."));
-				}
 
-				if (success && config.doPostAnalysisBuild) {
-					success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
-							config.postAnalysisBuilder, false) != null;
-				}
+	private void step(Collection<File> files) throws CompilerException {
+		CompilerException crashCause = null;
+		try {
+			if (config.doParseOnly) {
+				parse(files);
+			} else {
+				if (files.size() > 0) {
+					boolean success = !config.doPreAnalysisBuild;
+					if (config.doPreAnalysisBuild) {
+						success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
+								config.preAnalysisBuilder, true) != null;
+					}
+					if (success && config.doAnalyze) {
+						analyze(files);
+					} else {
+						MessageService.INSTANCE().addMessage(
+								MessageHelper.newAnalysisErrorAtTop(files.iterator().next().getPath(),
+										"Analysis failed. Dependency failed."));
+					}
 
-				if (!success) {
-					MessageService.INSTANCE().addMessage(
-							MessageHelper.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
+					if (success && config.doPostAnalysisBuild) {
+						success = BuilderService.INSTANCE().callBuilder(config.builderTarget,
+								config.postAnalysisBuilder, false) != null;
+					}
+
+					if (!success) {
+						MessageService.INSTANCE().addMessage(
+								MessageHelper
+										.newBuilderErrorAtTop(files.iterator().next().getPath(), "Builder failed."));
+					}
 				}
 			}
+		} catch (CompilerException cex) {
+			crashCause = cex;
 		}
 		emitMessages();
+		if (crashCause != null) {
+			throw crashCause;
+		}
 	}
-	
+
 	public void run() throws CompilerException {
 		init();
 		Scanner sc = new Scanner(System.in);
@@ -81,7 +90,6 @@ public class SunshineMainDriver {
 			System.out.println("Changes: " + files);
 			step(files);
 		} while (config.as_daemon && sc.nextLine() != null);
-
 	}
 
 	private void emitMessages() {
@@ -101,7 +109,7 @@ public class SunshineMainDriver {
 		System.gc();
 		// TODO: reset index cache
 	}
-	
+
 	private void warmup() {
 		System.out.println("Warming up " + config.warmup_rounds + " rounds.");
 		long begin = 0;
@@ -118,7 +126,7 @@ public class SunshineMainDriver {
 			System.out.println("Round " + (config.warmup_rounds - i + 1) + " done in " + (end - begin) + " ms");
 			reset();
 		}
-		
+
 		MessageService.INSTANCE().clearMessages();
 		System.out.println("Warm up completed. Last duration: " + (end - begin) + " ms");
 	}
