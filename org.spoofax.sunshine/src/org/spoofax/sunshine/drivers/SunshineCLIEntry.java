@@ -35,7 +35,6 @@ public class SunshineCLIEntry {
 	/**
 	 * @param args
 	 * @throws CompilerException 
-	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws CompilerException, InterruptedException {
 		SunshineMainDriver driver = new SunshineMainDriver(parseArgs(args));
