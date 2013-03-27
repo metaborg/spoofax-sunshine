@@ -22,8 +22,8 @@ import org.spoofax.sunshine.framework.language.ALanguage;
 import org.spoofax.sunshine.framework.messages.Message;
 import org.spoofax.sunshine.framework.messages.MessageHelper;
 import org.spoofax.sunshine.framework.messages.MessageType;
-import org.spoofax.sunshine.framework.messages.ResultApplAnalysisResult;
 import org.spoofax.sunshine.statistics.ExtendedResultApplAnalysisResult;
+import org.spoofax.sunshine.statistics.RoundMetrics;
 import org.strategoxt.HybridInterpreter;
 
 /**
@@ -92,6 +92,7 @@ public class AnalysisService {
 
 		final IStrategoList inputTerm = termFactory.makeList(fileNames);
 		runtime.setCurrent(inputTerm);
+		Throwable t = null;
 		try {
 			boolean success = runtime.invoke(lang.getAnalysisFunction());
 			if (!success) {
@@ -99,7 +100,10 @@ public class AnalysisService {
 			} else {
 				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
 				final IStrategoList evalTasks = (IStrategoList) resultTup.getSubterm(0);
-				Environment.INSTANCE().getCurrentRoundMetrics().tasks = evalTasks;
+				final RoundMetrics metric = Environment.INSTANCE().getCurrentRoundMetrics();
+				if (metric != null) {
+					metric.tasks = evalTasks;
+				}
 				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(1);
 				for (int idx = 0; idx < resultList.getSubtermCount(); idx++) {
 					AnalysisResultsService.INSTANCE().addResult(
@@ -107,14 +111,21 @@ public class AnalysisService {
 				}
 			}
 		} catch (InterpreterErrorExit e) {
-			reportAnalysisException(files, e);
+			t = e;
 		} catch (InterpreterExit e) {
-			reportAnalysisException(files, e);
+			t = e;
 		} catch (UndefinedStrategyException e) {
-			reportAnalysisException(files, e);
+			t = e;
 		} catch (InterpreterException e) {
-			reportAnalysisException(files, e);
+			t = e;
+		} finally {
+			runtime.uninit();
 		}
+
+		if (t != null) {
+			reportAnalysisException(files, t);
+		}
+
 	}
 
 	private static void reportAnalysisException(Collection<File> files, Throwable t) throws CompilerException {

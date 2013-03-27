@@ -5,6 +5,7 @@ package org.spoofax.sunshine.statistics;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -56,51 +57,65 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 
 		// compute project metrics & save them
 		final ProjectMetrics projMetrics = getWebDSLMetrics();
-
+		final File indexFile = new File(Environment.INSTANCE().projectDir, ".cache/index.idx");
+		assert indexFile.exists();
 		try {
+			System.out.println("Preparing for full analysis");
 			// save index to safe location
 			final File incrementalIndexSaved = rescueIndex();
-			
+
 			Environment.INSTANCE().setCurrentRoundMetric(fullMetrics);
-			
 			// reset everything
 			reset();
-			// TODO reload index
+			assert !indexFile.exists();
 
 			// perform full analysis
+			System.out.println("Doing full analysis.");
 			FileMonitoringService.INSTANCE().reset();
-			AnalysisService.INSTANCE().analyze(FileMonitoringService.INSTANCE().getChangesNoPersist());
+			Collection<File> filesForFull = FileMonitoringService.INSTANCE().getChangesNoPersist();
+			System.out.println("Analyzing " + filesForFull.size() + " files.");
+			AnalysisService.INSTANCE().analyze(filesForFull);
+			assert indexFile.exists();
+			System.out.println("Full analysis completed.");
+
 			// collect the results
+			System.out.println("Now saving results.");
 			fullMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
-			
+
 			// collect & store the times taken
 			// TODO
+			System.out.println("Finished saving results.");
+
+			// ======== 
 			
+			System.out.println("Preparing for incremental analysis");
 			Environment.INSTANCE().setCurrentRoundMetric(incrMetrics);
-			
+
 			// reset everything
 			reset();
-			
+			assert !indexFile.exists();
 			// restore index
 			restoreIndex(incrementalIndexSaved);
-			// reset everything
-			reset();
-			// TODO reload index
-			
+			assert indexFile.exists();
+			System.out.println("Analyzing " + files.size() + " files.");
 			// perform incremental analysis
 			AnalysisService.INSTANCE().analyze(files);
+			assert indexFile.exists();
+			System.out.println("Incremental analysis completed.");
 			// collect the results
+			System.out.println("Now saving results.");
 			incrMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
-			
-			//collect and store the times taken
+
+			// collect and store the times taken
 			// TODO
-			
+			System.out.println("Finished saving results.");
+
+			System.out.println("Synthesizing results.");
 			aggregator.addMetrics(projMetrics, fullMetrics, incrMetrics);
+			System.out.println("Done synthesizing results.");
 		} catch (IOException e) {
 			throw new CompilerException("Something broke", e);
 		}
-
-		// add the results to the statistics aggregator for evaluation & compression
 
 	}
 

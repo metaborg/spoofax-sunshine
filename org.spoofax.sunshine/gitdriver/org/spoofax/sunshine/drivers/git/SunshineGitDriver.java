@@ -45,7 +45,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 	}
 
 	@Override
-	public void init() {
+	public void init() throws CompilerException {
 		super.init();
 		final File projectDir = Environment.INSTANCE().projectDir;
 		FileRepository repo;
@@ -53,6 +53,9 @@ public class SunshineGitDriver extends SunshineMainDriver {
 			repo = (FileRepository) RepositoryCache
 					.open(RepositoryCache.FileKey.lenient(projectDir, FS.DETECTED), true);
 			git = new Git(repo);
+			File indexFile = new File(projectDir, ".cache/index.idx");
+			if (!indexFile.exists())
+				indexFile.createNewFile();
 		} catch (IOException e) {
 			throw new RuntimeException("Git autopilot initialization failed", e);
 		}
@@ -74,8 +77,9 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		init();
 		List<RevCommit> commits = getCommits(true);
 		final int numCommits = commits.size();
+
 		try {
-			for (int idx = 344; idx < numCommits; idx++) {
+			for (int idx = 343; idx < numCommits; idx++) {
 				previousGitCommit = currentGitCommit;
 				currentGitCommit = commits.get(idx);
 				assert currentGitCommit != null;
@@ -93,7 +97,9 @@ public class SunshineGitDriver extends SunshineMainDriver {
 				step(files);
 			}
 			git.checkout().setName("master").call();
+			File indexRescued = rescueIndex();
 			gitCleanVeryHard();
+			restoreIndex(indexRescued);
 			gitUpdateSubmodule();
 			gitDeleteBranch(currentGitCommit.getName());
 		} catch (GitAPIException e) {
@@ -111,6 +117,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 			File tempFile = File.createTempFile("sunshine_index", null);
 			tempFile.delete();
 			FileUtils.moveFile(index, tempFile);
+			System.out.println("Index rescued at " + tempFile.getAbsolutePath());
 			return tempFile;
 		} else {
 			return null;
@@ -126,6 +133,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		assert cacheDir.isDirectory() && cacheDir.exists();
 		File index = new File(cacheDir, "index.idx");
 		FileUtils.moveFile(tempIndex, index);
+		System.out.println("Index restored at " + index.getAbsolutePath());
 	}
 
 	private void gitCleanVeryHard() throws InterruptedException, IOException {

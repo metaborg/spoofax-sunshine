@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
@@ -85,6 +86,16 @@ public class LanguageService {
 	 */
 	public ALanguage getLanguageByExten(String exten) {
 		return exten2lang.get(exten);
+	}
+	
+	/**
+	 * Return one language at random from the registered languages.
+	 * 
+	 * @return
+	 * @throws NoSuchElementException if no languages are known in this registry
+	 */
+	public ALanguage getAnyLanguage() {
+		return name2lang.values().iterator().next();
 	}
 
 	/**

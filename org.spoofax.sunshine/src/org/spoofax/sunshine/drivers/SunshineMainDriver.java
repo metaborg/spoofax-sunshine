@@ -7,6 +7,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Scanner;
 
+import org.spoofax.interpreter.core.InterpreterException;
+import org.spoofax.interpreter.library.AbstractPrimitive;
+import org.spoofax.interpreter.library.IOperatorRegistry;
+import org.spoofax.interpreter.stratego.Strategy;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
@@ -20,6 +25,8 @@ import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.MessageService;
 import org.spoofax.sunshine.framework.services.ParseService;
+import org.spoofax.sunshine.framework.services.RuntimeService;
+import org.strategoxt.HybridInterpreter;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -52,7 +59,7 @@ public class SunshineMainDriver {
 		System.out.println("===============================");
 	}
 
-	public void init() {
+	public void init() throws CompilerException {
 		LanguageService.INSTANCE().registerLanguage(config.languages);
 		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 		warmup();
@@ -64,12 +71,24 @@ public class SunshineMainDriver {
 		}
 	}
 
-	public void reset() {
+	public void reset() throws CompilerException {
 		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
-		// FIXME: flush index cache
+		try {
+			unloadIndex();
+		} catch (InterpreterException e) {
+			throw new CompilerException(e);
+		}
 		MessageService.INSTANCE().clearMessages();
 		AnalysisResultsService.INSTANCE().reset();
 		System.gc();
+	}
+
+	protected void unloadIndex() throws InterpreterException {
+		HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(LanguageService.INSTANCE().getAnyLanguage());
+		IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry("INDEX");
+		AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
+		assert unloadIdxPrim.call(runtime.getContext(), new Strategy[0], new IStrategoTerm[] { runtime.getFactory()
+				.makeString(Environment.INSTANCE().projectDir.getAbsolutePath()) });
 	}
 
 	public void run() throws CompilerException {
@@ -124,7 +143,7 @@ public class SunshineMainDriver {
 		}
 	}
 
-	private void warmup() {
+	private void warmup() throws CompilerException {
 		System.out.println("Warming up " + config.warmup_rounds + " rounds.");
 		long begin = 0;
 		long end = 0;
