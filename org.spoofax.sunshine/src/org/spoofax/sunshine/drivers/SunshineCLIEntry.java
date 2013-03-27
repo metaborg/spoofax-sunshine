@@ -39,7 +39,6 @@ public class SunshineCLIEntry {
 	 */
 	public static void main(String[] args) throws CompilerException, InterruptedException {
 		SunshineMainDriver driver = new SunshineMainDriver(parseArgs(args));
-//		Thread.sleep(5000);
 		driver.run();
 		System.exit(0);
 	}
