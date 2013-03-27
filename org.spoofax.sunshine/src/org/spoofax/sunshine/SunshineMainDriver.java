@@ -48,13 +48,19 @@ public class SunshineMainDriver {
 		System.out.println("===============================");
 	}
 
+	public void init() {
+		LanguageService.INSTANCE().registerLanguage(config.languages);
+		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
+		warmup();
+	}
+
 	private void parse(final Collection<File> files) {
 		for (File f : files) {
 			ParseService.INSTANCE().parse(f);
 		}
 	}
 
-	private void reset() {
+	public void reset() {
 		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
 		MessageService.INSTANCE().clearMessages();
 		AnalysisResultsService.INSTANCE().reset();
@@ -63,9 +69,7 @@ public class SunshineMainDriver {
 	}
 
 	public void run() throws CompilerException {
-		LanguageService.INSTANCE().registerLanguage(config.languages);
-		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
-		warmup();
+		init();
 		Scanner sc = new Scanner(System.in);
 		do {
 			reset();
