@@ -102,7 +102,7 @@ public class SunshineMainDriver {
 		System.out.println("===============================");
 	}
 
-	private void reset() {
+	public void reset() {
 		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
 		MessageService.INSTANCE().clearMessages();
 		AnalysisResultsService.INSTANCE().reset();

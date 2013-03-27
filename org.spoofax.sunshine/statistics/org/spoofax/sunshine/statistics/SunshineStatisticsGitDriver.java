@@ -52,9 +52,9 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		incrMetrics.commitDeltaLines = deltaLoc;
 
 		// compute project metrics & save them
-		ProjectMetrics projMetrics = getWebDSLMetrics();
-		System.out.println("Metrics " + projMetrics.loc + "," + projMetrics.tdefs + "," + projMetrics.tcalls);
+		final ProjectMetrics projMetrics = getWebDSLMetrics();
 
+		
 		// save index to safe location
 		// reset everything
 		// perform full analysis
@@ -70,6 +70,8 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 
 	}
 
+	
+	
 	// hack
 	private int previousDeltaCount = 0;
 
