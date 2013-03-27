@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
+import org.spoofax.sunshine.statistics.RoundMetrics;
 import org.spoofax.terms.TermFactory;
 
 /**
@@ -20,6 +21,7 @@ public class Environment {
 	public final ITermFactory termFactory;
 	public final ParseTableManager parseTableMgr;
 	public File projectDir;
+	private RoundMetrics roundMetrics;
 	
 	private Environment() {
 		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
@@ -41,6 +43,14 @@ public class Environment {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public void setCurrentRoundMetric(RoundMetrics rm){
+		this.roundMetrics = rm;
+	}
+	
+	public RoundMetrics getCurrentRoundMetrics() {
+		return this.roundMetrics;
 	}
 
 }

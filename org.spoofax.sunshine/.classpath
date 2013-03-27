@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="test-files/" kind="src" path="test"/>
 	<classpathentry kind="src" path="gitdriver"/>
+	<classpathentry kind="src" path="statistics"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="lib/strategoxt.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
