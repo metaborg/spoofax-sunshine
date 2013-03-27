@@ -20,9 +20,22 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 	}
 
 	public void step(java.util.Collection<java.io.File> files) throws CompilerException {
+		// compute project metrics & save them
+		// compute git commit statistics and save them
+		
 		// save index to safe location
 		// reset everything
-		// 
+		// perform full analysis
+		// collect the results
+		// reset everything
+		
+		// restore index
+		// reset everything
+		// perform incremental analysis
+		// collect the results
+		
+		// add the results to the statistics aggregator for evaluation & compression
+		
 	};
 
 }
