@@ -12,12 +12,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
@@ -71,12 +71,19 @@ public class SunshineGitDriver extends SunshineMainDriver {
 				current = commits.get(idx);
 				assert current != null;
 				System.out.println("Checking out commit " + (idx + 1) + "/" + numCommits + " " + current.getId());
+				
+				final File rescuedIndex = rescueIndex();
+				
 				stepRevision(previous, current);
-
+				restoreIndex(rescuedIndex);
+				
 				Collection<File> files = gitGetModifiedFiles(previous, current);
 				assert files != null;
+				if(idx == 1)
+					break;
 				System.out.println("Processing: " + files);
 				step(files);
+				
 			}
 			git.checkout().setName("master").call();
 			gitCleanVeryHard();
@@ -89,6 +96,29 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		} catch (InterruptedException e) {
 			throw new RuntimeException("Git autopilot crashed", e);
 		}
+	}
+
+	private File rescueIndex() throws IOException {
+		File index = new File(Environment.INSTANCE().projectDir, ".cache/index.idx");
+		if (index.exists()) {
+			File tempFile = File.createTempFile("sunshine_index", null);
+			tempFile.delete();
+			FileUtils.moveFile(index, tempFile);
+			return tempFile;
+		} else {
+			return null;
+		}
+	}
+
+	private void restoreIndex(File tempIndex) throws IOException {
+		if (tempIndex == null)
+			return;
+		File cacheDir = new File(Environment.INSTANCE().projectDir, ".cache");
+		if (!cacheDir.exists())
+			cacheDir.mkdir();
+		assert cacheDir.isDirectory() && cacheDir.exists();
+		File index = new File(cacheDir, "index.idx");
+		FileUtils.moveFile(tempIndex, index);
 	}
 
 	private void gitCleanVeryHard() throws InterruptedException, IOException {
@@ -108,9 +138,9 @@ public class SunshineGitDriver extends SunshineMainDriver {
 
 	private void stepRevision(RevCommit from, RevCommit to) throws GitAPIException, IOException, InterruptedException {
 		git.checkout().setName(to.getName()).setCreateBranch(true).setStartPoint(to).call();
-		try{
+		try {
 			gitUpdateSubmodule();
-		}catch(RuntimeException gitex){
+		} catch (RuntimeException gitex) {
 			System.err.println("Failed to pull submodule for project. Currently at revision " + to.getId());
 			gitex.printStackTrace();
 		}
