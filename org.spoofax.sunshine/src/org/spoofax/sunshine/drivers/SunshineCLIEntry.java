@@ -44,10 +44,12 @@ public class SunshineCLIEntry {
 		SunshineMainDriver driver = null;
 		if (!config.autogit)
 			driver = new SunshineMainDriver(config);
-		else if (config.storeStats)
-			driver = new SunshineStatisticsGitDriver(config);
-		else
-			driver = new SunshineGitDriver(config);
+		else {
+			if (config.storeStats)
+				driver = new SunshineStatisticsGitDriver(config);
+			else
+				driver = new SunshineGitDriver(config);
+		}
 		driver.run();
 		System.exit(0);
 	}
@@ -234,7 +236,6 @@ public class SunshineCLIEntry {
 				dbg_warmups_next = false;
 				call_builder_next = false;
 				build_on_next = false;
-				git_autodrive = false;
 				collect_stats_next = true;
 			} else {
 				if (lang_jar_next) {

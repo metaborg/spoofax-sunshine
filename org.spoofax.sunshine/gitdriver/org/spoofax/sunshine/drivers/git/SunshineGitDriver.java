@@ -38,7 +38,7 @@ import org.spoofax.sunshine.framework.services.LanguageService;
  * 
  */
 public class SunshineGitDriver extends SunshineMainDriver {
-	private Git git;
+	protected Git git;
 
 	public SunshineGitDriver(LaunchConfiguration config) {
 		super(config);
@@ -58,37 +58,47 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		}
 	}
 
+	private RevCommit currentGitCommit;
+	private RevCommit previousGitCommit;
+
+	protected RevCommit gitGetCurrentCommit() {
+		return currentGitCommit;
+	}
+
+	protected RevCommit gitGetPreviousCommit() {
+		return previousGitCommit;
+	}
+
 	@Override
 	public void run() throws CompilerException {
 		init();
 		List<RevCommit> commits = getCommits(true);
 		final int numCommits = commits.size();
-		RevCommit previous = null;
-		RevCommit current = null;
 		try {
 			for (int idx = 0; idx < numCommits; idx++) {
-				previous = current;
-				current = commits.get(idx);
-				assert current != null;
-				System.out.println("Checking out commit " + (idx + 1) + "/" + numCommits + " " + current.getId());
-				
+				previousGitCommit = currentGitCommit;
+				currentGitCommit = commits.get(idx);
+				assert currentGitCommit != null;
+				System.out.println("Checking out commit " + (idx + 1) + "/" + numCommits + " "
+						+ currentGitCommit.getId());
+
 				final File rescuedIndex = rescueIndex();
-				
-				stepRevision(previous, current);
+
+				stepRevision(previousGitCommit, currentGitCommit);
 				restoreIndex(rescuedIndex);
-				
-				Collection<File> files = gitGetModifiedFiles(previous, current);
+
+				Collection<File> files = gitGetModifiedFiles(previousGitCommit, currentGitCommit);
 				assert files != null;
-				if(idx == 1)
-					break;
 				System.out.println("Processing: " + files);
 				step(files);
-				
+				if (idx == 10)
+					break;
+
 			}
 			git.checkout().setName("master").call();
 			gitCleanVeryHard();
 			gitUpdateSubmodule();
-			gitDeleteBranch(current.getName());
+			gitDeleteBranch(currentGitCommit.getName());
 		} catch (GitAPIException e) {
 			throw new RuntimeException("Git autopilot crashed", e);
 		} catch (IOException e) {
@@ -168,6 +178,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		}
 		if (ascOrder)
 			Collections.reverse(commits);
+		rw.release();
 		rw.dispose();
 		return commits;
 	}

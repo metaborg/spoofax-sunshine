@@ -47,6 +47,9 @@ public class LaunchConfiguration {
 		buf.append("\t DAEMON: ");
 		buf.append(this.as_daemon);
 		buf.append("\n");
+		buf.append("\t AUTOGIT: ");
+		buf.append(this.autogit);
+		buf.append("\n");
 		buf.append("\t WARMUPS: ");
 		buf.append(this.warmup_rounds);
 		buf.append("\n");
