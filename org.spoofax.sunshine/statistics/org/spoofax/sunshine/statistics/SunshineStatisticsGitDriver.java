@@ -11,10 +11,16 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.gitective.core.CommitFinder;
 import org.gitective.core.CommitUtils;
 import org.gitective.core.PathFilterUtils;
+import org.spoofax.interpreter.terms.IStrategoString;
+import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
+import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
+import org.spoofax.sunshine.framework.language.ALanguage;
 import org.spoofax.sunshine.framework.services.LanguageService;
+import org.spoofax.sunshine.framework.services.StrategoCallService;
 import org.spoofax.sunshine.statistics.RoundMetrics.RoundType;
 
 /**
@@ -46,6 +52,8 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		incrMetrics.commitDeltaLines = deltaLoc;
 
 		// compute project metrics & save them
+		ProjectMetrics projMetrics = getWebDSLMetrics();
+		System.out.println("Metrics " + projMetrics.loc + "," + projMetrics.tdefs + "," + projMetrics.tcalls);
 
 		// save index to safe location
 		// reset everything
@@ -83,6 +91,27 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		int currentCount = diffCountFilter.count - previousDeltaCount;
 		previousDeltaCount = diffCountFilter.count;
 		return currentCount;
+	}
+
+	private ProjectMetrics getWebDSLMetrics() throws CompilerException {
+		final ProjectMetrics metrics = new ProjectMetrics();
+		final ALanguage webdsl = LanguageService.INSTANCE().getLanguageByName("WebDSL");
+		assert webdsl != null;
+		final ITermFactory factory = Environment.INSTANCE().termFactory;
+		final IStrategoTerm nil = factory.makeList();
+		final IStrategoTerm inputTuple = factory.makeTuple(nil, nil, nil, nil,
+				factory.makeString(Environment.INSTANCE().projectDir.getAbsolutePath()));
+		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
+		final IStrategoTerm result = StrategoCallService.INSTANCE().callStratego(webdsl, "webdsl-metrics", inputTuple);
+		assert result.getTermType() == IStrategoTerm.TUPLE;
+		assert result.getSubtermCount() == 2;
+		final String metricString = ((IStrategoString) result.getSubterm(1)).stringValue();
+		final String[] metricBits = metricString.split(",");
+		assert metricBits.length == 3;
+		metrics.loc = Integer.parseInt(metricBits[0]);
+		metrics.tdefs = Integer.parseInt(metricBits[1]);
+		metrics.tcalls = Integer.parseInt(metricBits[2]);
+		return metrics;
 	}
 
 }

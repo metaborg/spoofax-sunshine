@@ -12,9 +12,11 @@ import org.spoofax.sunshine.statistics.RoundMetrics.RoundType;
 public class MetricsAggregator {
 
 	
-	public void addMetrics(RoundMetrics fullMetrics, RoundMetrics incrementalMetrics){
+	public void addMetrics(ProjectMetrics projMetrics, RoundMetrics fullMetrics, RoundMetrics incrementalMetrics){
+		assert projMetrics != null;
 		assert fullMetrics.roundType == RoundType.FULL;
 		assert incrementalMetrics.roundType == RoundType.INCREMENTAL;
+		
 		// TODO
 	}
 	
