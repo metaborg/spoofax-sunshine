@@ -34,10 +34,53 @@ public class SunshineMainDriver {
 		System.out.println("Configuration: \n" + config);
 	}
 
+	private void analyze(final Collection<File> files) {
+		try {
+			AnalysisService.INSTANCE().analyze(files);
+		} catch (CompilerException e) {
+			throw new RuntimeException("Analysis crashed", e);
+		}
+	}
+
+	private void emitMessages() {
+		AnalysisResultsService.INSTANCE().commitMessages();
+		final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
+		System.out.println("===============================");
+		for (IMessage msg : msgs) {
+			System.out.println(msg);
+		}
+		System.out.println("===============================");
+	}
+
 	public void init() {
 		LanguageService.INSTANCE().registerLanguage(config.languages);
 		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 		warmup();
+	}
+
+	private void parse(final Collection<File> files) {
+		for (File f : files) {
+			ParseService.INSTANCE().parse(f);
+		}
+	}
+
+	public void reset() {
+		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
+		MessageService.INSTANCE().clearMessages();
+		AnalysisResultsService.INSTANCE().reset();
+		System.gc();
+		// TODO: reset index cache
+	}
+
+	public void run() throws CompilerException {
+		init();
+		Scanner sc = new Scanner(System.in);
+		do {
+			reset();
+			Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
+			System.out.println("Changes: " + files);
+			step(files);
+		} while (config.as_daemon && sc.nextLine() != null);
 	}
 
 	public void step(Collection<File> files) throws CompilerException {
@@ -81,35 +124,6 @@ public class SunshineMainDriver {
 		}
 	}
 
-	public void run() throws CompilerException {
-		init();
-		Scanner sc = new Scanner(System.in);
-		do {
-			reset();
-			Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
-			System.out.println("Changes: " + files);
-			step(files);
-		} while (config.as_daemon && sc.nextLine() != null);
-	}
-
-	private void emitMessages() {
-		AnalysisResultsService.INSTANCE().commitMessages();
-		final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
-		System.out.println("===============================");
-		for (IMessage msg : msgs) {
-			System.out.println(msg);
-		}
-		System.out.println("===============================");
-	}
-
-	public void reset() {
-		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
-		MessageService.INSTANCE().clearMessages();
-		AnalysisResultsService.INSTANCE().reset();
-		System.gc();
-		// TODO: reset index cache
-	}
-
 	private void warmup() {
 		System.out.println("Warming up " + config.warmup_rounds + " rounds.");
 		long begin = 0;
@@ -129,20 +143,6 @@ public class SunshineMainDriver {
 
 		MessageService.INSTANCE().clearMessages();
 		System.out.println("Warm up completed. Last duration: " + (end - begin) + " ms");
-	}
-
-	private void parse(final Collection<File> files) {
-		for (File f : files) {
-			ParseService.INSTANCE().parse(f);
-		}
-	}
-
-	private void analyze(final Collection<File> files) {
-		try {
-			AnalysisService.INSTANCE().analyze(files);
-		} catch (CompilerException e) {
-			throw new RuntimeException("Analysis crashed", e);
-		}
 	}
 
 }
