@@ -7,4 +7,5 @@
 		--start-symbol Unit \
 		--lang-name WebDSL \
 		--proj-dir ../../yellowgrass/ \
-		--daemon #--warmup 10
+		--warmup 20
+		--git-autodrive

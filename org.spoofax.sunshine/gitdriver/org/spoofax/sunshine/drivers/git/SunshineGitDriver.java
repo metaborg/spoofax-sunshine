@@ -12,9 +12,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
@@ -22,6 +25,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
@@ -66,14 +70,13 @@ public class SunshineGitDriver extends SunshineMainDriver {
 				previous = current;
 				current = commits.get(idx);
 				assert current != null;
-				System.out.println("Checking out commit " + (idx + 1) + "/" + numCommits);
+				System.out.println("Checking out commit " + (idx + 1) + "/" + numCommits + " " + current.getId());
 				stepRevision(previous, current);
-				final Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
+
+				Collection<File> files = gitGetModifiedFiles(previous, current);
+				assert files != null;
 				System.out.println("Processing: " + files);
 				step(files);
-				FileMonitoringService.INSTANCE().reset();
-				if (idx >= 50)
-					break;
 			}
 			git.checkout().setName("master").call();
 			gitCleanVeryHard();
@@ -89,22 +92,28 @@ public class SunshineGitDriver extends SunshineMainDriver {
 	}
 
 	private void gitCleanVeryHard() throws InterruptedException, IOException {
-		Process proc = Runtime.getRuntime().exec("git clean -f -f -d", new String[0], git.getRepository().getDirectory().getParentFile());
+		Process proc = Runtime.getRuntime().exec("git clean -f -f -d", new String[0],
+				git.getRepository().getDirectory().getParentFile());
 		proc.waitFor();
 		assert proc.exitValue() == 0;
 	}
 
 	private void gitDeleteBranch(String branchname) throws GitAPIException {
-		git.branchDelete().setBranchNames(branchname).call();
+		git.branchDelete().setBranchNames(branchname).setForce(true).call();
 	}
-	
+
 	private void gitUpdateSubmodule() throws GitAPIException {
 		git.submoduleUpdate().call();
 	}
 
 	private void stepRevision(RevCommit from, RevCommit to) throws GitAPIException, IOException, InterruptedException {
 		git.checkout().setName(to.getName()).setCreateBranch(true).setStartPoint(to).call();
-		gitUpdateSubmodule();
+		try{
+			gitUpdateSubmodule();
+		}catch(RuntimeException gitex){
+			System.err.println("Failed to pull submodule for project. Currently at revision " + to.getId());
+			gitex.printStackTrace();
+		}
 		gitCleanVeryHard();
 		if (from != null) {
 			gitDeleteBranch(from.getName());
@@ -132,12 +141,35 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		rw.dispose();
 		return commits;
 	}
-	
-	private Collection<File> gitGetModifiedFiles(RevCommit rev){
+
+	private Collection<File> gitGetModifiedFiles(RevCommit parent, RevCommit rev) throws IOException {
 		final Collection<File> files = new LinkedList<File>();
-		// TODO
+
+		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		df.setRepository(git.getRepository());
+		df.setDetectRenames(true);
+		if (parent != null) {
+			List<DiffEntry> diffs = df.scan(parent.getTree(), rev.getTree());
+			for (DiffEntry diffEntry : diffs) {
+				String affectedFN = diffEntry.getNewPath();
+				if (hasSupportedExtension(affectedFN)) {
+					files.add(new File(affectedFN));
+				}
+			}
+		} else {
+			files.addAll(FileMonitoringService.INSTANCE().getChangesNoPersist());
+		}
 
 		return files;
+	}
+
+	private boolean hasSupportedExtension(String filename) {
+		final String exten = FilenameUtils.getExtension(filename);
+		for (String supExt : LanguageService.INSTANCE().getSupportedExtens()) {
+			if (exten.equals(supExt))
+				return true;
+		}
+		return false;
 	}
 
 }

@@ -59,6 +59,6 @@ public class FileExtensionRevFilter extends RevFilter {
 			return true;
 		}
 
-		return true;
+		return false;
 	}
 }
