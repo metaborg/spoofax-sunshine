@@ -9,5 +9,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.spoofax.sunshine.drivers.SunshineCLIEntry"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--extens app&#10;--lang-jar&#10;&#9;../../webdsl2/include/webdsl.jar&#10;&#9;../../webdsl2/include/webdsl-java.jar&#10;--lang-tbl&#10;&#9;../../webdsl2/include/WebDSL.tbl&#10;--start-symbol Unit&#10;--lang-name WebDSL&#10;--proj-dir&#10;&#9;../../yellowgrass/&#10;--git-autodrive&#10;--stats stats_yg"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.spoofax.sunshine"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea -server -Xss16m -Xms1G -Xmx2G"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea:org.spoofax.sunshine... -server -Xss16m -Xms1G -Xmx2G"/>
 </launchConfiguration>
