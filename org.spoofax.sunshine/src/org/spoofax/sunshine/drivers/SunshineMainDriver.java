@@ -66,10 +66,10 @@ public class SunshineMainDriver {
 
 	public void reset() {
 		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
+		// FIXME: flush index cache
 		MessageService.INSTANCE().clearMessages();
 		AnalysisResultsService.INSTANCE().reset();
 		System.gc();
-		// TODO: reset index cache
 	}
 
 	public void run() throws CompilerException {

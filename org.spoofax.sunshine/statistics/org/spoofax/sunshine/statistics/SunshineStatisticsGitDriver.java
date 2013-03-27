@@ -3,13 +3,13 @@
  */
 package org.spoofax.sunshine.statistics;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.gitective.core.CommitFinder;
-import org.gitective.core.CommitUtils;
 import org.gitective.core.PathFilterUtils;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
@@ -19,6 +19,9 @@ import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
 import org.spoofax.sunshine.framework.language.ALanguage;
+import org.spoofax.sunshine.framework.services.AnalysisResultsService;
+import org.spoofax.sunshine.framework.services.AnalysisService;
+import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.StrategoCallService;
 import org.spoofax.sunshine.statistics.RoundMetrics.RoundType;
@@ -54,24 +57,53 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		// compute project metrics & save them
 		final ProjectMetrics projMetrics = getWebDSLMetrics();
 
-		
-		// save index to safe location
-		// reset everything
-		// perform full analysis
-		// collect the results
-		// reset everything
+		try {
+			// save index to safe location
+			final File incrementalIndexSaved = rescueIndex();
+			
+			Environment.INSTANCE().setCurrentRoundMetric(fullMetrics);
+			
+			// reset everything
+			reset();
+			// TODO reload index
 
-		// restore index
-		// reset everything
-		// perform incremental analysis
-		// collect the results
+			// perform full analysis
+			FileMonitoringService.INSTANCE().reset();
+			AnalysisService.INSTANCE().analyze(FileMonitoringService.INSTANCE().getChangesNoPersist());
+			// collect the results
+			fullMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
+			
+			// collect & store the times taken
+			// TODO
+			
+			Environment.INSTANCE().setCurrentRoundMetric(incrMetrics);
+			
+			// reset everything
+			reset();
+			
+			// restore index
+			restoreIndex(incrementalIndexSaved);
+			// reset everything
+			reset();
+			// TODO reload index
+			
+			// perform incremental analysis
+			AnalysisService.INSTANCE().analyze(files);
+			// collect the results
+			incrMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
+			
+			//collect and store the times taken
+			// TODO
+			
+			aggregator.addMetrics(projMetrics, fullMetrics, incrMetrics);
+		} catch (IOException e) {
+			throw new CompilerException("Something broke", e);
+		}
 
 		// add the results to the statistics aggregator for evaluation & compression
 
 	}
 
-	
-	
 	// hack
 	private int previousDeltaCount = 0;
 

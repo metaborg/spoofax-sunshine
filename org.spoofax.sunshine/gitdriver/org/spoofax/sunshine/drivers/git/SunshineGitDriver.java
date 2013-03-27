@@ -75,7 +75,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		List<RevCommit> commits = getCommits(true);
 		final int numCommits = commits.size();
 		try {
-			for (int idx = 0; idx < numCommits; idx++) {
+			for (int idx = 344; idx < numCommits; idx++) {
 				previousGitCommit = currentGitCommit;
 				currentGitCommit = commits.get(idx);
 				assert currentGitCommit != null;
@@ -91,9 +91,6 @@ public class SunshineGitDriver extends SunshineMainDriver {
 				assert files != null;
 				System.out.println("Processing: " + files);
 				step(files);
-				if (idx == 10)
-					break;
-
 			}
 			git.checkout().setName("master").call();
 			gitCleanVeryHard();
@@ -108,7 +105,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		}
 	}
 
-	private File rescueIndex() throws IOException {
+	protected File rescueIndex() throws IOException {
 		File index = new File(Environment.INSTANCE().projectDir, ".cache/index.idx");
 		if (index.exists()) {
 			File tempFile = File.createTempFile("sunshine_index", null);
@@ -120,7 +117,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		}
 	}
 
-	private void restoreIndex(File tempIndex) throws IOException {
+	protected void restoreIndex(File tempIndex) throws IOException {
 		if (tempIndex == null)
 			return;
 		File cacheDir = new File(Environment.INSTANCE().projectDir, ".cache");

@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.framework.messages.IAnalysisResult;
 
@@ -50,10 +51,11 @@ public class RoundMetrics {
 	 * 
 	 * - commit affected lines of code
 	 */
-
+	
 	public final RoundType roundType;
 	public IStrategoTerm index;
 	public final Map<File, IAnalysisResult> analysisResults;
+	public IStrategoList tasks;
 	public long totalTime, parseTime, collectTime, evalTime, dependTime, commitTime;
 	public int commitDeltaLines;
 

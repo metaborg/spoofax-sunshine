@@ -49,6 +49,10 @@ public class AnalysisResultsService {
 	public Collection<IAnalysisResult> getAllResults() {
 		return new ArrayList<IAnalysisResult>(results.values());
 	}
+	
+	public Map<File, IAnalysisResult> getAllResultsMap() {
+		return new HashMap<File, IAnalysisResult>(results);
+	}
 
 	public void commitMessages() {
 		final Collection<IAnalysisResult> results = getAllResults();

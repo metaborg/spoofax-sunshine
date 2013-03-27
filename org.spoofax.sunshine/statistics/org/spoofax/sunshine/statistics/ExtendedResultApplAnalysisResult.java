@@ -5,7 +5,6 @@ package org.spoofax.sunshine.statistics;
 
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoList;
-import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.framework.messages.ResultApplAnalysisResult;
 
 /**
