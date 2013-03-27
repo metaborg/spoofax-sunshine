@@ -3,15 +3,19 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/dist/sunshine.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/dist/sunshine.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="org.spoofax.sunshine.SunshineFront"/>
+                <attribute name="Main-Class" value="org.spoofax.sunshine.drivers.SunshineCLIEntry"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/lib/strategoxt.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/lib/commons-io-2.4.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.meta.runtime.pretender/lib/sdf2imp.jar"/>
+            <fileset dir="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/strategoxt.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/commons-io-2.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/sdf2imp.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/Applications/Spoofax-3.8/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900/junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/Applications/Spoofax-3.8/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+            <fileset dir="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/test/test-files"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/guava-14.0.1.jar"/>
         </jar>
     </target>
 </project>

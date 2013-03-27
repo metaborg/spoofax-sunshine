@@ -14,6 +14,7 @@ import org.spoofax.interpreter.core.UndefinedStrategyException;
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoString;
+import org.spoofax.interpreter.terms.IStrategoTuple;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
@@ -95,7 +96,8 @@ public class AnalysisService {
 			if (!success) {
 				reportAnalysisException(files, new RuntimeException("Analysis function failed w/o exception"));
 			} else {
-				final IStrategoList resultList = (IStrategoList) runtime.current();
+				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
+				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(1);
 				for (int idx = 0; idx < resultList.getSubtermCount(); idx++) {
 					AnalysisResultsService.INSTANCE().addResult(
 							new ResultApplAnalysisResult((IStrategoAppl) resultList.getSubterm(idx)));

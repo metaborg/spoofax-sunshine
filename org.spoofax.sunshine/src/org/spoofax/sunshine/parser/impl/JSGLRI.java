@@ -97,6 +97,8 @@ public class JSGLRI extends AParser {
 			}
 		} catch (SGLRException e) {
 			throw new ParserException(e);
+		}catch (InterruptedException e) {
+			throw new ParserException(e);
 		}
 
 		return result;

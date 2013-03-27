@@ -32,14 +32,14 @@ public class ResultApplAnalysisResult implements IAnalysisResult {
 
 	private void init(IStrategoAppl resultTerm) {
 		assert resultTerm != null;
-		assert resultTerm.getSubtermCount() == 11;
+		assert resultTerm.getSubtermCount() == 10;
 		// partition, ast, errors, warnings, notes
 		final String filename = ((IStrategoString) resultTerm.getSubterm(0)).stringValue();
 		this.file = new File(filename);
 		this.ast = resultTerm.getSubterm(2);
-		this.errors = (IStrategoList) resultTerm.getSubterm(8);
-		this.warnings = (IStrategoList) resultTerm.getSubterm(9);
-		this.notes = (IStrategoList) resultTerm.getSubterm(10);
+		this.errors = (IStrategoList) resultTerm.getSubterm(7);
+		this.warnings = (IStrategoList) resultTerm.getSubterm(8);
+		this.notes = (IStrategoList) resultTerm.getSubterm(9);
 		messages.addAll(MessageHelper.makeMessages(this.file, MessageSeverity.ERROR, this.errors));
 		messages.addAll(MessageHelper.makeMessages(this.file, MessageSeverity.WARNING, this.warnings));
 		messages.addAll(MessageHelper.makeMessages(this.file, MessageSeverity.NOTE, this.notes));

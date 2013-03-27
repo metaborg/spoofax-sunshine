@@ -5,6 +5,8 @@ package org.spoofax.sunshine;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import org.spoofax.sunshine.framework.messages.IMessage;
@@ -38,6 +40,13 @@ public class SunshineMainDriver {
 		do {
 			reset();
 			Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
+			Collection<File> foos = new LinkedList<File>();
+			int cur = 0;
+			final Iterator<File> fileIter = files.iterator();
+			while(fileIter.hasNext() && cur < 2){
+				foos.add(fileIter.next());
+				cur++;
+			}
 			System.out.println("Changes: " + files);
 			step(files);
 		} while (config.as_daemon && sc.nextLine() != null);
