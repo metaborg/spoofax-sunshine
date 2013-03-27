@@ -5,8 +5,6 @@ package org.spoofax.sunshine;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 import org.spoofax.sunshine.framework.messages.IMessage;
@@ -30,6 +28,38 @@ public class SunshineMainDriver {
 		Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
 		this.config = config;
 		System.out.println("Configuration: \n" + config);
+	}
+
+	private void analyze(final Collection<File> files) {
+		try {
+			AnalysisService.INSTANCE().analyze(files);
+		} catch (CompilerException e) {
+			throw new RuntimeException("Analysis crashed", e);
+		}
+	}
+
+	private void emitMessages() {
+		AnalysisResultsService.INSTANCE().commitMessages();
+		final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
+		System.out.println("===============================");
+		for (IMessage msg : msgs) {
+			System.out.println(msg);
+		}
+		System.out.println("===============================");
+	}
+
+	private void parse(final Collection<File> files) {
+		for (File f : files) {
+			ParseService.INSTANCE().parse(f);
+		}
+	}
+
+	private void reset() {
+		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
+		MessageService.INSTANCE().clearMessages();
+		AnalysisResultsService.INSTANCE().reset();
+		System.gc();
+		// TODO: reset index cache
 	}
 
 	public void run() throws CompilerException {
@@ -87,24 +117,6 @@ public class SunshineMainDriver {
 		}
 	}
 
-	private void emitMessages() {
-		AnalysisResultsService.INSTANCE().commitMessages();
-		final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
-		System.out.println("===============================");
-		for (IMessage msg : msgs) {
-			System.out.println(msg);
-		}
-		System.out.println("===============================");
-	}
-
-	private void reset() {
-		new File(Environment.INSTANCE().projectDir, ".cache/index.idx").delete();
-		MessageService.INSTANCE().clearMessages();
-		AnalysisResultsService.INSTANCE().reset();
-		System.gc();
-		// TODO: reset index cache
-	}
-
 	private void warmup() {
 		System.out.println("Warming up " + config.warmup_rounds + " rounds.");
 		long begin = 0;
@@ -124,20 +136,6 @@ public class SunshineMainDriver {
 
 		MessageService.INSTANCE().clearMessages();
 		System.out.println("Warm up completed. Last duration: " + (end - begin) + " ms");
-	}
-
-	private void parse(final Collection<File> files) {
-		for (File f : files) {
-			ParseService.INSTANCE().parse(f);
-		}
-	}
-
-	private void analyze(final Collection<File> files) {
-		try {
-			AnalysisService.INSTANCE().analyze(files);
-		} catch (CompilerException e) {
-			throw new RuntimeException("Analysis crashed", e);
-		}
 	}
 
 }
