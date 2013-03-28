@@ -116,6 +116,8 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		} catch (IOException e) {
 			throw new CompilerException("Something broke", e);
 		}
+		
+		System.out.println(aggregator.getTimes());
 
 	}
 

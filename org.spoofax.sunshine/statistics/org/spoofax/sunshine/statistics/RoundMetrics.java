@@ -51,7 +51,7 @@ public class RoundMetrics {
 	 * 
 	 * - commit affected lines of code
 	 */
-	
+
 	public final RoundType roundType;
 	public IStrategoTerm index;
 	public final Map<File, IAnalysisResult> analysisResults;
@@ -63,6 +63,17 @@ public class RoundMetrics {
 		assert roundTy != null;
 		roundType = roundTy;
 		analysisResults = new HashMap<File, IAnalysisResult>();
+	}
+
+	private final HashMap<String, Double> timeSpent = new HashMap<String, Double>();
+
+	public void recordTimeSpent(String name, double time) {
+		final Double prevTime = timeSpent.get(name);
+		timeSpent.put(name, (prevTime != null ? prevTime : 0) + time);
+	}
+	
+	public HashMap<String, Double> getRecordedTimes() {
+		return timeSpent;
 	}
 
 	public enum RoundType {

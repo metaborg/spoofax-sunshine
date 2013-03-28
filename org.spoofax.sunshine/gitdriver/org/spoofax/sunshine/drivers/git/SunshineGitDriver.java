@@ -54,8 +54,11 @@ public class SunshineGitDriver extends SunshineMainDriver {
 					.open(RepositoryCache.FileKey.lenient(projectDir, FS.DETECTED), true);
 			git = new Git(repo);
 			File indexFile = new File(projectDir, ".cache/index.idx");
-			if (!indexFile.exists())
+			if (!indexFile.exists()){
+				if(!indexFile.getParentFile().exists())
+					indexFile.getParentFile().mkdir();
 				indexFile.createNewFile();
+			}
 		} catch (IOException e) {
 			throw new RuntimeException("Git autopilot initialization failed", e);
 		}
@@ -79,7 +82,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		final int numCommits = commits.size();
 
 		try {
-			for (int idx = 343; idx < numCommits; idx++) {
+			for (int idx = 344; idx < numCommits; idx++) {
 				previousGitCommit = currentGitCommit;
 				currentGitCommit = commits.get(idx);
 				assert currentGitCommit != null;
