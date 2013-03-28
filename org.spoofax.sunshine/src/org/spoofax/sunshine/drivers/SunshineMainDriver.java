@@ -49,7 +49,7 @@ public class SunshineMainDriver {
 		}
 	}
 
-	private void emitMessages() {
+	protected void emitMessages() {
 		AnalysisResultsService.INSTANCE().commitMessages();
 		final Collection<IMessage> msgs = MessageService.INSTANCE().getMessages();
 		System.out.println("===============================");
@@ -62,6 +62,7 @@ public class SunshineMainDriver {
 	public void init() throws CompilerException {
 		LanguageService.INSTANCE().registerLanguage(config.languages);
 		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
+		reset();
 		warmup();
 	}
 

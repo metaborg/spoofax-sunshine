@@ -53,11 +53,12 @@ public class RoundMetrics {
 	 */
 
 	public final RoundType roundType;
-	public IStrategoTerm index;
+//	public IStrategoTerm index;
 	public final Map<File, IAnalysisResult> analysisResults;
 	public IStrategoList tasks;
-	public long totalTime, parseTime, collectTime, evalTime, dependTime, commitTime;
-	public int commitDeltaLines;
+//	public long totalTime, parseTime, collectTime, evalTime, dependTime, commitTime;
+//	public int commitDeltaLines;
+	private final HashMap<String, Double> timeSpent = new HashMap<String, Double>();
 
 	public RoundMetrics(RoundType roundTy) {
 		assert roundTy != null;
@@ -65,7 +66,6 @@ public class RoundMetrics {
 		analysisResults = new HashMap<File, IAnalysisResult>();
 	}
 
-	private final HashMap<String, Double> timeSpent = new HashMap<String, Double>();
 
 	public void recordTimeSpent(String name, double time) {
 		final Double prevTime = timeSpent.get(name);
@@ -79,5 +79,5 @@ public class RoundMetrics {
 	public enum RoundType {
 		FULL, INCREMENTAL
 	}
-
+	
 }

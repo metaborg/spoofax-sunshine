@@ -28,7 +28,7 @@ public class SetMarkersPrimitive extends AbstractPrimitive {
 //		env.setCurrent(previousTerm);
 //
 //		return true;
-		System.err.println("WARNING: call to set markers primitive. doing nothing!");
+//		System.err.println("WARNING: call to set markers primitive. doing nothing!");
 		return true;
 	}
 

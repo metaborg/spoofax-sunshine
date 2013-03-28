@@ -299,6 +299,7 @@ public class SunshineCLIEntry {
 		if (buildOnTarget != null)
 			config.builderTarget = new File(buildOnTarget);
 		config.doAnalyze = !parse_only;
+		config.warmup_rounds = warmups;
 		if (storeStatsAt != null) {
 			config.storeStats = true;
 			config.storeStatsAt = new File(storeStatsAt);

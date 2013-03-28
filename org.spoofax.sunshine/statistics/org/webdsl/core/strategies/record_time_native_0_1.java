@@ -4,6 +4,7 @@ import org.spoofax.interpreter.terms.IStrategoReal;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.statistics.RoundMetrics;
 import org.strategoxt.lang.Context;
 import org.strategoxt.lang.Strategy;
 
@@ -13,7 +14,9 @@ public class record_time_native_0_1 extends Strategy {
 
 	@Override
 	public IStrategoTerm invoke(Context context, IStrategoTerm time, IStrategoTerm name) {
-		Environment.INSTANCE().getCurrentRoundMetrics().recordTimeSpent(((IStrategoString) name).stringValue(), ((IStrategoReal) time).realValue());
+		RoundMetrics metrics = Environment.INSTANCE().getCurrentRoundMetrics();
+		if(metrics != null)
+			metrics.recordTimeSpent(((IStrategoString) name).stringValue(), ((IStrategoReal) time).realValue());
 		return time;
 	}
 }

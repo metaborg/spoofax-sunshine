@@ -39,9 +39,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		super(config);
 		assert config.storeStats;
 		assert config.storeStatsAt != null;
-		if (!config.storeStatsAt.exists())
-			config.storeStatsAt.mkdir();
-		this.aggregator = new MetricsAggregator();
+		this.aggregator = new MetricsAggregator(config.storeStatsAt);
 	}
 
 	public void step(java.util.Collection<java.io.File> files) throws CompilerException {
@@ -50,13 +48,11 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		final RevCommit pRev = gitGetPreviousCommit();
 		final RevCommit cRev = gitGetCurrentCommit();
 
-		// compute git commit statistics and save them
-		int deltaLoc = gitComputeDeltaLoc(pRev, cRev);
-		fullMetrics.commitDeltaLines = deltaLoc;
-		incrMetrics.commitDeltaLines = deltaLoc;
-
 		// compute project metrics & save them
 		final ProjectMetrics projMetrics = getWebDSLMetrics();
+		projMetrics.commit = cRev.getId().getName();
+		projMetrics.commitDeltaLoc = gitComputeDeltaLoc(pRev, cRev);
+		projMetrics.seqNum = getCurrentCommitSeqNum();
 		final File indexFile = new File(Environment.INSTANCE().projectDir, ".cache/index.idx");
 		assert indexFile.exists();
 		try {
@@ -75,6 +71,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			Collection<File> filesForFull = FileMonitoringService.INSTANCE().getChangesNoPersist();
 			System.out.println("Analyzing " + filesForFull.size() + " files.");
 			AnalysisService.INSTANCE().analyze(filesForFull);
+			emitMessages();
 			assert indexFile.exists();
 			System.out.println("Full analysis completed.");
 
@@ -82,12 +79,10 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			System.out.println("Now saving results.");
 			fullMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
 
-			// collect & store the times taken
-			// TODO
 			System.out.println("Finished saving results.");
 
-			// ======== 
-			
+			// ========
+
 			System.out.println("Preparing for incremental analysis");
 			Environment.INSTANCE().setCurrentRoundMetric(incrMetrics);
 
@@ -106,18 +101,14 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			System.out.println("Now saving results.");
 			incrMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
 
-			// collect and store the times taken
-			// TODO
 			System.out.println("Finished saving results.");
 
 			System.out.println("Synthesizing results.");
 			aggregator.addMetrics(projMetrics, fullMetrics, incrMetrics);
-			System.out.println("Done synthesizing results.");
+			System.out.println("Done synthesizing & writing results.");
 		} catch (IOException e) {
 			throw new CompilerException("Something broke", e);
 		}
-		
-		System.out.println(aggregator.getTimes());
 
 	}
 
