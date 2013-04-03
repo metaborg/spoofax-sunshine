@@ -34,6 +34,7 @@ public class LaunchConfiguration {
 
 	public boolean storeStats;
 	public File storeStatsAt;
+	public boolean incremental;
 
 	@Override
 	public String toString() {

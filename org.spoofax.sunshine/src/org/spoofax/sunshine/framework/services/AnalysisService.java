@@ -22,8 +22,7 @@ import org.spoofax.sunshine.framework.language.ALanguage;
 import org.spoofax.sunshine.framework.messages.Message;
 import org.spoofax.sunshine.framework.messages.MessageHelper;
 import org.spoofax.sunshine.framework.messages.MessageType;
-import org.spoofax.sunshine.statistics.ExtendedResultApplAnalysisResult;
-import org.spoofax.sunshine.statistics.RoundMetrics;
+import org.spoofax.sunshine.framework.messages.ResultApplAnalysisResult;
 import org.strategoxt.HybridInterpreter;
 
 /**
@@ -99,15 +98,11 @@ public class AnalysisService {
 				reportAnalysisException(files, new RuntimeException("Analysis function failed w/o exception"));
 			} else {
 				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
-				final IStrategoList evalTasks = (IStrategoList) resultTup.getSubterm(0);
-				final RoundMetrics metric = Environment.INSTANCE().getCurrentRoundMetrics();
-				if (metric != null) {
-					metric.tasks = evalTasks;
-				}
+				// final IStrategoList evalTasks = (IStrategoList) resultTup.getSubterm(0);
 				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(1);
 				for (int idx = 0; idx < resultList.getSubtermCount(); idx++) {
 					AnalysisResultsService.INSTANCE().addResult(
-							new ExtendedResultApplAnalysisResult((IStrategoAppl) resultList.getSubterm(idx)));
+							new ResultApplAnalysisResult((IStrategoAppl) resultList.getSubterm(idx)));
 				}
 			}
 		} catch (InterpreterErrorExit e) {

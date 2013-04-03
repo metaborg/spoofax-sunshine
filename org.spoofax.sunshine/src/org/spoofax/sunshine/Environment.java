@@ -9,7 +9,6 @@ import java.io.IOException;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
-import org.spoofax.sunshine.statistics.RoundMetrics;
 import org.spoofax.terms.TermFactory;
 
 /**
@@ -17,16 +16,13 @@ import org.spoofax.terms.TermFactory;
  * 
  */
 public class Environment {
-
+	
 	public final ITermFactory termFactory;
 	public final ParseTableManager parseTableMgr;
 	public File projectDir;
-	private RoundMetrics roundMetrics;
+
+	private LaunchConfiguration launchConfiguration;
 	
-	private Environment() {
-		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
-		this.parseTableMgr = new ParseTableManager(termFactory);
-	}
 
 	private static Environment INSTANCE;
 
@@ -37,6 +33,11 @@ public class Environment {
 		return INSTANCE;
 	}
 	
+	private Environment() {
+		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
+		this.parseTableMgr = new ParseTableManager(termFactory);
+	}
+
 	public void setProjectDir(File pdir){
 		try {
 			projectDir = pdir.getCanonicalFile();
@@ -44,13 +45,13 @@ public class Environment {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public void setCurrentRoundMetric(RoundMetrics rm){
-		this.roundMetrics = rm;
+
+	public void setLaunchConfiguration(LaunchConfiguration config) {
+		this.launchConfiguration = config;
 	}
-	
-	public RoundMetrics getCurrentRoundMetrics() {
-		return this.roundMetrics;
+
+	public LaunchConfiguration getLaunchConfiguration() {
+		return launchConfiguration;
 	}
 
 }

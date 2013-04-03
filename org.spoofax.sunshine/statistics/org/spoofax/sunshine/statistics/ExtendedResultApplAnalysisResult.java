@@ -11,6 +11,7 @@ import org.spoofax.sunshine.framework.messages.ResultApplAnalysisResult;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
+@Deprecated
 public class ExtendedResultApplAnalysisResult extends ResultApplAnalysisResult {
 
 	private IStrategoList evaluatedTasks;

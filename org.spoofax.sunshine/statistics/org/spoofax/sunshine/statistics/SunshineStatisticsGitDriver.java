@@ -17,15 +17,12 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
 import org.spoofax.sunshine.framework.language.ALanguage;
-import org.spoofax.sunshine.framework.services.AnalysisResultsService;
 import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.StrategoCallService;
-import org.spoofax.sunshine.statistics.RoundMetrics.RoundType;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -33,18 +30,7 @@ import org.spoofax.sunshine.statistics.RoundMetrics.RoundType;
  */
 public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 
-	private final MetricsAggregator aggregator;
-
-	public SunshineStatisticsGitDriver(LaunchConfiguration config) {
-		super(config);
-		assert config.storeStats;
-		assert config.storeStatsAt != null;
-		this.aggregator = new MetricsAggregator(config.storeStatsAt);
-	}
-
 	public void step(java.util.Collection<java.io.File> files) throws CompilerException {
-		final RoundMetrics fullMetrics = new RoundMetrics(RoundType.FULL);
-		final RoundMetrics incrMetrics = new RoundMetrics(RoundType.INCREMENTAL);
 		final RevCommit pRev = gitGetPreviousCommit();
 		final RevCommit cRev = gitGetCurrentCommit();
 
@@ -60,7 +46,11 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			// save index to safe location
 			final File incrementalIndexSaved = rescueIndex();
 
-			Environment.INSTANCE().setCurrentRoundMetric(fullMetrics);
+			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
+				final DataRecording rec = RecordingStack.INSTANCE().next();
+				rec.addDataPoint("ISFULL", IValidatable.ALWAYS_VALIDATABLE);
+			}
+			
 			// reset everything
 			reset();
 			assert !indexFile.exists();
@@ -75,16 +65,13 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			assert indexFile.exists();
 			System.out.println("Full analysis completed.");
 
-			// collect the results
-			System.out.println("Now saving results.");
-			fullMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
-
-			System.out.println("Finished saving results.");
-
 			// ========
 
 			System.out.println("Preparing for incremental analysis");
-			Environment.INSTANCE().setCurrentRoundMetric(incrMetrics);
+			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
+				final DataRecording rec = RecordingStack.INSTANCE().next();
+				rec.addDataPoint("ISFULL", IValidatable.NEVER_VALIDATABLE);
+			}
 
 			// reset everything
 			reset();
@@ -97,15 +84,12 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			AnalysisService.INSTANCE().analyze(files);
 			assert indexFile.exists();
 			System.out.println("Incremental analysis completed.");
-			// collect the results
-			System.out.println("Now saving results.");
-			incrMetrics.analysisResults.putAll(AnalysisResultsService.INSTANCE().getAllResultsMap());
 
-			System.out.println("Finished saving results.");
-
-			System.out.println("Synthesizing results.");
-			aggregator.addMetrics(projMetrics, fullMetrics, incrMetrics);
-			System.out.println("Done synthesizing & writing results.");
+			// ==== 
+			// write statistics results
+			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
+				RecordingStack.INSTANCE().incrementalWriteToFile();
+			}
 		} catch (IOException e) {
 			throw new CompilerException("Something broke", e);
 		}

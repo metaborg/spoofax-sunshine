@@ -28,7 +28,6 @@ import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.drivers.SunshineMainDriver;
 import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
@@ -39,10 +38,6 @@ import org.spoofax.sunshine.framework.services.LanguageService;
  */
 public class SunshineGitDriver extends SunshineMainDriver {
 	protected Git git;
-
-	public SunshineGitDriver(LaunchConfiguration config) {
-		super(config);
-	}
 
 	@Override
 	public void init() throws CompilerException {
@@ -87,7 +82,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		final int numCommits = commits.size();
 
 		try {
-			for (int idx = 0; idx < numCommits; idx++) {
+			for (int idx = 340; idx < numCommits; idx++) {
 				currentCommitSeqNum = idx;
 				previousGitCommit = currentGitCommit;
 				currentGitCommit = commits.get(idx);

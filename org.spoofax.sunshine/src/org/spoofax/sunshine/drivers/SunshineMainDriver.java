@@ -33,12 +33,9 @@ import org.strategoxt.HybridInterpreter;
  * 
  */
 public class SunshineMainDriver {
-	private LaunchConfiguration config;
 
-	public SunshineMainDriver(LaunchConfiguration config) {
+	public SunshineMainDriver() {
 		Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
-		this.config = config;
-		System.out.println("Configuration: \n" + config);
 	}
 
 	private void analyze(final Collection<File> files) {
@@ -60,6 +57,7 @@ public class SunshineMainDriver {
 	}
 
 	public void init() throws CompilerException {
+		final LaunchConfiguration config = Environment.INSTANCE().getLaunchConfiguration();
 		LanguageService.INSTANCE().registerLanguage(config.languages);
 		Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 		reset();
@@ -100,10 +98,11 @@ public class SunshineMainDriver {
 			Collection<File> files = FileMonitoringService.INSTANCE().getChanges();
 			System.out.println("Changes: " + files);
 			step(files);
-		} while (config.as_daemon && sc.nextLine() != null);
+		} while (Environment.INSTANCE().getLaunchConfiguration().as_daemon && sc.nextLine() != null);
 	}
 
 	public void step(Collection<File> files) throws CompilerException {
+		final LaunchConfiguration config = Environment.INSTANCE().getLaunchConfiguration();
 		CompilerException crashCause = null;
 		try {
 			if (config.doParseOnly) {
@@ -145,6 +144,7 @@ public class SunshineMainDriver {
 	}
 
 	private void warmup() throws CompilerException {
+		final LaunchConfiguration config = Environment.INSTANCE().getLaunchConfiguration();
 		System.out.println("Warming up " + config.warmup_rounds + " rounds.");
 		long begin = 0;
 		long end = 0;

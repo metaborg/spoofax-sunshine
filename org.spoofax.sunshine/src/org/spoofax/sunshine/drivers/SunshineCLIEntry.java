@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.spoofax.sunshine.CompilerException;
+import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
 import org.spoofax.sunshine.framework.language.AdHocJarBasedLanguage;
@@ -32,6 +33,7 @@ public class SunshineCLIEntry {
 	private final static String BUILD_ON = "--build-on";
 	private final static String GIT_AUTODRIVE = "--git-autodrive";
 	private final static String COLLECT_STATS = "--stats";
+	private final static String FULL_ANALYSIS = "--non-incremental";
 
 	// private static final String observer_fun = "editor-analyze";
 
@@ -42,13 +44,14 @@ public class SunshineCLIEntry {
 	public static void main(String[] args) throws CompilerException {
 		LaunchConfiguration config = parseArgs(args);
 		SunshineMainDriver driver = null;
+		Environment.INSTANCE().setLaunchConfiguration(config);
 		if (!config.autogit)
-			driver = new SunshineMainDriver(config);
+			driver = new SunshineMainDriver();
 		else {
 			if (config.storeStats)
-				driver = new SunshineStatisticsGitDriver(config);
+				driver = new SunshineStatisticsGitDriver();
 			else
-				driver = new SunshineGitDriver(config);
+				driver = new SunshineGitDriver();
 		}
 		driver.run();
 		System.exit(0);
@@ -65,6 +68,7 @@ public class SunshineCLIEntry {
 		boolean call_builder_next = false;
 		boolean build_on_next = false;
 		boolean collect_stats_next = false;
+		boolean full_analysis_next = false;
 
 		boolean parse_only = false;
 		boolean daemon = false;
@@ -237,6 +241,18 @@ public class SunshineCLIEntry {
 				call_builder_next = false;
 				build_on_next = false;
 				collect_stats_next = true;
+			} else if (a.equals(FULL_ANALYSIS)) {
+				lang_jar_next = false;
+				lang_tbl_next = false;
+				proj_dir_next = false;
+				extens_next = false;
+				lang_name_next = false;
+				lang_startsymb_next = false;
+				dbg_warmups_next = false;
+				call_builder_next = false;
+				build_on_next = false;
+				collect_stats_next = false;
+				full_analysis_next = true;
 			} else {
 				if (lang_jar_next) {
 					language_jars.add(a);
@@ -290,6 +306,7 @@ public class SunshineCLIEntry {
 		}
 		config.languages.add(new AdHocJarBasedLanguage(langname, extens.toArray(new String[extens.size()]),
 				language_startsymb, new File(language_tbl), "editor-analyze", jars.toArray(new File[jars.size()])));
+		config.incremental = !full_analysis_next;
 		config.as_daemon = daemon;
 		config.autogit = git_autodrive;
 		config.project_dir = project_dir;
