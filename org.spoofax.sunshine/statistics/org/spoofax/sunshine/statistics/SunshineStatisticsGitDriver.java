@@ -50,7 +50,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 				final DataRecording rec = RecordingStack.INSTANCE().next();
 				rec.addDataPoint("ISFULL", IValidatable.ALWAYS_VALIDATABLE);
 			}
-			
+
 			// reset everything
 			reset();
 			assert !indexFile.exists();
@@ -85,7 +85,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			assert indexFile.exists();
 			System.out.println("Incremental analysis completed.");
 
-			// ==== 
+			// ====
 			// write statistics results
 			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
 				RecordingStack.INSTANCE().incrementalWriteToFile();

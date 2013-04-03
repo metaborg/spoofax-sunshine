@@ -82,7 +82,7 @@ public class SunshineGitDriver extends SunshineMainDriver {
 		final int numCommits = commits.size();
 
 		try {
-			for (int idx = 340; idx < numCommits; idx++) {
+			for (int idx = 0; idx < numCommits; idx++) {
 				currentCommitSeqNum = idx;
 				previousGitCommit = currentGitCommit;
 				currentGitCommit = commits.get(idx);

@@ -26,7 +26,10 @@ public class DataRecording {
 	public void addDataPoint(String name, long value) {
 		assert open;
 		assert validatables.get(name) == null;
-		points.put(name, value);
+		Long oldValue = points.get(name);
+		if (oldValue == null)
+			oldValue = 0L;
+		points.put(name, value + oldValue);
 	}
 
 	public void addDataPoint(String name, IValidatable value) {
@@ -50,9 +53,10 @@ public class DataRecording {
 			assert !(point != null && validatable != null);
 			if (point != null) {
 				result.add(point.toString());
-			} if (validatable != null) {
+			} else if (validatable != null) {
 				result.add("" + (validatable.validate() ? 1 : 0));
 			} else {
+				System.err.println("Giving default value for: " + key);
 				result.add(defaultValue);
 			}
 		}

@@ -42,7 +42,7 @@ public class RecordingStack {
 	public void reset() {
 		assert recordingStack != null;
 		recordingStack.clear();
-		headerWritten = false;
+		alreadyWritten = 0;
 	}
 
 	public DataRecording next() {
@@ -58,15 +58,14 @@ public class RecordingStack {
 		return recordingStack.peek();
 	}
 
-	private static final String NUM_FORMAT_STRING = "%D";
-	private static final String HEAD_FORMAT_STRING = "%S";
+	private static final String STR_FORMAT_STRING = "%s ";
 	private static final String NEWL_FORMAT_STRING = "%n";
 	private static final String SEQNUM_HEAD = "SEQNUM";
 	private static final String COMMA_STRING = ",";
 
 	private static final String DEFAULT_VALUE = "-1";
 
-	private Tuple2<String, String> toCSV() {
+	private List<String> getAllKeys() {
 		final Enumeration<DataRecording> recordingsEnum = recordingStack.elements();
 		final Set<String> keySet = new HashSet<String>(recordingStack.size());
 		while (recordingsEnum.hasMoreElements()) {
@@ -74,64 +73,66 @@ public class RecordingStack {
 		}
 		final List<String> keys = new ArrayList<String>(keySet);
 		Collections.sort(keys);
+		return keys;
+	}
 
-		final StringBuilder header = new StringBuilder();
-		final Formatter headerFormatter = new Formatter(header, Locale.US);
-		headerFormatter.format(makeFormatString(keys, HEAD_FORMAT_STRING), SEQNUM_HEAD, keys.toArray());
-		headerFormatter.close();
-
+	private String toStringRows(List<String> keys) {
 		final StringBuilder row = new StringBuilder();
 		final Formatter rowFormatter = new Formatter(row, Locale.US);
-		final String rowFormat = makeFormatString(keys, NUM_FORMAT_STRING);
-		for (int idx = 0; idx < recordingStack.size(); idx++) {
-			rowFormatter.format(rowFormat, idx, recordingStack.pop().toOrderedStrings(keys, DEFAULT_VALUE).toArray());
+		final String rowFormat = makeFormatString(keys);
+		for (int idx = alreadyWritten; recordingStack.size() > 0; idx++) {
+			final List<String> values = new ArrayList<String>(keys.size() + 1);
+			values.add("" + idx);
+			values.addAll(recordingStack.pop().toOrderedStrings(keys, DEFAULT_VALUE));
+			rowFormatter.format(rowFormat, (Object[]) values.toArray());
 		}
 		rowFormatter.close();
 
-		return new Tuple2<String, String>(header.toString(), row.toString());
+		return row.toString();
 	}
 
-	private String makeFormatString(List<String> keys, String entryType) {
+	private String toStringHeader(List<String> keys) {
+		final StringBuilder header = new StringBuilder();
+		final Formatter headerFormatter = new Formatter(header, Locale.US);
+		final String headerFormat = makeFormatString(keys);
+		final List<String> headerKeys = new ArrayList<String>(keys.size() + 1);
+		headerKeys.add(SEQNUM_HEAD);
+		headerKeys.addAll(keys);
+		headerFormatter.format(headerFormat, (Object[]) headerKeys.toArray(new String[0]));
+		headerFormatter.close();
+		return header.toString();
+	}
+
+	private String makeFormatString(List<String> keys) {
 		final StringBuilder headerFormat = new StringBuilder();
-		headerFormat.append(entryType);
+		headerFormat.append(STR_FORMAT_STRING);
 		for (int idx = 0; idx < keys.size(); idx++) {
 			headerFormat.append(COMMA_STRING);
-			headerFormat.append(entryType);
+			headerFormat.append(STR_FORMAT_STRING);
 		}
 		headerFormat.append(NEWL_FORMAT_STRING);
 		return headerFormat.toString();
 	}
 
-	private boolean headerWritten;
+	private int alreadyWritten = 0;
 
 	public void incrementalWriteToFile() throws IOException {
-		if (!headerWritten) {
-			if (!targetFile.exists()) {
-				if (!targetFile.getParentFile().exists()) {
-					targetFile.getParentFile().mkdir();
-				}
-				targetFile.createNewFile();
+		final List<String> keys = getAllKeys();
+		if (alreadyWritten == 0 && !targetFile.exists()) {
+			if (!targetFile.getParentFile().exists()) {
+				targetFile.getParentFile().mkdir();
 			}
+			targetFile.createNewFile();
 		}
 		assert targetFile.exists();
-
-		final Tuple2<String, String> csv = toCSV();
+		final int additionalRowCount = recordingStack.size();
+		final String header = alreadyWritten > 0 ? "" : toStringHeader(keys);
+		final String rows = toStringRows(keys);
 		recordingStack.clear();
-		if (!headerWritten) {
-			FileUtils.writeStringToFile(targetFile, csv._1);
-			headerWritten = true;
-		}
-		FileUtils.writeStringToFile(targetFile, csv._2, true);
-	}
 
-	private class Tuple2<L, R> {
-		public L _1;
-		public R _2;
+		FileUtils.writeStringToFile(targetFile, header + rows, alreadyWritten > 0);
 
-		public Tuple2(L l, R r) {
-			this._1 = l;
-			this._2 = r;
-		}
+		alreadyWritten += additionalRowCount;
 	}
 
 }
