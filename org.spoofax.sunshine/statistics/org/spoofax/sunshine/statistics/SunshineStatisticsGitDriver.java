@@ -39,11 +39,11 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 		final RevCommit cRev = gitGetCurrentCommit();
 
 		// compute project metrics & save them
-		// final ProjectMetrics projMetrics = getWebDSLMetrics();
-		// projMetrics.commit = cRev.getId().getName();
-		// projMetrics.commitDeltaLoc = gitComputeDeltaLoc(pRev, cRev);
-		final String commit = cRev.getId().getName();
-		final int commitDeltaLoc = gitComputeDeltaLoc(pRev, cRev);
+		final ProjectMetrics projMetrics = getWebDSLMetrics();
+		projMetrics.commit = cRev.getId().getName();
+		projMetrics.commitDeltaLoc = gitComputeDeltaLoc(pRev, cRev);
+		// final String commit = cRev.getId().getName();
+		// final int commitDeltaLoc = gitComputeDeltaLoc(pRev, cRev);
 		final File indexFile = new File(Environment.INSTANCE().projectDir, ".cache/index.idx");
 		assert indexFile.exists();
 		try {
@@ -54,7 +54,6 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
 				final DataRecording rec = RecordingStack.INSTANCE().next();
 				rec.addDataPoint("ISFULL", IValidatable.ALWAYS_VALIDATABLE);
-				rec.addDataPoint("COMMIT", new BoxValidatable<String>(commit));
 			}
 
 			// reset everything
@@ -66,8 +65,13 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			FileMonitoringService.INSTANCE().reset();
 			Collection<File> filesForFull = FileMonitoringService.INSTANCE().getChangesNoPersist();
 			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-				RecordingStack.INSTANCE().current()
-						.addDataPoint("FILES", new BoxValidatable<Integer>(filesForFull.size()));
+				final DataRecording rec = RecordingStack.INSTANCE().current();
+				rec.addDataPoint("COMMIT", new BoxValidatable<String>(projMetrics.commit));
+				rec.addDataPoint("LOC", new BoxValidatable<Integer>(projMetrics.loc));
+				rec.addDataPoint("TDEF", new BoxValidatable<Integer>(projMetrics.tdefs));
+				rec.addDataPoint("TCAL", new BoxValidatable<Integer>(projMetrics.tcalls));
+				rec.addDataPoint("FILES", new BoxValidatable<Integer>(filesForFull.size()));
+
 			}
 			System.out.println("Analyzing " + filesForFull.size() + " files.");
 			AnalysisService.INSTANCE().analyze(filesForFull);
@@ -81,7 +85,6 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
 				final DataRecording rec = RecordingStack.INSTANCE().next();
 				rec.addDataPoint("ISFULL", IValidatable.NEVER_VALIDATABLE);
-				rec.addDataPoint("COMMIT", new BoxValidatable<String>(commit));
 			}
 
 			// reset everything
@@ -92,8 +95,15 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 			assert indexFile.exists();
 			System.out.println("Analyzing " + files.size() + " files.");
 			if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-				RecordingStack.INSTANCE().current().addDataPoint("FILES", new BoxValidatable<Integer>(files.size()));
+				final DataRecording rec = RecordingStack.INSTANCE().current();
+				rec.addDataPoint("COMMIT", new BoxValidatable<String>(projMetrics.commit));
+				rec.addDataPoint("LOC", new BoxValidatable<Integer>(projMetrics.loc));
+				rec.addDataPoint("DELTALOC", new BoxValidatable<Integer>(projMetrics.commitDeltaLoc));
+				rec.addDataPoint("TDEF", new BoxValidatable<Integer>(projMetrics.tdefs));
+				rec.addDataPoint("TCAL", new BoxValidatable<Integer>(projMetrics.tcalls));
+				rec.addDataPoint("FILES", new BoxValidatable<Integer>(files.size()));
 			}
+			
 			// perform incremental analysis
 			AnalysisService.INSTANCE().analyze(files);
 			assert indexFile.exists();

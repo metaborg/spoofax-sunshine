@@ -31,9 +31,11 @@ public interface IValidatable<T> {
 		public Boolean getValue() {
 			return true;
 		};
+
 	};
 
 	public abstract boolean validate();
 
 	public T getValue();
+
 }
