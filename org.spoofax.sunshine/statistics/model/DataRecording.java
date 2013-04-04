@@ -1,4 +1,4 @@
-package org.spoofax.sunshine.statistics;
+package model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 /**
  * 
@@ -16,7 +17,7 @@ public class DataRecording {
 
 	private volatile boolean open = true;
 
-	private final Map<String, IValidatable> validatables = new HashMap<String, IValidatable>();
+	private final Map<String, IValidatable<?>> validatables = new HashMap<String, IValidatable<?>>();
 	private final Map<String, Long> points = new HashMap<String, Long>();
 
 	public void close() {
@@ -49,12 +50,12 @@ public class DataRecording {
 		
 		for (String key : keys) {
 			final Long point = points.get(key);
-			final IValidatable validatable = validatables.get(key);
+			final IValidatable<?> validatable = validatables.get(key);
 			assert !(point != null && validatable != null);
 			if (point != null) {
 				result.add(point.toString());
 			} else if (validatable != null) {
-				result.add("" + (validatable.validate() ? 1 : 0));
+				result.add("" + validatable.getValue());
 			} else {
 				System.err.println("Giving default value for: " + key);
 				result.add(defaultValue);
