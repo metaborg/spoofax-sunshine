@@ -103,6 +103,7 @@ public class SunshineMainDriver {
 
 	public void step(Collection<File> files) throws CompilerException {
 		final LaunchConfiguration config = Environment.INSTANCE().getLaunchConfiguration();
+		final boolean statsEnabled = config.storeStats;
 		CompilerException crashCause = null;
 		try {
 			if (config.doParseOnly) {

@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
-import model.BoxValidatable;
-import model.DataRecording;
-import model.IValidatable;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
@@ -27,6 +24,9 @@ import org.spoofax.sunshine.framework.services.AnalysisService;
 import org.spoofax.sunshine.framework.services.FileMonitoringService;
 import org.spoofax.sunshine.framework.services.LanguageService;
 import org.spoofax.sunshine.framework.services.StrategoCallService;
+import org.spoofax.sunshine.statistics.model.BoxValidatable;
+import org.spoofax.sunshine.statistics.model.DataRecording;
+import org.spoofax.sunshine.statistics.model.IValidatable;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

@@ -15,10 +15,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
-import model.DataRecording;
 
 import org.apache.commons.io.FileUtils;
 import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.statistics.model.DataRecording;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

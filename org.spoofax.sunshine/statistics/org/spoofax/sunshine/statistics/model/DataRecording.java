@@ -1,4 +1,4 @@
-package model;
+package org.spoofax.sunshine.statistics.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class DataRecording {
 		points.put(name, value + oldValue);
 	}
 
-	public void addDataPoint(String name, IValidatable value) {
+	public void addDataPoint(String name, IValidatable<?> value) {
 		assert open;
 		assert points.get(name) == null;
 		validatables.put(name, value);

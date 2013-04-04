@@ -1,7 +1,7 @@
 /**
  * 
  */
-package model;
+package org.spoofax.sunshine.statistics.model;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
