@@ -16,16 +16,16 @@ import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
-import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.messages.MessageHelper;
-import org.spoofax.sunshine.framework.services.AnalysisResultsService;
-import org.spoofax.sunshine.framework.services.AnalysisService;
-import org.spoofax.sunshine.framework.services.BuilderService;
-import org.spoofax.sunshine.framework.services.FileMonitoringService;
-import org.spoofax.sunshine.framework.services.LanguageService;
-import org.spoofax.sunshine.framework.services.MessageService;
-import org.spoofax.sunshine.framework.services.ParseService;
-import org.spoofax.sunshine.framework.services.RuntimeService;
+import org.spoofax.sunshine.model.messages.IMessage;
+import org.spoofax.sunshine.model.messages.MessageHelper;
+import org.spoofax.sunshine.services.BuilderService;
+import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.RuntimeService;
+import org.spoofax.sunshine.services.analysis.AnalysisService;
+import org.spoofax.sunshine.services.old.AnalysisResultsService;
+import org.spoofax.sunshine.services.old.FileMonitoringService;
+import org.spoofax.sunshine.services.old.MessageService;
+import org.spoofax.sunshine.services.old.ParseService;
 import org.strategoxt.HybridInterpreter;
 
 /**

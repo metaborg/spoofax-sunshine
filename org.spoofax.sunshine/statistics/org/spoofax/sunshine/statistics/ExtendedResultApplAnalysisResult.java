@@ -5,7 +5,7 @@ package org.spoofax.sunshine.statistics;
 
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoList;
-import org.spoofax.sunshine.framework.messages.ResultApplAnalysisResult;
+import org.spoofax.sunshine.services.analysis.ResultApplAnalysisResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

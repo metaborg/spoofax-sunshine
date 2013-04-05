@@ -12,6 +12,11 @@ import org.junit.Test;
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.jsglr.client.imploder.IToken;
 import org.spoofax.jsglr.client.imploder.ITokenizer;
+import org.spoofax.sunshine.model.messages.ARegion;
+import org.spoofax.sunshine.model.messages.Message;
+import org.spoofax.sunshine.model.messages.MessageSeverity;
+import org.spoofax.sunshine.model.messages.MessageType;
+import org.spoofax.sunshine.model.messages.PositionRegion;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -20,7 +25,7 @@ import org.spoofax.jsglr.client.imploder.ITokenizer;
 public class MessageTest {
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#type()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#type()}.
 	 */
 	@Test
 	public void testType1() {
@@ -29,7 +34,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#type()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#type()}.
 	 */
 	@Test
 	public void testType2() {
@@ -39,7 +44,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#type()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#type()}.
 	 */
 	@Test
 	public void testType3() {
@@ -49,7 +54,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#severity()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#severity()}.
 	 */
 	@Test
 	public void testSeverity1() {
@@ -58,7 +63,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#severity()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#severity()}.
 	 */
 	@Test
 	public void testSeverity2() {
@@ -68,7 +73,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#file()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#file()}.
 	 */
 	@Test
 	public void testFile1() {
@@ -77,7 +82,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#file()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#file()}.
 	 */
 	@Test
 	public void testFile2() {
@@ -87,7 +92,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#message()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#message()}.
 	 */
 	@Test
 	public void testMessage1() {
@@ -96,7 +101,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#message()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#message()}.
 	 */
 	@Test
 	public void testMessage2() {
@@ -107,7 +112,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#getAttachedException()}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#getAttachedException()}.
 	 */
 	@Test
 	public void testGetAttachedException1() {
@@ -117,7 +122,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#getAttachedException()}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#getAttachedException()}.
 	 */
 	@Test
 	public void testGetAttachedException2() {
@@ -129,7 +134,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject1() {
@@ -140,7 +145,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject2() {
@@ -153,7 +158,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject3() {
@@ -166,7 +171,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject4() {
@@ -179,7 +184,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject5() {
@@ -192,7 +197,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject6() {
@@ -205,7 +210,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject7() {
@@ -235,7 +240,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject8() {
@@ -248,7 +253,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject9() {
@@ -261,7 +266,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject10() {
@@ -274,7 +279,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject11() {
@@ -287,7 +292,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject12() {
@@ -300,7 +305,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.Message#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject13() {
@@ -329,7 +334,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#region()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#region()}.
 	 */
 	@Test
 	public void testRegion1() {
@@ -338,7 +343,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#region()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#region()}.
 	 */
 	@Test
 	public void testRegion2() {
@@ -366,7 +371,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#hashCode()}.
 	 */
 	@Test
 	public void testHashCode1() {
@@ -376,7 +381,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#hashCode()}.
 	 */
 	@Test
 	public void testHashCode2() {
@@ -388,7 +393,7 @@ public class MessageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.Message#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.Message#hashCode()}.
 	 */
 	@Test
 	public void testHashCode3() {
@@ -401,7 +406,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#newParseError(java.lang.String, org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken, java.lang.String)}
+	 * {@link org.spoofax.sunshine.model.messages.Message#newParseError(java.lang.String, org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken, java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -416,7 +421,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#newParseWarning(java.lang.String, org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken, java.lang.String)}
+	 * {@link org.spoofax.sunshine.model.messages.Message#newParseWarning(java.lang.String, org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken, java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -431,7 +436,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#newParseErrorAtTop(java.lang.String, java.lang.String)}
+	 * {@link org.spoofax.sunshine.model.messages.Message#newParseErrorAtTop(java.lang.String, java.lang.String)}
 	 * .
 	 */
 	@Test
@@ -446,7 +451,7 @@ public class MessageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.Message#newParseWarningAtTop(java.lang.String, java.lang.String)}
+	 * {@link org.spoofax.sunshine.model.messages.Message#newParseWarningAtTop(java.lang.String, java.lang.String)}
 	 * .
 	 */
 	@Test

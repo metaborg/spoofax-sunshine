@@ -11,7 +11,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.gitective.core.filter.commit.DiffCountFilter;
-import org.spoofax.sunshine.framework.services.LanguageService;
+import org.spoofax.sunshine.services.LanguageService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

@@ -14,6 +14,8 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.client.ParseTable;
 import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.parser.model.IParseTableProvider;
+import org.spoofax.sunshine.parser.model.IParserConfig;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -73,7 +75,7 @@ public class AParserTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.parser.framework.AParser#AParser(org.spoofax.sunshine.parser.framework.IParserConfig)}
+	 * {@link org.spoofax.sunshine.parser.framework.AParser#AParser(org.spoofax.sunshine.parser.model.IParserConfig)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)

@@ -1,7 +1,6 @@
 package org.spoofax.sunshine.prims;
 
 import org.spoofax.interpreter.library.AbstractStrategoOperatorRegistry;
-import org.spoofax.sunshine.parser.prims.ParseFilePrimitive;
 
 /**
  * 
@@ -17,7 +16,6 @@ public class SunshineLibrary extends AbstractStrategoOperatorRegistry {
 		add(new QueueStrategyPrimitive());
 		add(new SetTotalWorkUnitsPrimitive());
 		add(new CompleteWorkUnitPrimitive());
-		add(new ParseFilePrimitive());
 		add(new SetMarkersPrimitive());
 
 		// add(new NameDialogPrimitive());

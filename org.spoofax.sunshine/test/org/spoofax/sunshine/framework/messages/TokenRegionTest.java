@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.jsglr.client.imploder.IToken;
 import org.spoofax.jsglr.client.imploder.ITokenizer;
+import org.spoofax.sunshine.model.messages.TokenRegion;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -20,7 +21,7 @@ import org.spoofax.jsglr.client.imploder.ITokenizer;
 public class TokenRegionTest {
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.TokenRegion#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.TokenRegion#hashCode()}.
 	 */
 	@Test
 	public void testHashCode1() {
@@ -30,7 +31,7 @@ public class TokenRegionTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.TokenRegion#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.TokenRegion#hashCode()}.
 	 */
 	@Test
 	public void testHashCode2() {
@@ -40,7 +41,7 @@ public class TokenRegionTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.TokenRegion#toString()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.TokenRegion#toString()}.
 	 */
 	@Test
 	public void testToString() {
@@ -51,7 +52,7 @@ public class TokenRegionTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.TokenRegion#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.TokenRegion#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject1() {
@@ -62,7 +63,7 @@ public class TokenRegionTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.TokenRegion#equals(java.lang.Object)}.
+	 * {@link org.spoofax.sunshine.model.messages.TokenRegion#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject2() {
@@ -73,7 +74,7 @@ public class TokenRegionTest {
 	
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.TokenRegion#TokenRegion(org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken)}
+	 * {@link org.spoofax.sunshine.model.messages.TokenRegion#TokenRegion(org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -83,7 +84,7 @@ public class TokenRegionTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.framework.messages.TokenRegion#TokenRegion(org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken)}
+	 * {@link org.spoofax.sunshine.model.messages.TokenRegion#TokenRegion(org.spoofax.jsglr.client.imploder.IToken, org.spoofax.jsglr.client.imploder.IToken)}
 	 * .
 	 */
 	@Test

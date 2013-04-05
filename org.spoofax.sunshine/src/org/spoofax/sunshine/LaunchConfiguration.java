@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.spoofax.sunshine.framework.language.ALanguage;
+import org.spoofax.sunshine.model.language.ALanguage;
 
 public class LaunchConfiguration {
 	public boolean as_daemon;

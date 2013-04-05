@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.spoofax.sunshine.model.messages.PositionRegion;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -17,7 +18,7 @@ import org.junit.Test;
 public class PositionRegionTest {
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.PositionRegion#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.PositionRegion#hashCode()}.
 	 */
 	@Test
 	public void testHashCode1() {
@@ -27,7 +28,7 @@ public class PositionRegionTest {
 	}
 	
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.PositionRegion#hashCode()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.PositionRegion#hashCode()}.
 	 */
 	@Test
 	public void testHashCode2() {
@@ -37,7 +38,7 @@ public class PositionRegionTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.PositionRegion#toString()}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.PositionRegion#toString()}.
 	 */
 	@Test
 	public void testToString() {
@@ -47,7 +48,7 @@ public class PositionRegionTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.PositionRegion#equals(java.lang.Object)}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.PositionRegion#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject1() {
@@ -57,7 +58,7 @@ public class PositionRegionTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.PositionRegion#equals(java.lang.Object)}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.PositionRegion#equals(java.lang.Object)}.
 	 */
 	@Test
 	public void testEqualsObject2() {
@@ -67,7 +68,7 @@ public class PositionRegionTest {
 	}
 	
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.messages.PositionRegion#PositionRegion(int, int, int, int)}.
+	 * Test method for {@link org.spoofax.sunshine.model.messages.PositionRegion#PositionRegion(int, int, int, int)}.
 	 */
 	@Test
 	public void testPositionRegion() {

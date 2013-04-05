@@ -1,111 +1,170 @@
 package org.spoofax.sunshine.parser.impl;
 
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.client.Asfix2TreeBuilder;
 import org.spoofax.jsglr.client.Disambiguator;
 import org.spoofax.jsglr.client.FilterException;
+import org.spoofax.jsglr.client.imploder.ITokenizer;
 import org.spoofax.jsglr.client.imploder.ITreeFactory;
+import org.spoofax.jsglr.client.imploder.ImploderAttachment;
+import org.spoofax.jsglr.client.imploder.NullTokenizer;
 import org.spoofax.jsglr.client.imploder.TermTreeFactory;
 import org.spoofax.jsglr.client.imploder.TreeBuilder;
 import org.spoofax.jsglr.io.SGLR;
-import org.spoofax.jsglr.shared.BadTokenException;
 import org.spoofax.jsglr.shared.SGLRException;
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.parser.framework.AParser;
-import org.spoofax.sunshine.parser.framework.IParserConfig;
-import org.spoofax.sunshine.parser.framework.ParserException;
+import org.spoofax.sunshine.parser.model.IFileParser;
+import org.spoofax.sunshine.parser.model.IParserConfig;
 import org.spoofax.terms.attachments.ParentTermFactory;
 
 /**
- * @author Lennart Kats <L.C.L.Kats add tudelft.nl>
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  */
-public class JSGLRI extends AParser {
+public class JSGLRI implements IFileParser<IStrategoTerm> {
 
-	private boolean useRecovery = false;
+    private final IParserConfig config;
 
-	private SGLR parser;
+    private boolean useRecovery = false;
 
-	private Disambiguator disambiguator;
+    private SGLR parser;
 
-	private int cursorLocation = Integer.MAX_VALUE;
+    private Disambiguator disambiguator;
 
-	private boolean implodeEnabled = true;
+    private int cursorLocation = Integer.MAX_VALUE;
 
-	// Initialization and parsing
+    private boolean implodeEnabled = true;
 
-	public void setCursorLocation(int cursorLocation) {
-		this.cursorLocation = cursorLocation;
+    private ITokenizer currentTokenizer;
+
+    private final JSGLRParseErrorHandler errorHandler;
+
+    private File file;
+
+    public void setCursorLocation(int cursorLocation) {
+	this.cursorLocation = cursorLocation;
+    }
+
+    public JSGLRI(IParserConfig config, File file) {
+	assert config != null;
+	this.config = config;
+	final TermTreeFactory factory = new TermTreeFactory(
+		new ParentTermFactory(Environment.INSTANCE().termFactory));
+	this.parser = new SGLR(new TreeBuilder(factory), config
+		.getParseTableProvider().getParseTable());
+	this.errorHandler = new JSGLRParseErrorHandler(this);
+	assert file != null;
+	this.file = file;
+	resetState();
+    }
+
+    public void setUseRecovery(boolean useRecovery) {
+	this.useRecovery = useRecovery;
+	parser.setUseStructureRecovery(useRecovery);
+    }
+
+    public void setImplodeEnabled(boolean implode) {
+	this.implodeEnabled = implode;
+	resetState();
+    }
+
+    /**
+     * Resets the state of this parser, reinitializing the SGLR instance
+     */
+    private void resetState() {
+	parser.setTimeout(config.getTimeout());
+	if (disambiguator != null)
+	    parser.setDisambiguator(disambiguator);
+	else
+	    disambiguator = parser.getDisambiguator();
+	setUseRecovery(useRecovery);
+	if (!implodeEnabled) {
+	    parser.setTreeBuilder(new Asfix2TreeBuilder(
+		    Environment.INSTANCE().termFactory));
+	} else {
+	    assert parser.getTreeBuilder() instanceof TreeBuilder;
+	    @SuppressWarnings("unchecked")
+	    ITreeFactory<IStrategoTerm> treeFactory = ((TreeBuilder) parser
+		    .getTreeBuilder()).getFactory();
+	    assert ((TermTreeFactory) treeFactory).getOriginalTermFactory() instanceof ParentTermFactory;
+	}
+    }
+
+    @Override
+    public JSGLRParseResult parse() {
+	assert file != null;
+	JSGLRParseResult result = new JSGLRParseResult(file);
+	String input;
+	try {
+	    input = FileUtils.readFileToString(file);
+	} catch (IOException e) {
+	    throw new CompilerException("Could not read file", e);
 	}
 
-	public JSGLRI(IParserConfig config) throws ParserException {
-		super(config);
-		final TermTreeFactory factory = new TermTreeFactory(new ParentTermFactory(Environment.INSTANCE().termFactory));
-		this.parser = new SGLR(new TreeBuilder(factory), config.getParseTableProvider().getParseTable());
-		resetState();
+	assert input != null;
+
+	errorHandler.reset();
+	currentTokenizer = new NullTokenizer(input, file.getName());
+	IStrategoTerm ast = null;
+	try {
+	    ast = actuallyParse(input, file.getName());
+	    result.setAst(ast);
+	    SourceAttachment.putSource(ast, file, config);
+	} catch (Exception e) {
+	    errorHandler.setRecoveryFailed(true);
+	    errorHandler.gatherException(currentTokenizer, e);
 	}
 
-	public void setUseRecovery(boolean useRecovery) {
-		this.useRecovery = useRecovery;
-		parser.setUseStructureRecovery(useRecovery);
+	if (ast != null) {
+	    currentTokenizer = ImploderAttachment.getTokenizer(ast);
+	    errorHandler.setRecoveryFailed(false);
+	    errorHandler.gatherNonFatalErrors(ast);
 	}
 
-	public void setImplodeEnabled(boolean implode) {
-		this.implodeEnabled = implode;
-		resetState();
-	}
+	result.setMessages(errorHandler.getCollectedMessages());
 
-	/**
-	 * Resets the state of this parser, reinitializing the SGLR instance
-	 */
-	private void resetState() {
-		parser.setTimeout(config.getTimeout());
-		if (disambiguator != null)
-			parser.setDisambiguator(disambiguator);
-		else
-			disambiguator = parser.getDisambiguator();
-		setUseRecovery(useRecovery);
-		if (!implodeEnabled) {
-			parser.setTreeBuilder(new Asfix2TreeBuilder(Environment.INSTANCE().termFactory));
-		} else {
-			assert parser.getTreeBuilder() instanceof TreeBuilder;
-			@SuppressWarnings("unchecked")
-			ITreeFactory<IStrategoTerm> treeFactory = ((TreeBuilder) parser.getTreeBuilder()).getFactory();
-			assert ((TermTreeFactory) treeFactory).getOriginalTermFactory() instanceof ParentTermFactory;
-		}
-	}
+	return result;
+    }
 
-	@Override
-	protected IStrategoTerm doParse(String input, String filename) throws ParserException {
-		IStrategoTerm result = null;
+    private IStrategoTerm actuallyParse(String input, String filename)
+	    throws SGLRException, InterruptedException {
+	IStrategoTerm result;
+	try {
+	    result = (IStrategoTerm) parser.parse(input, filename,
+		    config.getStartSymbol(), true, cursorLocation);
+	} catch (FilterException fex) {
+	    if (fex.getCause() == null
+		    && parser.getDisambiguator().getFilterPriorities()) {
+		disambiguator.setFilterPriorities(false);
 		try {
-			try {
-				result = (IStrategoTerm) parser.parse(input, filename, config.getStartSymbol(), true, cursorLocation);
-			} catch (FilterException e) {
-				if (e.getCause() == null && parser.getDisambiguator().getFilterPriorities()) {
-					disambiguator.setFilterPriorities(false);
-					try {
-						result = (IStrategoTerm) parser.parse(input, filename, config.getStartSymbol());
-					} finally {
-						disambiguator.setFilterPriorities(true);
-					}
-				} else {
-					throw e;
-				}
-			}
-		} catch (SGLRException e) {
-			throw new ParserException(e);
-		}catch (InterruptedException e) {
-			throw new ParserException(e);
+		    result = (IStrategoTerm) parser.parse(input, filename,
+			    config.getStartSymbol());
+		} finally {
+		    disambiguator.setFilterPriorities(true);
 		}
-
-		return result;
+	    } else {
+		throw fex;
+	    }
 	}
+	return result;
+    }
 
-	public Set<BadTokenException> getCollectedErrors() {
-		return parser.getCollectedErrors();
-	}
+    @Override
+    public IParserConfig getConfig() {
+	return config;
+    }
+
+    @Override
+    public File getFile() {
+	return file;
+    }
+
+    protected SGLR getParser() {
+	return parser;
+    }
 
 }

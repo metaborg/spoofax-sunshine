@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.spoofax.jsglr.client.ParseTable;
+import org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -40,7 +41,7 @@ public class FileBasedParseTableProviderTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider#getParseTable()}.
+	 * {@link org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider#getParseTable()}.
 	 */
 	@Test
 	public void testGetParseTable1() {
@@ -55,7 +56,7 @@ public class FileBasedParseTableProviderTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider#getParseTable()}.
+	 * {@link org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider#getParseTable()}.
 	 */
 	@Test
 	public void testGetParseTable2() {
@@ -71,7 +72,7 @@ public class FileBasedParseTableProviderTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider#getParseTable()}.
+	 * {@link org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider#getParseTable()}.
 	 */
 	@Test
 	public void testGetParseTable3() {
@@ -87,7 +88,7 @@ public class FileBasedParseTableProviderTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider#getParseTable()}.
+	 * {@link org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider#getParseTable()}.
 	 * 
 	 * @throws ParserException
 	 */
@@ -100,7 +101,7 @@ public class FileBasedParseTableProviderTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.parser.framework.FileBasedParseTableProvider#getParseTable()}.
+	 * {@link org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider#getParseTable()}.
 	 */
 	@Test(expected = AssertionError.class)
 	public void testGetParseTable5() {

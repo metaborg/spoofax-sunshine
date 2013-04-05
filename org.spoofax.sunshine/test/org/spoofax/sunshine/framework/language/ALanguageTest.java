@@ -11,7 +11,9 @@ import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spoofax.sunshine.parser.framework.IParseTableProvider;
+import org.spoofax.sunshine.model.language.ALanguage;
+import org.spoofax.sunshine.model.language.LanguageNature;
+import org.spoofax.sunshine.parser.model.IParseTableProvider;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -61,7 +63,7 @@ public class ALanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.language.ALanguage#getName()}.
+	 * Test method for {@link org.spoofax.sunshine.model.language.ALanguage#getName()}.
 	 */
 	@Test
 	public void testGetName() {
@@ -69,7 +71,7 @@ public class ALanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.framework.language.ALanguage#getNature()}.
+	 * Test method for {@link org.spoofax.sunshine.model.language.ALanguage#getNature()}.
 	 */
 	@Test
 	public void testGetNature() {

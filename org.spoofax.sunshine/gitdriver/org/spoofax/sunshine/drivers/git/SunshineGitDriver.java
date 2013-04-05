@@ -29,8 +29,8 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.drivers.SunshineMainDriver;
-import org.spoofax.sunshine.framework.services.FileMonitoringService;
-import org.spoofax.sunshine.framework.services.LanguageService;
+import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.old.FileMonitoringService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
