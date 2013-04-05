@@ -7,7 +7,7 @@ package org.spoofax.sunshine;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  *
  */
-public class CompilerException extends Exception {
+public class CompilerException extends RuntimeException {
 
 	/**
 	 * 

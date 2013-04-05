@@ -3,15 +3,18 @@
  */
 package org.spoofax.sunshine.drivers;
 
+import java.io.File;
 import java.util.Collection;
 
+import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.framework.messages.IMessage;
-import org.spoofax.sunshine.framework.services.pipeline.servicewrappers.IPartition;
-import org.spoofax.sunshine.framework.services.pipeline2.ILinkManyToMany;
-import org.spoofax.sunshine.framework.services.pipeline2.ILinkOneToOne;
-import org.spoofax.sunshine.framework.services.pipeline2.ISinkMany;
-import org.spoofax.sunshine.framework.services.pipeline2.ISourceMany;
-import org.spoofax.sunshine.framework.services.pipeline2.LinkMapperOneToOneSequential;
+import org.spoofax.sunshine.framework.services.pipeline.ILinkManyToMany;
+import org.spoofax.sunshine.framework.services.pipeline.ILinkOneToOne;
+import org.spoofax.sunshine.framework.services.pipeline.ISourceMany;
+import org.spoofax.sunshine.framework.services.pipeline.LinkMapperOneToOneSequential;
+import org.spoofax.sunshine.framework.services.pipeline.servicewrappers.AnalyzerLink;
+import org.spoofax.sunshine.framework.services.pipeline.servicewrappers.FileSource;
+import org.spoofax.sunshine.framework.services.pipeline.servicewrappers.ParserLink;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -27,45 +30,24 @@ public class PipelinedSushineDriver {
 
     }
 
-    /**
-     * - take a directory to monitor => produces a list of files that need to be
-     * analyzed
-     * 
-     * - parse all files => produce a map of filename and ast
-     * 
-     * - analyze all files => produce a map of filename and analysis result
-     * 
-     * - collect messages => produce a set of messages per file
-     * 
-     */
-
     public Collection<IMessage> assemble() {
 
-
 	// files source
-	ISourceMany<IPartition> filesSrc = null;
+	ISourceMany<File> filesSrc = new FileSource();
 
 	// the parser
-	ILinkOneToOne<IPartition, IParserResult> parserLink = null;
-	// link to map the parser over the files
+	ILinkOneToOne<File, IStrategoTerm> parserLink = new ParserLink();
 
-	LinkMapperOneToOneSequential<IPartition, IParserResult> parserMapper = new LinkMapperOneToOneSequential<IPartition, IParserResult>(
+	// link to map the parser over the files
+	LinkMapperOneToOneSequential<File, IStrategoTerm> parserMapper = new LinkMapperOneToOneSequential<File, IStrategoTerm>(
 		parserLink);
 	filesSrc.addSink(parserMapper);
 
-	ILinkManyToMany<IParserResult, IAnalyzerResult> analyzerLink = null;
-	parserMapper.addSink(analyzerLink);
-
-	ISinkMany<IAnalyzerResult> messageSink = null;
-	analyzerLink.addSink(messageSink);
+	// link the analyzer to work on the files
+	ILinkManyToMany<File, IStrategoTerm> analyzerLink = new AnalyzerLink();
+	filesSrc.addSink(analyzerLink);
 
 	return null;
-    }
-
-    private interface IParserResult {
-    }
-
-    private interface IAnalyzerResult {
     }
 
 }

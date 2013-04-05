@@ -4,6 +4,7 @@
 package org.spoofax.sunshine.framework.services.pipeline.diff;
 
 import java.util.AbstractCollection;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,6 +32,38 @@ public class MultiDiff<T> extends AbstractCollection<Diff<T>> implements
 	    throw new UnsupportedOperationException(
 		    "Unsupported DiffKind kind: " + kind);
 	}
+    }
+
+    public Collection<T> values() {
+	final Collection<T> values = new HashSet<T>();
+	final Iterator<T> iter = valuesIter();
+	while (iter.hasNext()) {
+	    values.add(iter.next());
+	}
+	return values;
+    }
+
+    public Iterator<T> valuesIter() {
+	return new Iterator<T>() {
+	    private final Iterator<Diff<T>> boxIterator = iterator();
+
+	    @Override
+	    public boolean hasNext() {
+		return boxIterator.hasNext();
+	    }
+
+	    @Override
+	    public T next() {
+		return boxIterator.next().getPayload();
+	    }
+
+	    @Override
+	    public void remove() {
+		throw new UnsupportedOperationException(
+			"Remove unsupported on MultiDiffSpec iterator");
+	    }
+
+	};
     }
 
     @Override
