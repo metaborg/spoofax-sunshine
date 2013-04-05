@@ -14,8 +14,7 @@ import org.spoofax.sunshine.pipeline.diff.MultiDiff;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class LinkMapperOneToOne<I, P> implements ISinkMany<I>,
-	ISourceMany<P> {
+public class LinkMapperOneToOne<I, P> implements ISinkMany<I>, ISourceMany<P> {
 
     private final SinkAggregator<P> aggregator = new SinkAggregator<P>();
 

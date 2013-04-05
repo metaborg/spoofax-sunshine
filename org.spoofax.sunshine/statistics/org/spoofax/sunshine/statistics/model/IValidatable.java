@@ -9,33 +9,33 @@ package org.spoofax.sunshine.statistics.model;
  */
 public interface IValidatable<T> {
 
-	public final IValidatable<Boolean> NEVER_VALIDATABLE = new IValidatable<Boolean>() {
+    public final IValidatable<Boolean> NEVER_VALIDATABLE = new IValidatable<Boolean>() {
 
-		@Override
-		public boolean validate() {
-			return false;
-		}
+	@Override
+	public boolean validate() {
+	    return false;
+	}
 
-		public Boolean getValue() {
-			return false;
-		};
+	public Boolean getValue() {
+	    return false;
 	};
-	
-	public final IValidatable<Boolean> ALWAYS_VALIDATABLE = new IValidatable<Boolean>() {
+    };
 
-		@Override
-		public boolean validate() {
-			return true;
-		}
+    public final IValidatable<Boolean> ALWAYS_VALIDATABLE = new IValidatable<Boolean>() {
 
-		public Boolean getValue() {
-			return true;
-		};
+	@Override
+	public boolean validate() {
+	    return true;
+	}
 
+	public Boolean getValue() {
+	    return true;
 	};
 
-	public abstract boolean validate();
+    };
 
-	public T getValue();
+    public abstract boolean validate();
+
+    public T getValue();
 
 }

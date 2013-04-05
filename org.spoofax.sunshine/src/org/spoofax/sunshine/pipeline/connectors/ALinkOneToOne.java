@@ -14,8 +14,7 @@ import org.spoofax.sunshine.pipeline.diff.Diff;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public abstract class ALinkOneToOne<I, P> implements
-	ILinkOneToOne<I, P> {
+public abstract class ALinkOneToOne<I, P> implements ILinkOneToOne<I, P> {
 
     private final Collection<ISinkOne<P>> sinks = new HashSet<ISinkOne<P>>();
 

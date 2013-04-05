@@ -11,13 +11,11 @@ import org.spoofax.sunshine.pipeline.ISinkMany;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
 
-
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
- *
+ * 
  */
-public abstract class ALinkOneToMany<I, P> implements
-	ILinkOneToMany<I, P> {
+public abstract class ALinkOneToMany<I, P> implements ILinkOneToMany<I, P> {
 
     private final Collection<ISinkMany<P>> sinks = new HashSet<ISinkMany<P>>();
 

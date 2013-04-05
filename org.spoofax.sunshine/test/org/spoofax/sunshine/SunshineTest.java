@@ -12,8 +12,10 @@ import org.spoofax.sunshine.parser.framework.AParserTest;
 import org.spoofax.sunshine.parser.framework.FileBasedParseTableProviderTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ MessageTest.class, PositionRegionTest.class, TokenRegionTest.class, ALanguageTest.class,
-		AdHocJarBasedLanguageTest.class, FileBasedParseTableProviderTest.class, AParserTest.class })
+@SuiteClasses({ MessageTest.class, PositionRegionTest.class,
+	TokenRegionTest.class, ALanguageTest.class,
+	AdHocJarBasedLanguageTest.class, FileBasedParseTableProviderTest.class,
+	AParserTest.class })
 public class SunshineTest {
 
 }

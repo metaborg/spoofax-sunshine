@@ -9,20 +9,20 @@ package org.spoofax.sunshine.statistics.model;
  */
 public class BoxValidatable<T> implements IValidatable<T> {
 
-	public T value;
+    public T value;
 
-	public BoxValidatable(T value) {
-		this.value = value;
-	}
+    public BoxValidatable(T value) {
+	this.value = value;
+    }
 
-	@Override
-	public boolean validate() {
-		return true;
-	}
+    @Override
+    public boolean validate() {
+	return true;
+    }
 
-	@Override
-	public T getValue() {
-		return value;
-	}
+    @Override
+    public T getValue() {
+	return value;
+    }
 
 }

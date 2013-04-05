@@ -16,42 +16,42 @@ import org.spoofax.terms.TermFactory;
  * 
  */
 public class Environment {
-	
-	public final ITermFactory termFactory;
-	public final ParseTableManager parseTableMgr;
-	public File projectDir;
 
-	private LaunchConfiguration launchConfiguration;
-	
+    public final ITermFactory termFactory;
+    public final ParseTableManager parseTableMgr;
+    public File projectDir;
 
-	private static Environment INSTANCE;
+    private LaunchConfiguration launchConfiguration;
 
-	public static final Environment INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new Environment();
-		}
-		return INSTANCE;
+    private static Environment INSTANCE;
+
+    public static final Environment INSTANCE() {
+	if (INSTANCE == null) {
+	    INSTANCE = new Environment();
 	}
-	
-	private Environment() {
-		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
-		this.parseTableMgr = new ParseTableManager(termFactory);
-	}
+	return INSTANCE;
+    }
 
-	public void setProjectDir(File pdir){
-		try {
-			projectDir = pdir.getCanonicalFile();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private Environment() {
+	this.termFactory = new TermFactory()
+		.getFactoryWithStorageType(IStrategoTerm.MUTABLE);
+	this.parseTableMgr = new ParseTableManager(termFactory);
+    }
 
-	public void setLaunchConfiguration(LaunchConfiguration config) {
-		this.launchConfiguration = config;
+    public void setProjectDir(File pdir) {
+	try {
+	    projectDir = pdir.getCanonicalFile();
+	} catch (IOException e) {
+	    throw new RuntimeException(e);
 	}
+    }
 
-	public LaunchConfiguration getLaunchConfiguration() {
-		return launchConfiguration;
-	}
+    public void setLaunchConfiguration(LaunchConfiguration config) {
+	this.launchConfiguration = config;
+    }
+
+    public LaunchConfiguration getLaunchConfiguration() {
+	return launchConfiguration;
+    }
 
 }

@@ -3,7 +3,6 @@
  */
 package org.spoofax.sunshine.pipeline.diff;
 
-
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 

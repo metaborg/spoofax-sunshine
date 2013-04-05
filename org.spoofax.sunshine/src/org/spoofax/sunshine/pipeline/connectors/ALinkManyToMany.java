@@ -14,8 +14,7 @@ import org.spoofax.sunshine.pipeline.diff.MultiDiff;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public abstract class ALinkManyToMany<I, P> implements
-	ILinkManyToMany<I, P> {
+public abstract class ALinkManyToMany<I, P> implements ILinkManyToMany<I, P> {
 
     private final Collection<ISinkMany<P>> sinks = new HashSet<ISinkMany<P>>();
 

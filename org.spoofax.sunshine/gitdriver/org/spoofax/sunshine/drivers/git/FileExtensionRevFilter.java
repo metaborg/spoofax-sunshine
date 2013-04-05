@@ -25,40 +25,41 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
  */
 public class FileExtensionRevFilter extends RevFilter {
 
-	private final String exten;
-	private final Repository repo;
+    private final String exten;
+    private final Repository repo;
 
-	public FileExtensionRevFilter(String exten, Repository repo) {
-		assert exten != null && exten.length() > 0;
-		assert repo != null;
-		this.exten = exten;
-		this.repo = repo;
-	}
+    public FileExtensionRevFilter(String exten, Repository repo) {
+	assert exten != null && exten.length() > 0;
+	assert repo != null;
+	this.exten = exten;
+	this.repo = repo;
+    }
 
-	@Override
-	public RevFilter clone() {
-		return new FileExtensionRevFilter(exten, repo);
-	}
+    @Override
+    public RevFilter clone() {
+	return new FileExtensionRevFilter(exten, repo);
+    }
 
-	@Override
-	public boolean include(RevWalk rw, RevCommit rev) throws StopWalkException, MissingObjectException,
-			IncorrectObjectTypeException, IOException {
-		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-		df.setRepository(repo);
-		df.setDiffComparator(RawTextComparator.DEFAULT);
-		df.setDetectRenames(true);
-		if (rev.getParentCount() > 0) {
-			RevCommit parentRev = rw.parseCommit(rev.getParent(0).getId());
-			List<DiffEntry> diffs = df.scan(parentRev.getTree(), rev.getTree());
-			for (DiffEntry diffEntry : diffs) {
-				if (FilenameUtils.getExtension(diffEntry.getNewPath()).equals(exten)) {
-					return true;
-				}
-			}
-		} else {
-			return true;
+    @Override
+    public boolean include(RevWalk rw, RevCommit rev) throws StopWalkException,
+	    MissingObjectException, IncorrectObjectTypeException, IOException {
+	DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+	df.setRepository(repo);
+	df.setDiffComparator(RawTextComparator.DEFAULT);
+	df.setDetectRenames(true);
+	if (rev.getParentCount() > 0) {
+	    RevCommit parentRev = rw.parseCommit(rev.getParent(0).getId());
+	    List<DiffEntry> diffs = df.scan(parentRev.getTree(), rev.getTree());
+	    for (DiffEntry diffEntry : diffs) {
+		if (FilenameUtils.getExtension(diffEntry.getNewPath()).equals(
+			exten)) {
+		    return true;
 		}
-
-		return false;
+	    }
+	} else {
+	    return true;
 	}
+
+	return false;
+    }
 }

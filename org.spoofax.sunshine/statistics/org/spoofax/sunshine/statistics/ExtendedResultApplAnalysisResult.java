@@ -14,18 +14,18 @@ import org.spoofax.sunshine.services.analysis.ResultApplAnalysisResult;
 @Deprecated
 public class ExtendedResultApplAnalysisResult extends ResultApplAnalysisResult {
 
-	private IStrategoList evaluatedTasks;
-	private IStrategoList errorTasks;
+    private IStrategoList evaluatedTasks;
+    private IStrategoList errorTasks;
 
-	public ExtendedResultApplAnalysisResult(IStrategoAppl resultTerm) {
-		super(resultTerm);
-		init(resultTerm);
-	}
+    public ExtendedResultApplAnalysisResult(IStrategoAppl resultTerm) {
+	super(resultTerm);
+	init(resultTerm);
+    }
 
-	private void init(IStrategoAppl resultTerm) {
-		assert resultTerm != null;
-		this.evaluatedTasks = (IStrategoList) resultTerm.getSubterm(5);
-		this.errorTasks = (IStrategoList) resultTerm.getSubterm(6);
-	}
-	
+    private void init(IStrategoAppl resultTerm) {
+	assert resultTerm != null;
+	this.evaluatedTasks = (IStrategoList) resultTerm.getSubterm(5);
+	this.errorTasks = (IStrategoList) resultTerm.getSubterm(6);
+    }
+
 }

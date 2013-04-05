@@ -19,28 +19,30 @@ import org.spoofax.sunshine.services.LanguageService;
  */
 public class LocDiffFilter extends DiffCountFilter {
 
-	public int count = 0;
-	private final Set<String> extensions = LanguageService.INSTANCE().getSupportedExtens();
+    public int count = 0;
+    private final Set<String> extensions = LanguageService.INSTANCE()
+	    .getSupportedExtens();
 
-	@Override
-	protected boolean include(RevCommit commit, DiffEntry diff, Collection<Edit> edits) {
-		if (FilenameUtils.isExtension(diff.getNewPath(), extensions)) {
-			for (Edit edit : edits)
-				switch (edit.getType()) {
-				case DELETE:
-					count += edit.getLengthA();
-					break;
-				case INSERT:
-				case REPLACE:
-					count += edit.getLengthB();
-					break;
-				case EMPTY:
-					break;
-				default:
-					break;
-				}
+    @Override
+    protected boolean include(RevCommit commit, DiffEntry diff,
+	    Collection<Edit> edits) {
+	if (FilenameUtils.isExtension(diff.getNewPath(), extensions)) {
+	    for (Edit edit : edits)
+		switch (edit.getType()) {
+		case DELETE:
+		    count += edit.getLengthA();
+		    break;
+		case INSERT:
+		case REPLACE:
+		    count += edit.getLengthB();
+		    break;
+		case EMPTY:
+		    break;
+		default:
+		    break;
 		}
-		return true;
 	}
+	return true;
+    }
 
 }
