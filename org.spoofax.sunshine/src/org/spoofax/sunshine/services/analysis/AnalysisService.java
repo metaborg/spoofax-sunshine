@@ -16,6 +16,7 @@ import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.language.ALanguage;
+import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.RuntimeService;
 import org.strategoxt.HybridInterpreter;
@@ -47,7 +48,8 @@ public class AnalysisService {
      * @param files
      * @throws CompilerException
      */
-    public Collection<IAnalysisResult> analyze(Collection<File> files)
+    public Collection<IStrategoParseOrAnalyzeResult> analyze(
+	    Collection<File> files)
 	    throws CompilerException {
 	final Map<ALanguage, Collection<File>> lang2files = new HashMap<ALanguage, Collection<File>>();
 	for (File file : files) {
@@ -58,14 +60,14 @@ public class AnalysisService {
 	    }
 	    lang2files.get(lang).add(file);
 	}
-	final Collection<IAnalysisResult> results = new HashSet<IAnalysisResult>();
+	final Collection<IStrategoParseOrAnalyzeResult> results = new HashSet<IStrategoParseOrAnalyzeResult>();
 	for (ALanguage lang : lang2files.keySet()) {
 	    results.addAll(analyze(lang, lang2files.get(lang)));
 	}
 	return results;
     }
 
-    private Collection<IAnalysisResult> analyze(ALanguage lang,
+    private Collection<IStrategoParseOrAnalyzeResult> analyze(ALanguage lang,
 	    Collection<File> files) throws CompilerException {
 	final ITermFactory termFactory = Environment.INSTANCE().termFactory;
 	final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(
@@ -80,7 +82,7 @@ public class AnalysisService {
 	final IStrategoList inputTerm = termFactory.makeList(fileNames);
 	runtime.setCurrent(inputTerm);
 
-	final Collection<IAnalysisResult> results = new HashSet<IAnalysisResult>();
+	final Collection<IStrategoParseOrAnalyzeResult> results = new HashSet<IStrategoParseOrAnalyzeResult>();
 	try {
 	    boolean success = runtime.invoke(lang.getAnalysisFunction());
 	    if (!success) {

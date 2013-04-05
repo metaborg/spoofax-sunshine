@@ -14,12 +14,13 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.model.messages.MessageHelper;
 import org.spoofax.sunshine.model.messages.MessageSeverity;
+import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class ResultApplAnalysisResult implements IAnalysisResult {
+public class ResultApplAnalysisResult implements IStrategoParseOrAnalyzeResult {
 
     private File file;
     private IStrategoTerm ast;
@@ -62,5 +63,16 @@ public class ResultApplAnalysisResult implements IAnalysisResult {
     @Override
     public File file() {
 	return file;
+    }
+
+    @Override
+    public void setAst(IStrategoTerm ast) {
+	throw new UnsupportedOperationException("Cannot explicitly set AST");
+    }
+
+    @Override
+    public void setMessages(Collection<IMessage> messages) {
+	throw new UnsupportedOperationException(
+		"Cannot explicitly set messages");
     }
 }

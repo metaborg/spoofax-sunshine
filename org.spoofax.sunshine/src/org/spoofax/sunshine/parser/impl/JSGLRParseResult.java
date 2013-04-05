@@ -8,13 +8,13 @@ import java.util.Collection;
 
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.model.messages.IMessage;
-import org.spoofax.sunshine.parser.model.IParseResult;
+import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class JSGLRParseResult implements IParseResult<IStrategoTerm> {
+public class JSGLRParseResult implements IStrategoParseOrAnalyzeResult {
 
     private File file;
     private IStrategoTerm ast;

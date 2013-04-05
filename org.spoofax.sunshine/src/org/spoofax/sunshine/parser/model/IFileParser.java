@@ -11,7 +11,7 @@ import java.io.File;
  */
 public interface IFileParser<T> {
 
-    IParseResult<T> parse();
+    IStrategoParseOrAnalyzeResult parse();
 
     IParserConfig getConfig();
 
