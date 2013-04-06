@@ -28,12 +28,15 @@ public class FileSource implements ISourceMany<File> {
     }
 
     public void kick() {
+	FileMonitoringService.INSTANCE().reset();
 	Collection<File> filesChanged = FileMonitoringService.INSTANCE()
 		.getChanges();
 	MultiDiff<File> diff = new MultiDiff<File>();
 	for (File f : filesChanged) {
 	    diff.add(new Diff<File>(f, DiffKind.ADDITION));
 	}
+	System.err.println("FileSource notifying " + sinks.size()
+		+ " sinks of " + diff.size() + " file changes");
 	for (ISinkMany<File> sink : sinks) {
 	    sink.sink(diff);
 	}

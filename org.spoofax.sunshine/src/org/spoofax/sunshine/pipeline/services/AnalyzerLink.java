@@ -23,13 +23,14 @@ public class AnalyzerLink extends
     @Override
     public MultiDiff<IStrategoParseOrAnalyzeResult> sinkWork(
 	    MultiDiff<File> input) {
+	System.err.println("Analyzing " + input.size() + " files ");
 	final Collection<IStrategoParseOrAnalyzeResult> aResults = AnalysisService
 		.INSTANCE()
 		.analyze(input.values());
 	final MultiDiff<IStrategoParseOrAnalyzeResult> results = new MultiDiff<IStrategoParseOrAnalyzeResult>();
 	for (IStrategoParseOrAnalyzeResult res : aResults) {
 	    results.add(new Diff<IStrategoParseOrAnalyzeResult>(res,
-		    DiffKind.MODIFICATION));
+		    DiffKind.ADDITION));
 	}
 	return results;
     }

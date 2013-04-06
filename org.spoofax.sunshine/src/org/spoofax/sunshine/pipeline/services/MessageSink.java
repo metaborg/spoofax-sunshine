@@ -23,6 +23,8 @@ public class MessageSink implements ISinkMany<IMessage> {
 
     @Override
     public void sink(MultiDiff<IMessage> product) {
+	System.err.println("MessageSink sinking " + product.size()
+		+ " messages");
 	final Iterator<Diff<IMessage>> diffIter = product.iterator();
 	while (diffIter.hasNext()) {
 	    final Diff<IMessage> diff = diffIter.next();

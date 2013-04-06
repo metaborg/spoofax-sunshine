@@ -26,6 +26,8 @@ public abstract class ALinkManyToMany<I, P> implements ILinkManyToMany<I, P> {
     @Override
     public void sink(MultiDiff<I> product) {
 	final MultiDiff<P> result = sinkWork(product);
+	System.err.println(this.getClass().getName() + " notifying "
+		+ sinks.size() + " sinks");
 	for (ISinkMany<P> sink : sinks) {
 	    sink.sink(result);
 	}

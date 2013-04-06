@@ -17,15 +17,15 @@ import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.model.messages.IMessage;
-import org.spoofax.sunshine.model.messages.MessageHelper;
-import org.spoofax.sunshine.services.BuilderService;
+import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
+import org.spoofax.sunshine.pipeline.ILinkManyToMany;
+import org.spoofax.sunshine.pipeline.services.AnalyzerLink;
+import org.spoofax.sunshine.pipeline.services.FileSource;
+import org.spoofax.sunshine.pipeline.services.MessageExtractorLink;
+import org.spoofax.sunshine.pipeline.services.MessageSink;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.RuntimeService;
-import org.spoofax.sunshine.services.analysis.AnalysisService;
-import org.spoofax.sunshine.services.old.AnalysisResultsService;
 import org.spoofax.sunshine.services.old.FileMonitoringService;
-import org.spoofax.sunshine.services.old.MessageService;
-import org.spoofax.sunshine.services.old.ParseService;
 import org.strategoxt.HybridInterpreter;
 
 /**
@@ -34,23 +34,24 @@ import org.strategoxt.HybridInterpreter;
  */
 public class SunshineMainDriver {
 
+    private final MessageSink messageSink = new MessageSink();
+    private final FileSource filesSource = new FileSource();
+
     public SunshineMainDriver() {
 	Thread.currentThread().setUncaughtExceptionHandler(
 		new CompilerCrashHandler());
     }
 
-    private void analyze(final Collection<File> files) {
-	try {
-	    AnalysisService.INSTANCE().analyze(files);
-	} catch (CompilerException e) {
-	    throw new RuntimeException("Analysis crashed", e);
-	}
-    }
+    // private void analyze(final Collection<File> files) {
+    // try {
+    // AnalysisService.INSTANCE().analyze(files);
+    // } catch (CompilerException e) {
+    // throw new RuntimeException("Analysis crashed", e);
+    // }
+    // }
 
     protected void emitMessages() {
-	AnalysisResultsService.INSTANCE().commitMessages();
-	final Collection<IMessage> msgs = MessageService.INSTANCE()
-		.getMessages();
+	final Collection<IMessage> msgs = messageSink.getMessages();
 	System.out.println("===============================");
 	for (IMessage msg : msgs) {
 	    System.out.println(msg);
@@ -64,13 +65,31 @@ public class SunshineMainDriver {
 	LanguageService.INSTANCE().registerLanguage(config.languages);
 	Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 	reset();
-	warmup();
+	initPipeline();
+	// warmup();
     }
 
-    private void parse(final Collection<File> files) {
-	for (File f : files) {
-	    ParseService.INSTANCE().parse(f);
-	}
+    private void initPipeline() {
+	// the parser
+	// ILinkOneToOne<File, IStrategoParseOrAnalyzeResult> parserLink = new
+	// JSGLRLink();
+
+	// link to map the parser over the files
+	// LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper
+	// = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
+	// parserLink);
+	// filesSource.addSink(parserMapper);
+
+	// link the analyzer to work on the files
+	ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
+	filesSource.addSink(analyzerLink);
+
+	// create a Parser and Analyzer message extractor
+	ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
+	// parserMapper.addSink(messageSelector);
+	analyzerLink.addSink(messageSelector);
+
+	messageSelector.addSink(messageSink);
     }
 
     public void reset() throws CompilerException {
@@ -81,9 +100,6 @@ public class SunshineMainDriver {
 	} catch (InterpreterException e) {
 	    throw new CompilerException(e);
 	}
-	MessageService.INSTANCE().clearMessages();
-	AnalysisResultsService.INSTANCE().reset();
-	System.gc();
     }
 
     protected void unloadIndex() throws InterpreterException {
@@ -113,77 +129,34 @@ public class SunshineMainDriver {
     }
 
     public void step(Collection<File> files) throws CompilerException {
-	final LaunchConfiguration config = Environment.INSTANCE()
-		.getLaunchConfiguration();
-	final boolean statsEnabled = config.storeStats;
-	CompilerException crashCause = null;
-	try {
-	    if (config.doParseOnly) {
-		parse(files);
-	    } else {
-		if (files.size() > 0) {
-		    boolean success = !config.doPreAnalysisBuild;
-		    if (config.doPreAnalysisBuild) {
-			success = BuilderService.INSTANCE().callBuilder(
-				config.builderTarget,
-				config.preAnalysisBuilder, true) != null;
-		    }
-		    if (success && config.doAnalyze) {
-			analyze(files);
-		    } else {
-			MessageService.INSTANCE().addMessage(
-				MessageHelper.newAnalysisErrorAtTop(files
-					.iterator().next().getPath(),
-					"Analysis failed. Dependency failed."));
-		    }
-
-		    if (success && config.doPostAnalysisBuild) {
-			success = BuilderService.INSTANCE().callBuilder(
-				config.builderTarget,
-				config.postAnalysisBuilder, false) != null;
-		    }
-
-		    if (!success) {
-			MessageService.INSTANCE().addMessage(
-				MessageHelper.newBuilderErrorAtTop(files
-					.iterator().next().getPath(),
-					"Builder failed."));
-		    }
-		}
-	    }
-	} catch (CompilerException cex) {
-	    crashCause = cex;
-	}
+	filesSource.kick();
 	emitMessages();
-	if (crashCause != null) {
-	    throw crashCause;
-	}
     }
 
-    private void warmup() throws CompilerException {
-	final LaunchConfiguration config = Environment.INSTANCE()
-		.getLaunchConfiguration();
-	System.out.println("Warming up " + config.warmup_rounds + " rounds.");
-	long begin = 0;
-	long end = 0;
-	for (int i = config.warmup_rounds; i > 0; i--) {
-	    begin = System.currentTimeMillis();
-	    final Collection<File> files = FileMonitoringService.INSTANCE()
-		    .getChangesNoPersist();
-	    if (config.doParseOnly) {
-		parse(files);
-	    } else {
-		analyze(files);
-	    }
-	    end = System.currentTimeMillis();
-	    System.out.println("Round " + (config.warmup_rounds - i + 1)
-		    + " done in " + (end - begin) + " ms");
-	    reset();
-	}
-
-	MessageService.INSTANCE().clearMessages();
-	System.out.println("Warm up completed. Last duration: " + (end - begin)
-		+ " ms");
-    }
+    // private void warmup() throws CompilerException {
+    // final LaunchConfiguration config = Environment.INSTANCE()
+    // .getLaunchConfiguration();
+    // System.out.println("Warming up " + config.warmup_rounds + " rounds.");
+    // long begin = 0;
+    // long end = 0;
+    // for (int i = config.warmup_rounds; i > 0; i--) {
+    // begin = System.currentTimeMillis();
+    // final Collection<File> files = FileMonitoringService.INSTANCE()
+    // .getChangesNoPersist();
+    // if (config.doParseOnly) {
+    // parse(files);
+    // } else {
+    // analyze(files);
+    // }
+    // end = System.currentTimeMillis();
+    // System.out.println("Round " + (config.warmup_rounds - i + 1)
+    // + " done in " + (end - begin) + " ms");
+    // reset();
+    // }
+    //
+    // MessageService.INSTANCE().clearMessages();
+    // System.out.println("Warm up completed. Last duration: " + (end - begin)
+    // + " ms");
+    // }
 
 }
