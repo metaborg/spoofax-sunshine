@@ -233,4 +233,67 @@ public class DiffingHashMapTest {
 	assertNull(dmap.get("hello"));
     }
 
+    @Test
+    public void testMerge1() {
+	dmap = new DiffingHashMap<String, String>(new IMerger<String>() {
+
+	    @Override
+	    public boolean areDifferent(String older, String newer) {
+		return ((older == null || newer == null) && newer != older)
+			|| !older.equals(newer);
+	    }
+
+	    @Override
+	    public String merge(String older, String newer) {
+		return areDifferent(older, newer) ? older + newer : newer;
+	    }
+	});
+	dmap.put("aa", "foo");
+	dmap.put("aa", "bar");
+	assertEquals("foobar", dmap.get("aa"));
+    }
+
+    @Test
+    public void testMerge2() {
+	dmap = new DiffingHashMap<String, String>(new IMerger<String>() {
+
+	    @Override
+	    public boolean areDifferent(String older, String newer) {
+		return ((older == null || newer == null) && newer != older)
+			|| !older.equals(newer);
+	    }
+
+	    @Override
+	    public String merge(String older, String newer) {
+		return areDifferent(older, newer) ? older + newer : newer;
+	    }
+	});
+	dmap.put("aa", "foo");
+	dmap.beginDiff();
+	dmap.put("aa", "bar");
+	assertEquals("foobar", dmap.get("aa"));
+	assertEquals(DiffKind.MODIFICATION, dmap.endDiff().get("aa"));
+    }
+
+    @Test
+    public void testMerge3() {
+	dmap = new DiffingHashMap<String, String>(new IMerger<String>() {
+
+	    @Override
+	    public boolean areDifferent(String older, String newer) {
+		return ((older == null || newer == null) && newer != older)
+			|| !older.equals(newer);
+	    }
+
+	    @Override
+	    public String merge(String older, String newer) {
+		return areDifferent(older, newer) ? older + newer : newer;
+	    }
+	});
+	dmap.put("aa", "foo");
+	dmap.beginDiff();
+	dmap.put("aa", "foo");
+	assertEquals(0, dmap.endDiff().size());
+    }
+
 }

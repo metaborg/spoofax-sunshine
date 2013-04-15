@@ -19,12 +19,10 @@ public class BubblingMap<K, V> extends AbstractMap<K, V> {
 
     private final Map<K, V> top;
     private Map<K, V> bottom;
-    private final IMerger<V> merger;
 
-    public BubblingMap(Map<K, V> bottom, Map<K, V> top, IMerger<V> merger) {
+    public BubblingMap(Map<K, V> bottom, Map<K, V> top) {
 	this.bottom = bottom;
 	this.top = top;
-	this.merger = merger;
     }
 
     @Override
@@ -98,9 +96,7 @@ public class BubblingMap<K, V> extends AbstractMap<K, V> {
 	if (oldValue == null && bottom != null) {
 	    oldValue = bottom.remove(key);
 	}
-	if (merger.areDifferent(oldValue, newValue)) {
-	    top.put(key, merger.merge(oldValue, newValue));
-	}
+	top.put(key, newValue);
 	return oldValue;
     }
 
@@ -139,6 +135,5 @@ public class BubblingMap<K, V> extends AbstractMap<K, V> {
 	bottom = null;
 	return oldBottom;
     }
-
 
 }

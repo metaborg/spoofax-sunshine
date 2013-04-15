@@ -23,7 +23,7 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
 
     public DiffingHashMap(IMerger<V> merger) {
 	this.merger = merger;
-	this.map = new BubblingMap<K, V>(null, new HashMap<K, V>(), merger);
+	this.map = new BubblingMap<K, V>(null, new HashMap<K, V>());
     }
 
     public void beginDiff() {
@@ -31,7 +31,7 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
 	    endDiff();
 	nowDiffing = true;
 	changes = new HashMap<K, DiffKind>();
-	map = new BubblingMap<K, V>(map.top(), new HashMap<K, V>(), merger);
+	map = new BubblingMap<K, V>(map.top(), new HashMap<K, V>());
     }
 
     public Map<K, DiffKind> endDiff() {
@@ -54,18 +54,25 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
     }
 
     @Override
-    public V put(K key, V value) {
+    public V put(K key, V newValue) {
+	V oldValue = map.get(key);
 	if (nowDiffing) {
-	    V oldValue = map.get(key);
-	    if (oldValue != null && merger.areDifferent(oldValue, value)) {
-		changes.put(key, DiffKind.MODIFICATION);
-	    } else if (oldValue == null && changes.containsKey(key)) {
-		changes.put(key, DiffKind.MODIFICATION);
+	    if (oldValue == null) {
+		if (changes.containsKey(key)) {
+		    changes.put(key, DiffKind.MODIFICATION);
+		} else {
+		    changes.put(key, DiffKind.ADDITION);
+		}
 	    } else {
-		changes.put(key, DiffKind.ADDITION);
+		if (merger.areDifferent(oldValue, newValue)) {
+		    if (changes.get(key) != DiffKind.ADDITION) {
+			changes.put(key, DiffKind.MODIFICATION);
+		    }
+		}
 	    }
 	}
-	return map.put(key, value);
+	return map.put(key, oldValue != null ? merger.merge(oldValue, newValue)
+		: newValue);
     }
 
     @SuppressWarnings("unchecked")

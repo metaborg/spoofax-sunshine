@@ -5,3 +5,7 @@ guava-*.jar
 org.eclipse.jgit-*.jar
 jsch-*.jar
 gitective-core-*.jar
+log4j-api-2.0-beta4.jar
+log4j-api-2.0-beta4-javadoc.jar
+log4j-core-2.0-beta4.jar
+log4j-core-2.0-beta4-javadoc.jar

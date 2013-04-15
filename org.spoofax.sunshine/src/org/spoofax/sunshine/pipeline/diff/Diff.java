@@ -35,4 +35,9 @@ public class Diff<T> {
 	// TODO Auto-generated method stub
 	return super.hashCode();
     }
+
+    @Override
+    public String toString() {
+	return diffKind + " " + payload;
+    }
 }

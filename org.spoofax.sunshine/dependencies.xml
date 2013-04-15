@@ -20,8 +20,16 @@
 		     dest="${lib.dir}/org.eclipse.jgit-2.3.jar" />
 
 		<get src="http://search.maven.org/remotecontent?filepath=org/gitective/gitective-core/0.9.9/gitective-core-0.9.9.jar"
-				     dest="${lib.dir}/gitective-core-0.9.9.jar" />
-		
+		     dest="${lib.dir}/gitective-core-0.9.9.jar" />
+
+		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-beta4/apache-log4j-2.0-beta4-bin.zip"
+		     dest="${lib.dir}/tmp" />
+		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin.zip" dest="${lib.dir}/tmp" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-api-2.0-beta4.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-api-2.0-beta4-javadoc.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-core-2.0-beta4.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-core-2.0-beta4-javadoc.jar" todir="${lib.dir}" />
+
 		<delete dir="${lib.dir}/tmp" />
 	</target>
 </project>
