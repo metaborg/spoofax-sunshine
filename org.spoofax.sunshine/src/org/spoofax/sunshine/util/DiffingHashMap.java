@@ -16,12 +16,14 @@ import org.spoofax.sunshine.pipeline.diff.DiffKind;
  */
 public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
 
+    private final IMerger<V> merger;
     private BubblingMap<K, V> map;
     private volatile boolean nowDiffing;
     private Map<K, DiffKind> changes;
 
-    public DiffingHashMap() {
-	map = new BubblingMap<K, V>(null, new HashMap<K, V>());
+    public DiffingHashMap(IMerger<V> merger) {
+	this.merger = merger;
+	this.map = new BubblingMap<K, V>(null, new HashMap<K, V>(), merger);
     }
 
     public void beginDiff() {
@@ -29,7 +31,7 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
 	    endDiff();
 	nowDiffing = true;
 	changes = new HashMap<K, DiffKind>();
-	map = new BubblingMap<K, V>(map.top(), new HashMap<K, V>());
+	map = new BubblingMap<K, V>(map.top(), new HashMap<K, V>(), merger);
     }
 
     public Map<K, DiffKind> endDiff() {
@@ -54,7 +56,10 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
     @Override
     public V put(K key, V value) {
 	if (nowDiffing) {
-	    if (map.containsKey(key) || changes.containsKey(key)) {
+	    V oldValue = map.get(key);
+	    if (oldValue != null && merger.areDifferent(oldValue, value)) {
+		changes.put(key, DiffKind.MODIFICATION);
+	    } else if (oldValue == null && changes.containsKey(key)) {
 		changes.put(key, DiffKind.MODIFICATION);
 	    } else {
 		changes.put(key, DiffKind.ADDITION);
@@ -76,5 +81,15 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
 	    // nothing to do here. it's normal if the key is not a K
 	}
 	return map.remove(key);
+    }
+
+    @Override
+    public V get(Object key) {
+	return map.get(key);
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+	return map.containsKey(key);
     }
 }

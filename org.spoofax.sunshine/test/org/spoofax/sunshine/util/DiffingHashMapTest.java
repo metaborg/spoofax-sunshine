@@ -19,7 +19,7 @@ public class DiffingHashMapTest {
 
     @Before
     public void setUp() throws Exception {
-	dmap = new DiffingHashMap<String, String>();
+	dmap = new DiffingHashMap<String, String>(new NoMerger<String>());
     }
 
     @After
@@ -29,7 +29,7 @@ public class DiffingHashMapTest {
 
     @Test
     public void testDiffingHashMap() {
-	new DiffingHashMap<String, String>();
+	new DiffingHashMap<String, String>(new NoMerger<String>());
     }
 
     @Test
@@ -78,16 +78,31 @@ public class DiffingHashMapTest {
     @Test
     public void testCommitDiff4() {
 	dmap.put("one", "1");
+	assertEquals("1", dmap.get("one"));
 	dmap.put("two", "2");
+	assertEquals("2", dmap.get("two"));
 	dmap.put("three", "3");
+	assertEquals("3", dmap.get("three"));
 	dmap.put("four", "4");
+	assertEquals("4", dmap.get("four"));
+
 	dmap.beginDiff();
+	assertEquals("1", dmap.get("one"));
+	assertEquals("2", dmap.get("two"));
+	assertEquals("3", dmap.get("three"));
+	assertEquals("4", dmap.get("four"));
 
 	dmap.remove("four");
 	dmap.put("four", "44");
+	assertEquals("44", dmap.get("four"));
 	Map<String, DiffKind> diffs = dmap.endDiff();
 	assertEquals(DiffKind.MODIFICATION, diffs.get("four"));
 	assertEquals(1, dmap.size());
+    }
+
+    @Test
+    public void testCommitDiff5() {
+	assertEquals(0, dmap.endDiff().size());
     }
 
     @Test

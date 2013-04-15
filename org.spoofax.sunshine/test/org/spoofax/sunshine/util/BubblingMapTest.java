@@ -27,7 +27,8 @@ public class BubblingMapTest {
     public void setUp() throws Exception {
 	this.top = new HashMap<String, String>();
 	this.bottom = new HashMap<String, String>();
-	this.bmap = new BubblingMap<String, String>(bottom, top);
+	this.bmap = new BubblingMap<String, String>(bottom, top,
+		new NoMerger<String>());
     }
 
     @After
@@ -40,7 +41,7 @@ public class BubblingMapTest {
     @Test
     public void testBubblingMap1() {
 	BubblingMap<String, String> map = new BubblingMap<String, String>(
-		bottom, top);
+		bottom, top, new NoMerger<String>());
 	assertEquals(top, map.top());
 	assertEquals(bottom, map.bottom());
     }
@@ -48,7 +49,7 @@ public class BubblingMapTest {
     @Test
     public void testBubblingMap2() {
 	BubblingMap<String, String> map = new BubblingMap<String, String>(null,
-		top);
+		top, new NoMerger<String>());
 	assertEquals(top, map.top());
 	assertEquals(null, map.bottom());
     }
@@ -56,7 +57,7 @@ public class BubblingMapTest {
     @Test
     public void testBubblingMap3() {
 	BubblingMap<String, String> map = new BubblingMap<String, String>(
-		bottom, null);
+		bottom, null, new NoMerger<String>());
 	assertEquals(null, map.top());
 	assertEquals(bottom, map.bottom());
     }
@@ -404,6 +405,32 @@ public class BubblingMapTest {
 	bmap.put("bar", "bar");
 	bmap.dropBottom();
 	bmap.remove("foo");
+    }
+
+    @Test
+    public void testGet1() {
+	assertNull(bmap.get("f"));
+    }
+
+    @Test
+    public void testGet2() {
+	bottom.put("a", "A");
+	assertEquals("A", bmap.get("a"));
+    }
+
+    @Test
+    public void testGet3() {
+	bottom.put("a", "A");
+	top.put("a", "B");
+	assertEquals("B", bmap.get("a"));
+    }
+
+    @Test
+    public void testGet4() {
+	bmap.put("a", "A");
+	bmap.put("a", "B");
+	bmap.dropBottom();
+	assertEquals("B", bmap.get("a"));
     }
 
 }
