@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.model.language.AdHocJarBasedLanguage;
-import org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider;
+import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

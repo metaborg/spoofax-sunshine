@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.pipeline.services;
+package org.spoofax.sunshine.services.messages;
 
 import java.util.Collection;
 import java.util.HashSet;

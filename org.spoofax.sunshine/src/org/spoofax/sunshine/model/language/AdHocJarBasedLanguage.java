@@ -7,8 +7,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.spoofax.sunshine.parser.impl.FileBasedParseTableProvider;
 import org.spoofax.sunshine.parser.model.IParseTableProvider;
+import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

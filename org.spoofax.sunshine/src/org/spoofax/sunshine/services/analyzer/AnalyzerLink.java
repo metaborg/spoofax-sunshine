@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.pipeline.services;
+package org.spoofax.sunshine.services.analyzer;
 
 import java.io.File;
 import java.util.Collection;
@@ -13,7 +13,6 @@ import org.spoofax.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.DiffKind;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
-import org.spoofax.sunshine.services.analysis.AnalysisService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

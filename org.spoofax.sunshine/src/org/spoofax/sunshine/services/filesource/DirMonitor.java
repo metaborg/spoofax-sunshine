@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.services.files;
+package org.spoofax.sunshine.services.filesource;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

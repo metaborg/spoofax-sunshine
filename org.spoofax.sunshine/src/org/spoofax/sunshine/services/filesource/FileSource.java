@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.pipeline.services;
+package org.spoofax.sunshine.services.filesource;
 
 import java.io.File;
 import java.util.Collection;
@@ -14,7 +14,6 @@ import org.spoofax.sunshine.pipeline.ISinkMany;
 import org.spoofax.sunshine.pipeline.ISourceMany;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
 import org.spoofax.sunshine.services.LanguageService;
-import org.spoofax.sunshine.services.files.DirMonitor;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

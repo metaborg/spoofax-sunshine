@@ -326,8 +326,8 @@ public class SunshineCLIEntry {
 	config.autogit = git_autodrive;
 	config.project_dir = project_dir;
 	config.doParseOnly = parse_only;
-	config.doPreAnalysisBuild = builderName != null;
-	config.preAnalysisBuilder = builderName;
+	config.doPostAnalysisBuild = builderName != null;
+	config.postAnalysisBuilder = builderName;
 	if (buildOnTarget != null)
 	    config.builderTarget = new File(buildOnTarget);
 	config.doAnalyze = !parse_only;

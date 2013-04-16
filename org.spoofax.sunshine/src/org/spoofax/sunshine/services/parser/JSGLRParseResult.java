@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.parser.impl;
+package org.spoofax.sunshine.services.parser;
 
 import java.io.File;
 import java.util.Collection;

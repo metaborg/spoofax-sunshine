@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.spoofax.sunshine.pipeline.diff.DiffKind;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
+import org.spoofax.sunshine.services.filesource.DirMonitor;
 
 public class DirMonitorTest {
 

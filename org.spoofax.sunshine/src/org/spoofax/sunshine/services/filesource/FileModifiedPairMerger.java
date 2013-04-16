@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.services.files;
+package org.spoofax.sunshine.services.filesource;
 
 import org.spoofax.sunshine.util.IMerger;
 

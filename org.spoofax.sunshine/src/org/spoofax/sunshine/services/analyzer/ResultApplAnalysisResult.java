@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.services.analysis;
+package org.spoofax.sunshine.services.analyzer;
 
 import java.io.File;
 import java.util.ArrayList;

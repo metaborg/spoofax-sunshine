@@ -15,14 +15,15 @@ import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
-import org.spoofax.sunshine.pipeline.ILinkOneToOne;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
-import org.spoofax.sunshine.pipeline.services.AnalyzerLink;
-import org.spoofax.sunshine.pipeline.services.FileSource;
-import org.spoofax.sunshine.pipeline.services.JSGLRLink;
-import org.spoofax.sunshine.pipeline.services.MessageExtractorLink;
-import org.spoofax.sunshine.pipeline.services.MessageSink;
 import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
+import org.spoofax.sunshine.services.filesource.FileSource;
+import org.spoofax.sunshine.services.messages.MessageExtractorLink;
+import org.spoofax.sunshine.services.messages.MessageSink;
+import org.spoofax.sunshine.services.parser.JSGLRLink;
+import org.spoofax.sunshine.services.pipelined.builders.BuilderInputTermFactoryLink;
+import org.spoofax.sunshine.services.pipelined.builders.BuilderSink;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -61,40 +62,36 @@ public class SunshineMainDriver {
 	logger.debug("Initializing pipeline");
 
 	filesSource = new FileSource(Environment.INSTANCE().projectDir);
-
 	logger.trace("Created file source {}", filesSource);
-
-	// the parser
-	ILinkOneToOne<File, IStrategoParseOrAnalyzeResult> parserLink = new JSGLRLink();
-	logger.trace("Created parser link {}", parserLink);
-
-	// // link to map the parser over the files
 	LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
-		parserLink);
-	filesSource.addSink(parserMapper);
-	logger.trace("Created mapper {} for parser {}", parserMapper,
-		parserLink);
-
-	// link the analyzer to work on the files
+		new JSGLRLink());
+	logger.trace("Created mapper {} for parser", parserMapper);
 	ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
-	filesSource.addSink(analyzerLink);
-	logger.trace("Analyzer {} linked on file source {}", analyzerLink,
-		filesSource);
-
-	// create a Parser and Analyzer message extractor
 	ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
-	parserMapper.addSink(messageSelector);
 	logger.trace("Message selector {} linked on parse mapper {}",
 		messageSelector, parserMapper);
-	analyzerLink.addSink(messageSelector);
-	logger.trace("Message selector {} linked on analyzer {}",
-		messageSelector, analyzerLink);
-
 	messageSink = new MessageSink();
-	messageSelector.addSink(messageSink);
-	logger.trace("Message sink {} linked on message selector {}",
-		messageSink, messageSelector);
 
+	logger.trace("Wiring pipeline up");
+	filesSource.addSink(parserMapper);
+	filesSource.addSink(analyzerLink);
+	parserMapper.addSink(messageSelector);
+	analyzerLink.addSink(messageSelector);
+	messageSelector.addSink(messageSink);
+
+	if (Environment.INSTANCE().getLaunchConfiguration().postAnalysisBuilder != null) {
+	    logger.trace("Creating builder links for builder {}", Environment
+		    .INSTANCE().getLaunchConfiguration().postAnalysisBuilder);
+	    BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+		    new File(Environment.INSTANCE().projectDir, Environment
+			    .INSTANCE().getLaunchConfiguration().builderTarget
+			    .getPath()));
+	    BuilderSink compileBuilder = new BuilderSink(Environment.INSTANCE()
+		    .getLaunchConfiguration().postAnalysisBuilder);
+	    logger.trace("Wiring builder up into pipeline");
+	    analyzerLink.addSink(inputMakeLink);
+	    inputMakeLink.addSink(compileBuilder);
+	}
 	logger.info("Pipeline initialized");
     }
 
@@ -118,7 +115,7 @@ public class SunshineMainDriver {
 	logger.trace("Beginning the push of changes");
 	filesSource.poke();
 	logger.trace("Emitting messages");
-	emitMessages();
+	// emitMessages();
     }
 
 }

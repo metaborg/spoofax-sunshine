@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.pipeline.services;
+package org.spoofax.sunshine.services.parser;
 
 import java.io.File;
 import java.util.Map;
@@ -9,8 +9,6 @@ import java.util.WeakHashMap;
 
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.model.language.ALanguage;
-import org.spoofax.sunshine.parser.impl.JSGLRI;
-import org.spoofax.sunshine.parser.impl.JSGLRParseResult;
 import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.parser.model.ParserConfig;
 import org.spoofax.sunshine.pipeline.connectors.ALinkOneToOne;

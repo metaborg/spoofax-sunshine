@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.pipeline.services;
+package org.spoofax.sunshine.services.messages;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

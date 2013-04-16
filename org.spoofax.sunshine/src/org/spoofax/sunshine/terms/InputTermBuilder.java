@@ -14,7 +14,7 @@ import org.spoofax.interpreter.terms.IStrategoTuple;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.client.imploder.TermTreeFactory;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.parser.impl.SourceAttachment;
+import org.spoofax.sunshine.services.parser.SourceAttachment;
 import org.spoofax.terms.StrategoSubList;
 import org.strategoxt.HybridInterpreter;
 import org.strategoxt.lang.Context;
