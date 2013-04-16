@@ -1,4 +1,4 @@
-package org.spoofax.sunshine.statistics.model;
+package org.spoofax.sunshine.statistics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * 
@@ -18,12 +19,13 @@ public class DataRecording {
 
     private final Map<String, IValidatable<?>> validatables = new HashMap<String, IValidatable<?>>();
     private final Map<String, Long> points = new HashMap<String, Long>();
+    private final Stack<RunningTimer> timers = new Stack<RunningTimer>();
 
     public void close() {
 	open = false;
     }
 
-    public void addDataPoint(String name, long value) {
+    protected void addDataPoint(String name, long value) {
 	assert open;
 	assert validatables.get(name) == null;
 	Long oldValue = points.get(name);
@@ -32,14 +34,28 @@ public class DataRecording {
 	points.put(name, value + oldValue);
     }
 
-    public void addDataPoint(String name, IValidatable<?> value) {
+    protected void startTimer(String name) {
+	timers.push(new RunningTimer(name, System.currentTimeMillis()));
+    }
+
+    protected void stopTimer() {
+	RunningTimer timer = timers.pop();
+	points.put(timer.name, System.currentTimeMillis() - timer.time);
+    }
+
+    protected void addDataPoint(String name, IValidatable<?> value) {
 	assert open;
 	assert points.get(name) == null;
+	if (!open) {
+	    throw new RuntimeException(
+		    "Attempting to add data point to closed recording");
+	}
 	validatables.put(name, value);
     }
 
     public Set<String> getKeys() {
-	final Set<String> res = new HashSet<String>(validatables.keySet());
+	final Set<String> res = new HashSet<String>();
+	res.addAll(validatables.keySet());
 	res.addAll(points.keySet());
 	return res;
     }
@@ -56,11 +72,20 @@ public class DataRecording {
 	    } else if (validatable != null) {
 		result.add("" + validatable.getValue());
 	    } else {
-		System.err.println("Giving default value for: " + key);
 		result.add(defaultValue);
 	    }
 	}
 	return result;
+    }
+
+    private class RunningTimer {
+	public String name;
+	public long time;
+
+	public RunningTimer(String name, long time) {
+	    this.name = name;
+	    this.time = time;
+	}
     }
 
 }

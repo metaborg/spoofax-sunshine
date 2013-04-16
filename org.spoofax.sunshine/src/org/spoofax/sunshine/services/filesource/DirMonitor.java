@@ -92,14 +92,17 @@ public class DirMonitor {
 	    logger.trace("Stored {}", f.getPath());
 	}
 	logger.trace("Done store diffing");
-	try {
-	    logger.trace("Persisting store to cache");
-	    int bytes = writeToPersist();
-	    logger.trace("Store persisted using {} bytes", bytes);
-	} catch (IOException ioex) {
-	    logger.warn("Persisting store failed", ioex);
+	Map<String, DiffKind> diff = store.endDiff();
+	if (diff.size() > 0) {
+	    try {
+		logger.trace("Persisting store to cache");
+		int bytes = writeToPersist();
+		logger.trace("Store persisted using {} bytes", bytes);
+	    } catch (IOException ioex) {
+		logger.warn("Persisting store failed", ioex);
+	    }
 	}
-	return store.endDiff();
+	return diff;
     }
 
     public MultiDiff<File> getChanges() {

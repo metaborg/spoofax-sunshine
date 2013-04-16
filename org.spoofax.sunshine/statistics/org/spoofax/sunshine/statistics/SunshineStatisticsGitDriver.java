@@ -23,9 +23,6 @@ import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.StrategoCallService;
 import org.spoofax.sunshine.services.analyzer.AnalysisService;
 import org.spoofax.sunshine.services.filesource.FileMonitoringService;
-import org.spoofax.sunshine.statistics.model.BoxValidatable;
-import org.spoofax.sunshine.statistics.model.DataRecording;
-import org.spoofax.sunshine.statistics.model.IValidatable;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -53,7 +50,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 	    final File incrementalIndexSaved = rescueIndex();
 
 	    if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-		final DataRecording rec = RecordingStack.INSTANCE().next();
+		final DataRecording rec = Statistics.INSTANCE().next();
 		rec.addDataPoint("ISFULL", IValidatable.ALWAYS_VALIDATABLE);
 	    }
 
@@ -67,7 +64,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 	    Collection<File> filesForFull = FileMonitoringService.INSTANCE()
 		    .getChangesNoPersist();
 	    if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-		final DataRecording rec = RecordingStack.INSTANCE().current();
+		final DataRecording rec = Statistics.INSTANCE().current();
 		rec.addDataPoint("COMMIT", new BoxValidatable<String>(
 			projMetrics.commit));
 		rec.addDataPoint("LOC", new BoxValidatable<Integer>(
@@ -90,7 +87,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 
 	    System.out.println("Preparing for incremental analysis");
 	    if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-		final DataRecording rec = RecordingStack.INSTANCE().next();
+		final DataRecording rec = Statistics.INSTANCE().next();
 		rec.addDataPoint("ISFULL", IValidatable.NEVER_VALIDATABLE);
 	    }
 
@@ -102,7 +99,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 	    assert indexFile.exists();
 	    System.out.println("Analyzing " + files.size() + " files.");
 	    if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-		final DataRecording rec = RecordingStack.INSTANCE().current();
+		final DataRecording rec = Statistics.INSTANCE().current();
 		rec.addDataPoint("COMMIT", new BoxValidatable<String>(
 			projMetrics.commit));
 		rec.addDataPoint("LOC", new BoxValidatable<Integer>(
@@ -125,7 +122,7 @@ public class SunshineStatisticsGitDriver extends SunshineGitDriver {
 	    // ====
 	    // write statistics results
 	    if (Environment.INSTANCE().getLaunchConfiguration().storeStats) {
-		RecordingStack.INSTANCE().incrementalWriteToFile();
+		Statistics.INSTANCE().incrementalWriteToFile();
 	    }
 	} catch (IOException e) {
 	    throw new CompilerException("Something broke", e);

@@ -59,4 +59,8 @@ public class Environment {
 	return new File(projectDir, ".cache");
     }
 
+    public boolean isStatEnabled() {
+	return getLaunchConfiguration().storeStats;
+    }
+
 }

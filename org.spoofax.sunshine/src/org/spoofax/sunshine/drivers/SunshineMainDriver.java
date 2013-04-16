@@ -24,6 +24,7 @@ import org.spoofax.sunshine.services.messages.MessageSink;
 import org.spoofax.sunshine.services.parser.JSGLRLink;
 import org.spoofax.sunshine.services.pipelined.builders.BuilderInputTermFactoryLink;
 import org.spoofax.sunshine.services.pipelined.builders.BuilderSink;
+import org.spoofax.sunshine.statistics.Statistics;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -60,7 +61,7 @@ public class SunshineMainDriver {
 
     private void initPipeline() {
 	logger.debug("Initializing pipeline");
-
+	Statistics.startTimer("PIPELINE_CONSTRUCT");
 	filesSource = new FileSource(Environment.INSTANCE().projectDir);
 	logger.trace("Created file source {}", filesSource);
 	LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
@@ -92,6 +93,9 @@ public class SunshineMainDriver {
 	    analyzerLink.addSink(inputMakeLink);
 	    inputMakeLink.addSink(compileBuilder);
 	}
+
+	Statistics.stopTimer();
+
 	logger.info("Pipeline initialized");
     }
 
@@ -109,13 +113,18 @@ public class SunshineMainDriver {
     // }
 
     public void run() {
+	Statistics.startTimer("RUN");
 	logger.debug("Beginning run");
 	init();
 	initPipeline();
 	logger.trace("Beginning the push of changes");
+	Statistics.startTimer("POKE");
 	filesSource.poke();
+	Statistics.stopTimer();
 	logger.trace("Emitting messages");
 	emitMessages();
+	Statistics.stopTimer();
+	Statistics.toNext();
     }
 
 }

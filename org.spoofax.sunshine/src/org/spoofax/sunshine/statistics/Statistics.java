@@ -16,38 +16,58 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.statistics.model.DataRecording;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class RecordingStack {
+public class Statistics {
 
-    private static RecordingStack INSTANCE;
+    private static final Logger logger = LogManager.getLogger(Statistics.class
+	    .getName());
 
-    private RecordingStack() {
+    private final Stack<DataRecording> recordingStack = new Stack<DataRecording>();
+    private final File targetFile;
+
+    private static Statistics INSTANCE;
+
+    private Statistics() {
+	File f = Environment.INSTANCE().getLaunchConfiguration().storeStatsAt;
+	targetFile = new File(f.getParent(), FilenameUtils.getBaseName(f
+		.getName())
+		+ "_"
+		+ System.currentTimeMillis()
+		+ "."
+		+ FilenameUtils.getExtension(f.getName()));
+	if (targetFile.exists()) {
+	    logger.fatal("Stats file {} already exists. Refusing to overwrite",
+		    targetFile);
+	    throw new RuntimeException("Stats file already exists");
+	}
+	targetFile.getParentFile().mkdir();
+	try {
+	    targetFile.createNewFile();
+	} catch (IOException ioex) {
+	    logger.fatal(
+		    "Failed to create stats file {} because of exception {}",
+		    targetFile, ioex);
+	    throw new RuntimeException(
+		    "Failed to create statistics target file");
+	}
     }
 
-    public static RecordingStack INSTANCE() {
+    public static Statistics INSTANCE() {
 	if (INSTANCE == null) {
-	    INSTANCE = new RecordingStack();
+	    INSTANCE = new Statistics();
 	}
 	return INSTANCE;
     }
 
-    private final Stack<DataRecording> recordingStack = new Stack<DataRecording>();
-    private final File targetFile = Environment.INSTANCE()
-	    .getLaunchConfiguration().storeStatsAt;
-
-    public void reset() {
-	assert recordingStack != null;
-	recordingStack.clear();
-	alreadyWritten = 0;
-    }
-
-    public DataRecording next() {
+    private DataRecording next() {
 	if (recordingStack.size() > 0) {
 	    recordingStack.peek().close();
 	}
@@ -56,8 +76,8 @@ public class RecordingStack {
 	return recording;
     }
 
-    public DataRecording current() {
-	return recordingStack.peek();
+    private DataRecording current() {
+	return !recordingStack.empty() ? recordingStack.peek() : next();
     }
 
     private static final String STR_FORMAT_STRING = "%s ";
@@ -121,14 +141,8 @@ public class RecordingStack {
 
     private int alreadyWritten = 0;
 
-    public void incrementalWriteToFile() throws IOException {
+    private void incrementalWriteToFile() throws IOException {
 	final List<String> keys = getAllKeys();
-	if (alreadyWritten == 0 && !targetFile.exists()) {
-	    if (!targetFile.getParentFile().exists()) {
-		targetFile.getParentFile().mkdir();
-	    }
-	    targetFile.createNewFile();
-	}
 	assert targetFile.exists();
 	final int additionalRowCount = recordingStack.size();
 	final String header = alreadyWritten > 0 ? "" : toStringHeader(keys);
@@ -141,4 +155,32 @@ public class RecordingStack {
 	alreadyWritten += additionalRowCount;
     }
 
+    public static void toNext() {
+	if (Environment.INSTANCE().isStatEnabled()) {
+	    try {
+		INSTANCE().incrementalWriteToFile();
+	    } catch (IOException ioex) {
+		logger.error("Failed to save statistics to file", ioex);
+	    }
+	    INSTANCE().next();
+	}
+    }
+
+    public static void startTimer(String name) {
+	if (Environment.INSTANCE().isStatEnabled()) {
+	    INSTANCE().current().startTimer(name);
+	}
+    }
+
+    public static void stopTimer() {
+	if (Environment.INSTANCE().isStatEnabled()) {
+	    INSTANCE().current().stopTimer();
+	}
+    }
+
+    public static void addDataPoint(String name, long time) {
+	if (Environment.INSTANCE().isStatEnabled()) {
+	    INSTANCE().current().addDataPoint(name, time);
+	}
+    }
 }

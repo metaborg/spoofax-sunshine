@@ -85,7 +85,7 @@ public class DiffingHashMap<K, V> extends AbstractMap<K, V> {
 		}
 	    }
 	} catch (ClassCastException castex) {
-	    // nothing to do here. it's normal if the key is not a K
+	    // nothing to do here. it is normal if the key is not a K
 	}
 	return map.remove(key);
     }

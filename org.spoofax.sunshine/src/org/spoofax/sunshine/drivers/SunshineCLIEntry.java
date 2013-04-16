@@ -39,8 +39,6 @@ public class SunshineCLIEntry {
     private final static String COLLECT_STATS = "--stats";
     private final static String FULL_ANALYSIS = "--non-incremental";
 
-    // private static final String observer_fun = "editor-analyze";
-
     /**
      * @param args
      * @throws CompilerException
