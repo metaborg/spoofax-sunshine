@@ -18,7 +18,6 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spoofax.sunshine.drivers.SunshineCLIEntry;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.DiffKind;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
@@ -37,8 +36,8 @@ import org.spoofax.sunshine.util.DiffingHashMap;
  * 
  */
 public class DirMonitor {
-    private static final Logger logger = LogManager
-	    .getLogger(SunshineCLIEntry.class.getName());
+    private static final Logger logger = LogManager.getLogger(DirMonitor.class
+	    .getName());
 
     private final File cacheFile;
     private final File dir;
@@ -61,9 +60,11 @@ public class DirMonitor {
 		    + dir + ") which does not exist");
 	}
 	assert cacheDir != null;
-	if (cacheDir == null || !cacheDir.exists()) {
-	    throw new IllegalArgumentException("The cache directory ("
-		    + cacheDir + ") does not exist");
+	if (cacheDir == null) {
+	    throw new IllegalArgumentException("The cache directory is null");
+	}
+	if (!cacheDir.exists()) {
+	    cacheDir.mkdir();
 	}
 	this.cacheFile = new File(cacheDir, "fsmonitor.bin");
 	this.dir = dir;

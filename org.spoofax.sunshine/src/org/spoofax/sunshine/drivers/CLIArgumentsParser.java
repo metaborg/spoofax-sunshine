@@ -9,20 +9,20 @@ import java.util.LinkedList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spoofax.sunshine.CompilerException;
-import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
-import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
 import org.spoofax.sunshine.model.language.AdHocJarBasedLanguage;
-import org.spoofax.sunshine.statistics.SunshineStatisticsGitDriver;
 
 /**
- * @author Vlad Vergu
+ * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
+ * @deprecated This is butt ugly. Needs to be rewritten using JCommander or
+ *             Apache Commons CLI
  */
-public class SunshineCLIEntry {
+@Deprecated
+public class CLIArgumentsParser {
+
     private static final Logger logger = LogManager
-	    .getLogger(SunshineCLIEntry.class.getName());
+	    .getLogger(CLIArgumentsParser.class.getName());
 
     private final static String DBG_WARM = "--warmup";
     private final static String LANG_JAR = "--lang-jar";
@@ -39,33 +39,9 @@ public class SunshineCLIEntry {
     private final static String COLLECT_STATS = "--stats";
     private final static String FULL_ANALYSIS = "--non-incremental";
 
-    /**
-     * @param args
-     * @throws CompilerException
-     */
-    public static void main(String[] args) throws CompilerException {
-	logger.info("Hello");
-	logger.trace("Parsing arguments");
-	LaunchConfiguration config = parseArgs(args);
-	SunshineMainDriver driver = null;
-	logger.trace("Setting launch configuration to {}", config);
-	Environment.INSTANCE().setLaunchConfiguration(config);
-	if (!config.autogit)
-	    driver = new SunshineMainDriver();
-	else {
-	    if (config.storeStats)
-		driver = new SunshineStatisticsGitDriver();
-	    else
-		driver = new SunshineGitDriver();
-	}
-	logger.debug("Created driver {}", driver);
-	driver.run();
-	logger.info("Execution completed. Exiting now");
-	System.exit(0);
-    }
-
-    private static LaunchConfiguration parseArgs(String[] args)
+    public static LaunchConfiguration parseArgs(String[] args)
 	    throws IllegalArgumentException {
+	logger.trace("Parsing arguments");
 	boolean lang_jar_next = false;
 	boolean lang_tbl_next = false;
 	boolean proj_dir_next = false;
@@ -335,6 +311,7 @@ public class SunshineCLIEntry {
 	    config.storeStatsAt = new File(storeStatsAt);
 	}
 	config.invariant();
+	logger.trace("Done parsing arguments");
 	return config;
     }
 }

@@ -4,8 +4,10 @@
 package org.spoofax.sunshine.drivers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerCrashHandler;
@@ -56,6 +58,17 @@ public class SunshineMainDriver {
 		.getLaunchConfiguration();
 	LanguageService.INSTANCE().registerLanguage(config.languages);
 	Environment.INSTANCE().setProjectDir(new File(config.project_dir));
+	if (!Environment.INSTANCE().getLaunchConfiguration().incremental) {
+	    try {
+		FileUtils.deleteDirectory(Environment.INSTANCE().getCacheDir());
+	    } catch (IOException ioex) {
+		logger.error(
+			"Could not delete cache directory {} because of exception {}",
+			Environment.INSTANCE().getCacheDir(), ioex);
+		throw new CompilerException("Could not delete cache directory",
+			ioex);
+	    }
+	}
 	logger.trace("Init completed");
     }
 
