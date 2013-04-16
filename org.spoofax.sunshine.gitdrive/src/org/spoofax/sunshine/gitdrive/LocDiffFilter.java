@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.statistics;
+package org.spoofax.sunshine.gitdrive;
 
 import java.util.Collection;
 import java.util.Set;

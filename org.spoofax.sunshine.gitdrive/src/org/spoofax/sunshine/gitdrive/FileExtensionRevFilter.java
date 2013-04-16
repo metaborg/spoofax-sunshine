@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.drivers.git;
+package org.spoofax.sunshine.gitdrive;
 
 import java.io.IOException;
 import java.util.List;

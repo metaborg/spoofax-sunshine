@@ -13,12 +13,10 @@ import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
-import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
 import org.spoofax.sunshine.services.filesource.FileSource;
 import org.spoofax.sunshine.services.messages.MessageExtractorLink;
@@ -54,10 +52,6 @@ public class SunshineMainDriver {
 
     public void init() throws CompilerException {
 	logger.trace("Beginning init");
-	final LaunchConfiguration config = Environment.INSTANCE()
-		.getLaunchConfiguration();
-	LanguageService.INSTANCE().registerLanguage(config.languages);
-	Environment.INSTANCE().setProjectDir(new File(config.project_dir));
 	if (!Environment.INSTANCE().getLaunchConfiguration().incremental) {
 	    try {
 		FileUtils.deleteDirectory(Environment.INSTANCE().getCacheDir());

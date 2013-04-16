@@ -1,34 +1,33 @@
 /**
  * 
  */
-package org.spoofax.sunshine.statistics;
+package oldstuff;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.treewalk.filter.TreeFilter;
-import org.gitective.core.CommitFinder;
-import org.gitective.core.PathFilterUtils;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.drivers.git.SunshineGitDriver;
+import org.spoofax.sunshine.gitdrive.LocDiffFilter;
 import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.StrategoCallService;
 import org.spoofax.sunshine.services.analyzer.AnalysisService;
-import org.spoofax.sunshine.services.filesource.FileMonitoringService;
+import org.spoofax.sunshine.statistics.BoxValidatable;
+import org.spoofax.sunshine.statistics.DataRecording;
+import org.spoofax.sunshine.statistics.IValidatable;
+import org.spoofax.sunshine.statistics.Statistics;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class SunshineStatisticsGitDriver extends SunshineGitDriver {
+public class SunshineStatisticsGitDriver extends SunshineGitDriverOld {
 
     public void step(java.util.Collection<java.io.File> files)
 	    throws CompilerException {

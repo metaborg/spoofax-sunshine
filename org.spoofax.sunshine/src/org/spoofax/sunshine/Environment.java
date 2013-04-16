@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
+import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.terms.TermFactory;
 
 /**
@@ -38,7 +39,7 @@ public class Environment {
 	this.parseTableMgr = new ParseTableManager(termFactory);
     }
 
-    public void setProjectDir(File pdir) {
+    private void setProjectDir(File pdir) {
 	try {
 	    projectDir = pdir.getCanonicalFile();
 	} catch (IOException e) {
@@ -48,6 +49,9 @@ public class Environment {
 
     public void setLaunchConfiguration(LaunchConfiguration config) {
 	this.launchConfiguration = config;
+	setProjectDir(new File(launchConfiguration.project_dir));
+	LanguageService.INSTANCE().registerLanguage(
+		launchConfiguration.languages);
     }
 
     public LaunchConfiguration getLaunchConfiguration() {
@@ -56,7 +60,11 @@ public class Environment {
 
     public File getCacheDir() {
 	assert projectDir != null;
-	return new File(projectDir, ".cache");
+	File cacheDir = new File(projectDir, ".cache");
+	if (!cacheDir.exists()) {
+	    cacheDir.mkdir();
+	}
+	return cacheDir;
     }
 
     public boolean isStatEnabled() {
