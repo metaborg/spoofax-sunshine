@@ -54,4 +54,9 @@ public class Environment {
 	return launchConfiguration;
     }
 
+    public File getCacheDir() {
+	assert projectDir != null;
+	return new File(projectDir, ".cache");
+    }
+
 }

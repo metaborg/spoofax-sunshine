@@ -22,7 +22,7 @@ import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.StrategoCallService;
 import org.spoofax.sunshine.services.analysis.AnalysisService;
-import org.spoofax.sunshine.services.old.FileMonitoringService;
+import org.spoofax.sunshine.services.files.FileMonitoringService;
 import org.spoofax.sunshine.statistics.model.BoxValidatable;
 import org.spoofax.sunshine.statistics.model.DataRecording;
 import org.spoofax.sunshine.statistics.model.IValidatable;

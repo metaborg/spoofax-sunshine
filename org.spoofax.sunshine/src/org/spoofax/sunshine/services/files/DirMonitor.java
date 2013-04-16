@@ -45,6 +45,15 @@ public class DirMonitor {
     private final Collection<String> extensions;
     private final DiffingHashMap<String, FileModifiedPair> store;
 
+    public void reset() {
+	store.clear();
+	try {
+	    writeToPersist();
+	} catch (IOException e) {
+	    logger.warn("Could not write to cache after clear", e);
+	}
+    }
+
     public DirMonitor(Collection<String> extensions, File dir, File cacheDir) {
 	assert dir != null;
 	if (dir == null || !dir.exists()) {

@@ -5,13 +5,9 @@ package org.spoofax.sunshine.drivers;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Scanner;
 
-import org.spoofax.interpreter.core.InterpreterException;
-import org.spoofax.interpreter.library.AbstractPrimitive;
-import org.spoofax.interpreter.library.IOperatorRegistry;
-import org.spoofax.interpreter.stratego.Strategy;
-import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
@@ -19,144 +15,110 @@ import org.spoofax.sunshine.LaunchConfiguration;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
+import org.spoofax.sunshine.pipeline.ILinkOneToOne;
+import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.spoofax.sunshine.pipeline.services.AnalyzerLink;
 import org.spoofax.sunshine.pipeline.services.FileSource;
+import org.spoofax.sunshine.pipeline.services.JSGLRLink;
 import org.spoofax.sunshine.pipeline.services.MessageExtractorLink;
 import org.spoofax.sunshine.pipeline.services.MessageSink;
 import org.spoofax.sunshine.services.LanguageService;
-import org.spoofax.sunshine.services.RuntimeService;
-import org.spoofax.sunshine.services.old.FileMonitoringService;
-import org.strategoxt.HybridInterpreter;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
 public class SunshineMainDriver {
+    private static final Logger logger = LogManager
+	    .getLogger(SunshineMainDriver.class.getName());
 
-    private final MessageSink messageSink = new MessageSink();
-    private final FileSource filesSource = new FileSource();
+    private MessageSink messageSink;
+    private FileSource filesSource;
 
     public SunshineMainDriver() {
+	logger.trace("Initializing & setting uncaught exception handler");
 	Thread.currentThread().setUncaughtExceptionHandler(
 		new CompilerCrashHandler());
     }
 
-    // private void analyze(final Collection<File> files) {
-    // try {
-    // AnalysisService.INSTANCE().analyze(files);
-    // } catch (CompilerException e) {
-    // throw new RuntimeException("Analysis crashed", e);
-    // }
-    // }
-
     protected void emitMessages() {
 	final Collection<IMessage> msgs = messageSink.getMessages();
-	System.out.println("===============================");
 	for (IMessage msg : msgs) {
-	    System.out.println(msg);
+	    System.err.println(msg);
 	}
-	System.out.println("===============================");
     }
 
     public void init() throws CompilerException {
+	logger.trace("Beginning init");
 	final LaunchConfiguration config = Environment.INSTANCE()
 		.getLaunchConfiguration();
 	LanguageService.INSTANCE().registerLanguage(config.languages);
 	Environment.INSTANCE().setProjectDir(new File(config.project_dir));
-	reset();
-	initPipeline();
-	// warmup();
+	logger.trace("Init completed");
     }
 
     private void initPipeline() {
-	// the parser
-	// ILinkOneToOne<File, IStrategoParseOrAnalyzeResult> parserLink = new
-	// JSGLRLink();
+	logger.debug("Initializing pipeline");
 
-	// link to map the parser over the files
-	// LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper
-	// = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
-	// parserLink);
-	// filesSource.addSink(parserMapper);
+	filesSource = new FileSource(Environment.INSTANCE().projectDir);
+
+	logger.trace("Created file source {}", filesSource);
+
+	// the parser
+	ILinkOneToOne<File, IStrategoParseOrAnalyzeResult> parserLink = new JSGLRLink();
+	logger.trace("Created parser link {}", parserLink);
+
+	// // link to map the parser over the files
+	LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
+		parserLink);
+	filesSource.addSink(parserMapper);
+	logger.trace("Created mapper {} for parser {}", parserMapper,
+		parserLink);
 
 	// link the analyzer to work on the files
 	ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
 	filesSource.addSink(analyzerLink);
+	logger.trace("Analyzer {} linked on file source {}", analyzerLink,
+		filesSource);
 
 	// create a Parser and Analyzer message extractor
 	ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
-	// parserMapper.addSink(messageSelector);
+	parserMapper.addSink(messageSelector);
+	logger.trace("Message selector {} linked on parse mapper {}",
+		messageSelector, parserMapper);
 	analyzerLink.addSink(messageSelector);
+	logger.trace("Message selector {} linked on analyzer {}",
+		messageSelector, analyzerLink);
 
+	messageSink = new MessageSink();
 	messageSelector.addSink(messageSink);
+	logger.trace("Message sink {} linked on message selector {}",
+		messageSink, messageSelector);
+
+	logger.info("Pipeline initialized");
     }
 
-    public void reset() throws CompilerException {
-	new File(Environment.INSTANCE().projectDir, ".cache/index.idx")
-		.delete();
-	try {
-	    unloadIndex();
-	} catch (InterpreterException e) {
-	    throw new CompilerException(e);
-	}
-    }
+    // protected void unloadIndex() throws InterpreterException {
+    // HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(
+    // LanguageService.INSTANCE().getAnyLanguage());
+    // IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry(
+    // "INDEX");
+    // AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
+    // assert unloadIdxPrim.call(
+    // runtime.getContext(),
+    // new Strategy[0],
+    // new IStrategoTerm[] { runtime.getFactory().makeString(
+    // Environment.INSTANCE().projectDir.getAbsolutePath()) });
+    // }
 
-    protected void unloadIndex() throws InterpreterException {
-	HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(
-		LanguageService.INSTANCE().getAnyLanguage());
-	IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry(
-		"INDEX");
-	AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
-	assert unloadIdxPrim.call(
-		runtime.getContext(),
-		new Strategy[0],
-		new IStrategoTerm[] { runtime.getFactory().makeString(
-			Environment.INSTANCE().projectDir.getAbsolutePath()) });
-    }
-
-    public void run() throws CompilerException {
+    public void run() {
+	logger.debug("Beginning run");
 	init();
-	Scanner sc = new Scanner(System.in);
-	do {
-	    reset();
-	    Collection<File> files = FileMonitoringService.INSTANCE()
-		    .getChanges();
-	    System.out.println("Changes: " + files);
-	    step(files);
-	} while (Environment.INSTANCE().getLaunchConfiguration().as_daemon
-		&& sc.nextLine() != null);
-    }
-
-    public void step(Collection<File> files) throws CompilerException {
-	filesSource.kick();
+	initPipeline();
+	logger.trace("Beginning the push of changes");
+	filesSource.poke();
+	logger.trace("Emitting messages");
 	emitMessages();
     }
-
-    // private void warmup() throws CompilerException {
-    // final LaunchConfiguration config = Environment.INSTANCE()
-    // .getLaunchConfiguration();
-    // System.out.println("Warming up " + config.warmup_rounds + " rounds.");
-    // long begin = 0;
-    // long end = 0;
-    // for (int i = config.warmup_rounds; i > 0; i--) {
-    // begin = System.currentTimeMillis();
-    // final Collection<File> files = FileMonitoringService.INSTANCE()
-    // .getChangesNoPersist();
-    // if (config.doParseOnly) {
-    // parse(files);
-    // } else {
-    // analyze(files);
-    // }
-    // end = System.currentTimeMillis();
-    // System.out.println("Round " + (config.warmup_rounds - i + 1)
-    // + " done in " + (end - begin) + " ms");
-    // reset();
-    // }
-    //
-    // MessageService.INSTANCE().clearMessages();
-    // System.out.println("Warm up completed. Last duration: " + (end - begin)
-    // + " ms");
-    // }
 
 }

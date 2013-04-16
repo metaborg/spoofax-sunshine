@@ -30,7 +30,7 @@ import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.drivers.SunshineMainDriver;
 import org.spoofax.sunshine.services.LanguageService;
-import org.spoofax.sunshine.services.old.FileMonitoringService;
+import org.spoofax.sunshine.services.files.FileMonitoringService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

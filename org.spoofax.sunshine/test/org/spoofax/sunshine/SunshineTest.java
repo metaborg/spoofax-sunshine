@@ -10,6 +10,7 @@ import org.spoofax.sunshine.framework.messages.PositionRegionTest;
 import org.spoofax.sunshine.framework.messages.TokenRegionTest;
 import org.spoofax.sunshine.parser.framework.AParserTest;
 import org.spoofax.sunshine.parser.framework.FileBasedParseTableProviderTest;
+import org.spoofax.sunshine.services.files.DirMonitorTest;
 import org.spoofax.sunshine.util.BubblingMapTest;
 import org.spoofax.sunshine.util.DiffingHashMapTest;
 
@@ -17,7 +18,8 @@ import org.spoofax.sunshine.util.DiffingHashMapTest;
 @SuiteClasses({ MessageTest.class, PositionRegionTest.class,
 	TokenRegionTest.class, ALanguageTest.class,
 	AdHocJarBasedLanguageTest.class, FileBasedParseTableProviderTest.class,
-	AParserTest.class, BubblingMapTest.class, DiffingHashMapTest.class })
+	AParserTest.class, BubblingMapTest.class, DiffingHashMapTest.class,
+	DirMonitorTest.class })
 public class SunshineTest {
 
 }

@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.LaunchConfiguration;
@@ -19,6 +21,8 @@ import org.spoofax.sunshine.statistics.SunshineStatisticsGitDriver;
  * 
  */
 public class SunshineCLIEntry {
+    private static final Logger logger = LogManager
+	    .getLogger(SunshineCLIEntry.class.getName());
 
     private final static String DBG_WARM = "--warmup";
     private final static String LANG_JAR = "--lang-jar";
@@ -42,8 +46,11 @@ public class SunshineCLIEntry {
      * @throws CompilerException
      */
     public static void main(String[] args) throws CompilerException {
+	logger.info("Hello");
+	logger.trace("Parsing arguments");
 	LaunchConfiguration config = parseArgs(args);
 	SunshineMainDriver driver = null;
+	logger.trace("Setting launch configuration to {}", config);
 	Environment.INSTANCE().setLaunchConfiguration(config);
 	if (!config.autogit)
 	    driver = new SunshineMainDriver();
@@ -53,7 +60,9 @@ public class SunshineCLIEntry {
 	    else
 		driver = new SunshineGitDriver();
 	}
+	logger.debug("Created driver {}", driver);
 	driver.run();
+	logger.info("Execution completed. Exiting now");
 	System.exit(0);
     }
 
