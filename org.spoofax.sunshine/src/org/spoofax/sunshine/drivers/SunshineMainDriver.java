@@ -115,7 +115,7 @@ public class SunshineMainDriver {
 	logger.trace("Beginning the push of changes");
 	filesSource.poke();
 	logger.trace("Emitting messages");
-	// emitMessages();
+	emitMessages();
     }
 
 }
