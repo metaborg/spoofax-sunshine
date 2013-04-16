@@ -16,15 +16,13 @@ import org.spoofax.terms.TermFactory;
  * 
  */
 public class Environment {
-
+	
 	public final ITermFactory termFactory;
 	public final ParseTableManager parseTableMgr;
 	public File projectDir;
+
+	private LaunchConfiguration launchConfiguration;
 	
-	private Environment() {
-		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
-		this.parseTableMgr = new ParseTableManager(termFactory);
-	}
 
 	private static Environment INSTANCE;
 
@@ -35,12 +33,25 @@ public class Environment {
 		return INSTANCE;
 	}
 	
+	private Environment() {
+		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
+		this.parseTableMgr = new ParseTableManager(termFactory);
+	}
+
 	public void setProjectDir(File pdir){
 		try {
 			projectDir = pdir.getCanonicalFile();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void setLaunchConfiguration(LaunchConfiguration config) {
+		this.launchConfiguration = config;
+	}
+
+	public LaunchConfiguration getLaunchConfiguration() {
+		return launchConfiguration;
 	}
 
 }

@@ -1,4 +1,7 @@
 strategoxt.jar
-commons-io-2.4.jar
+commons-io-*.jar
 sdf2imp.jar
-guava-14.0.1.jar
+guava-*.jar
+org.eclipse.jgit-*.jar
+jsch-*.jar
+gitective-core-*.jar

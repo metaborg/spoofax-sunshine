@@ -91,12 +91,14 @@ public class AnalysisService {
 
 		final IStrategoList inputTerm = termFactory.makeList(fileNames);
 		runtime.setCurrent(inputTerm);
+		Throwable t = null;
 		try {
 			boolean success = runtime.invoke(lang.getAnalysisFunction());
 			if (!success) {
 				reportAnalysisException(files, new RuntimeException("Analysis function failed w/o exception"));
 			} else {
 				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
+				// final IStrategoList evalTasks = (IStrategoList) resultTup.getSubterm(0);
 				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(1);
 				for (int idx = 0; idx < resultList.getSubtermCount(); idx++) {
 					AnalysisResultsService.INSTANCE().addResult(
@@ -104,14 +106,21 @@ public class AnalysisService {
 				}
 			}
 		} catch (InterpreterErrorExit e) {
-			reportAnalysisException(files, e);
+			t = e;
 		} catch (InterpreterExit e) {
-			reportAnalysisException(files, e);
+			t = e;
 		} catch (UndefinedStrategyException e) {
-			reportAnalysisException(files, e);
+			t = e;
 		} catch (InterpreterException e) {
-			reportAnalysisException(files, e);
+			t = e;
+		} finally {
+			runtime.uninit();
 		}
+
+		if (t != null) {
+			reportAnalysisException(files, t);
+		}
+
 	}
 
 	private static void reportAnalysisException(Collection<File> files, Throwable t) throws CompilerException {

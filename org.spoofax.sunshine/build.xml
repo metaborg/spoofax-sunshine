@@ -15,7 +15,10 @@
             <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/Applications/Spoofax-3.8/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900/junit.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/Applications/Spoofax-3.8/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
             <fileset dir="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/test/test-files"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/org.eclipse.jgit-2.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/jsch-0.1.49.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/guava-14.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/vladvergu/git/spoofax-pretender/org.spoofax.sunshine/lib/gitective-core-0.9.9.jar"/>
         </jar>
     </target>
 </project>

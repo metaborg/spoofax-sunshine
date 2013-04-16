@@ -30,28 +30,28 @@ public class AnalysisResultsService {
 		return INSTANCE;
 	}
 
-	private final Map<File, IAnalysisResult> results = new HashMap<File, IAnalysisResult>();
+	private final Map<File, IAnalysisResult> resultsMap = new HashMap<File, IAnalysisResult>();
 
 	public void reset() {
-		results.clear();
+		resultsMap.clear();
 	}
 
 	public IAnalysisResult getResult(File f) {
 		assert f != null;
-		return results.get(f);
+		return resultsMap.get(f);
 	}
 
 	public void addResult(IAnalysisResult res) {
 		assert res != null;
-		results.put(res.getFile(), res);
+		resultsMap.put(res.getFile(), res);
 	}
 
-	public Collection<IAnalysisResult> getAllResults() {
-		return new ArrayList<IAnalysisResult>(results.values());
+	public Map<File, IAnalysisResult> getAllResultsMap() {
+		return new HashMap<File, IAnalysisResult>(resultsMap);
 	}
 
 	public void commitMessages() {
-		final Collection<IAnalysisResult> results = getAllResults();
+		final Collection<IAnalysisResult> results = resultsMap.values();
 		final Collection<IMessage> messages = new LinkedList<IMessage>();
 		for (IAnalysisResult result : results) {
 			messages.addAll(result.getMessages());
