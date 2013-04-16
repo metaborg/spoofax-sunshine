@@ -40,9 +40,10 @@ public class FileSource implements ISourceMany<File> {
 
     public void poke() {
 	logger.trace("Poked for changes");
-
-	logger.warn("Resetting the directory monitor (for debugging purposes)");
-	monitor.reset();
+	if (!Environment.INSTANCE().getLaunchConfiguration().incremental) {
+	    logger.warn("Resetting the directory monitor for full analysis");
+	    monitor.reset();
+	}
 	logger.debug("Getting directory changes");
 	MultiDiff<File> diff = monitor.getChanges();
 	logger.debug("Notifying {} sinks of {} file changes", sinks.size(),
