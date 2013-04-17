@@ -183,4 +183,10 @@ public class Statistics {
 	    INSTANCE().current().addDataPoint(name, time);
 	}
     }
+
+    public static void addDataPoint(String name, IValidatable<?> value) {
+	if (Environment.INSTANCE().isStatEnabled()) {
+	    INSTANCE().current().addDataPoint(name, value);
+	}
+    }
 }

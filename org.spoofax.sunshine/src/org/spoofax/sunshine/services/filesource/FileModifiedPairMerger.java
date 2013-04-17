@@ -20,20 +20,8 @@ public class FileModifiedPairMerger implements IMerger<FileModifiedPair> {
 	}
 
 	return older.getModified() != newer.getModified();
-//	return ((older == null || newer == null) && older != newer)
-//		|| !(older.getFile().getPath()
-//			.equals(newer.getFile().getPath())
-//			&& older.getFile().isDirectory() == newer.getFile()
-//				.isDirectory() && older.getModified() == newer
-//			.getModified());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.spoofax.sunshine.util.IMerger#merge(java.lang.Object,
-     * java.lang.Object)
-     */
     @Override
     public FileModifiedPair merge(FileModifiedPair older, FileModifiedPair newer) {
 	return areDifferent(older, newer) ? newer : older;

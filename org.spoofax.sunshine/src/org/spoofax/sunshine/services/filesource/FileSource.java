@@ -14,6 +14,8 @@ import org.spoofax.sunshine.pipeline.ISinkMany;
 import org.spoofax.sunshine.pipeline.ISourceMany;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
 import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.statistics.BoxValidatable;
+import org.spoofax.sunshine.statistics.Statistics;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -48,6 +50,8 @@ public class FileSource implements ISourceMany<File> {
 	MultiDiff<File> diff = monitor.getChanges();
 	logger.debug("Notifying {} sinks of {} file changes", sinks.size(),
 		diff.size());
+	Statistics.addDataPoint("DELTAFILES",
+		new BoxValidatable<Integer>(diff.size()));
 	for (ISinkMany<File> sink : sinks) {
 	    sink.sink(diff);
 	}

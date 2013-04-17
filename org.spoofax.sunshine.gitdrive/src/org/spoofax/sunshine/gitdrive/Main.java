@@ -29,7 +29,8 @@ public class Main {
 	// the main behavior
 	LaunchConfiguration launch = CLIArgumentsParser.parseArgs(args);
 	Environment.INSTANCE().setLaunchConfiguration(launch);
-
+	logger.info("Launching with:  \n{}", launch);
+	System.exit(1);
 	// the git behavior which wraps the main behavior
 	GitRunArguments gitArgs = new GitRunArguments();
 	parseGitArgs(args, gitArgs);

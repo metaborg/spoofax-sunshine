@@ -24,6 +24,7 @@ import org.spoofax.sunshine.services.messages.MessageSink;
 import org.spoofax.sunshine.services.parser.JSGLRLink;
 import org.spoofax.sunshine.services.pipelined.builders.BuilderInputTermFactoryLink;
 import org.spoofax.sunshine.services.pipelined.builders.BuilderSink;
+import org.spoofax.sunshine.statistics.IValidatable;
 import org.spoofax.sunshine.statistics.Statistics;
 
 /**
@@ -106,25 +107,17 @@ public class SunshineMainDriver {
 	logger.info("Pipeline initialized");
     }
 
-    // protected void unloadIndex() throws InterpreterException {
-    // HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(
-    // LanguageService.INSTANCE().getAnyLanguage());
-    // IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry(
-    // "INDEX");
-    // AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
-    // assert unloadIdxPrim.call(
-    // runtime.getContext(),
-    // new Strategy[0],
-    // new IStrategoTerm[] { runtime.getFactory().makeString(
-    // Environment.INSTANCE().projectDir.getAbsolutePath()) });
-    // }
-
     public void run() {
 	Statistics.startTimer("RUN");
 	logger.debug("Beginning run");
 	init();
 	initPipeline();
-	logger.trace("Beginning the push of changes");
+	Statistics
+		.addDataPoint(
+			"INCREMENTAL",
+			Environment.INSTANCE().getLaunchConfiguration().incremental ? IValidatable.ALWAYS_VALIDATABLE
+				: IValidatable.NEVER_VALIDATABLE);
+	logger.trace("Beginning pushing file changes");
 	Statistics.startTimer("POKE");
 	filesSource.poke();
 	Statistics.stopTimer();
