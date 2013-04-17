@@ -70,6 +70,7 @@ public class SunshineMainDriver {
     private void initPipeline() {
 	logger.debug("Initializing pipeline");
 	Environment env = Environment.INSTANCE();
+	SunshineMainArguments args = env.getMainArguments();
 
 	Statistics.startTimer("PIPELINE_CONSTRUCT");
 	filesSource = new FileSource(env.projectDir);
@@ -77,28 +78,31 @@ public class SunshineMainDriver {
 	LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
 		new JSGLRLink());
 	logger.trace("Created mapper {} for parser", parserMapper);
-	ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
+
+	messageSink = new MessageSink();
+	filesSource.addSink(parserMapper);
 	ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
+	parserMapper.addSink(messageSelector);
 	logger.trace("Message selector {} linked on parse mapper {}",
 		messageSelector, parserMapper);
-	messageSink = new MessageSink();
 
-	logger.trace("Wiring pipeline up");
-	filesSource.addSink(parserMapper);
-	filesSource.addSink(analyzerLink);
-	parserMapper.addSink(messageSelector);
-	analyzerLink.addSink(messageSelector);
 	messageSelector.addSink(messageSink);
 
-	SunshineMainArguments args = env.getMainArguments();
-	if (args.builder != null) {
-	    logger.trace("Creating builder links for builder {}", args.builder);
-	    BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-		    new File(env.projectDir, args.tobuildfile));
-	    BuilderSink compileBuilder = new BuilderSink(args.builder);
-	    logger.trace("Wiring builder up into pipeline");
-	    analyzerLink.addSink(inputMakeLink);
-	    inputMakeLink.addSink(compileBuilder);
+
+	if (!args.parseonly) {
+	    ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
+	    filesSource.addSink(analyzerLink);
+	    analyzerLink.addSink(messageSelector);
+	    if (args.builder != null) {
+		logger.trace("Creating builder links for builder {}",
+			args.builder);
+		BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+			new File(env.projectDir, args.tobuildfile));
+		BuilderSink compileBuilder = new BuilderSink(args.builder);
+		logger.trace("Wiring builder up into pipeline");
+		analyzerLink.addSink(inputMakeLink);
+		inputMakeLink.addSink(compileBuilder);
+	    }
 	}
 
 	Statistics.stopTimer();
