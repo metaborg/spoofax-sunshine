@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.spoofax.interpreter.library.LoggingIOAgent;
-import org.spoofax.sunshine.framework.language.ALanguage;
+import org.spoofax.sunshine.model.language.ALanguage;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -15,23 +15,24 @@ import org.spoofax.sunshine.framework.language.ALanguage;
  */
 public class SunshineIOAgent extends LoggingIOAgent {
 
-	private ALanguage language;
+    private ALanguage language;
 
-	public SunshineIOAgent() {
-		try {
-			this.setWorkingDir(Environment.INSTANCE().projectDir.getAbsolutePath());
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    public SunshineIOAgent() {
+	try {
+	    this.setWorkingDir(Environment.INSTANCE().projectDir
+		    .getAbsolutePath());
+	} catch (FileNotFoundException e) {
+	    throw new RuntimeException(e);
+	} catch (IOException e) {
+	    throw new RuntimeException(e);
 	}
+    }
 
-	public void setLanguage(ALanguage language) {
-		this.language = language;
-	}
+    public void setLanguage(ALanguage language) {
+	this.language = language;
+    }
 
-	public ALanguage getLanguage() {
-		return language;
-	}
+    public ALanguage getLanguage() {
+	return language;
+    }
 }

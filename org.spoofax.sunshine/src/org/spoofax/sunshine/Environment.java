@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
+import org.spoofax.sunshine.drivers.SunshineMainArguments;
 import org.spoofax.terms.TermFactory;
 
 /**
@@ -16,42 +17,56 @@ import org.spoofax.terms.TermFactory;
  * 
  */
 public class Environment {
-	
-	public final ITermFactory termFactory;
-	public final ParseTableManager parseTableMgr;
-	public File projectDir;
 
-	private LaunchConfiguration launchConfiguration;
-	
+    public final ITermFactory termFactory;
+    public final ParseTableManager parseTableMgr;
+    public File projectDir;
+    private SunshineMainArguments mainArgs;
 
-	private static Environment INSTANCE;
+    // private LaunchConfiguration launchConfiguration;
 
-	public static final Environment INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new Environment();
-		}
-		return INSTANCE;
+    private static Environment INSTANCE;
+
+    public static final Environment INSTANCE() {
+	if (INSTANCE == null) {
+	    INSTANCE = new Environment();
 	}
-	
-	private Environment() {
-		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
-		this.parseTableMgr = new ParseTableManager(termFactory);
-	}
+	return INSTANCE;
+    }
 
-	public void setProjectDir(File pdir){
-		try {
-			projectDir = pdir.getCanonicalFile();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private Environment() {
+	this.termFactory = new TermFactory()
+		.getFactoryWithStorageType(IStrategoTerm.MUTABLE);
+	this.parseTableMgr = new ParseTableManager(termFactory);
+    }
 
-	public void setLaunchConfiguration(LaunchConfiguration config) {
-		this.launchConfiguration = config;
+    public void setProjectDir(File pdir) {
+	try {
+	    projectDir = pdir.getCanonicalFile();
+	} catch (IOException e) {
+	    throw new RuntimeException(e);
 	}
+    }
 
-	public LaunchConfiguration getLaunchConfiguration() {
-		return launchConfiguration;
+    public File getCacheDir() {
+	assert projectDir != null;
+	File cacheDir = new File(projectDir, ".cache");
+	if (!cacheDir.exists()) {
+	    cacheDir.mkdir();
 	}
+	return cacheDir;
+    }
+
+    public boolean isStatEnabled() {
+	return mainArgs.statstarget != null;
+    }
+
+    public void setMainArguments(SunshineMainArguments args) {
+	this.mainArgs = args;
+    }
+
+    public SunshineMainArguments getMainArguments() {
+	return this.mainArgs;
+    }
 
 }
