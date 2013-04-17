@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
-import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.drivers.SunshineMainArguments;
 import org.spoofax.terms.TermFactory;
 
 /**
@@ -21,8 +21,9 @@ public class Environment {
     public final ITermFactory termFactory;
     public final ParseTableManager parseTableMgr;
     public File projectDir;
+    private SunshineMainArguments mainArgs;
 
-    private LaunchConfiguration launchConfiguration;
+    // private LaunchConfiguration launchConfiguration;
 
     private static Environment INSTANCE;
 
@@ -39,23 +40,12 @@ public class Environment {
 	this.parseTableMgr = new ParseTableManager(termFactory);
     }
 
-    private void setProjectDir(File pdir) {
+    public void setProjectDir(File pdir) {
 	try {
 	    projectDir = pdir.getCanonicalFile();
 	} catch (IOException e) {
 	    throw new RuntimeException(e);
 	}
-    }
-
-    public void setLaunchConfiguration(LaunchConfiguration config) {
-	this.launchConfiguration = config;
-	setProjectDir(new File(launchConfiguration.project_dir));
-	LanguageService.INSTANCE().registerLanguage(
-		launchConfiguration.languages);
-    }
-
-    public LaunchConfiguration getLaunchConfiguration() {
-	return launchConfiguration;
     }
 
     public File getCacheDir() {
@@ -68,7 +58,15 @@ public class Environment {
     }
 
     public boolean isStatEnabled() {
-	return getLaunchConfiguration().storeStats;
+	return mainArgs.statstarget != null;
+    }
+
+    public void setMainArguments(SunshineMainArguments args) {
+	this.mainArgs = args;
+    }
+
+    public SunshineMainArguments getMainArguments() {
+	return this.mainArgs;
     }
 
 }

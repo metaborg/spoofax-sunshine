@@ -38,14 +38,14 @@ public class SunshineGitDriver {
     private static final Logger logger = LogManager
 	    .getLogger(SunshineGitDriver.class.getName());
 
-    private GitRunArguments args;
+    private SunshineGitArguments args;
     private Git git;
     private SunshineMainDriver currentDriver;
 
     private int currentCommitIndex;
     private List<RevCommit> commits;
 
-    public SunshineGitDriver(GitRunArguments gitArgs) {
+    public SunshineGitDriver(SunshineGitArguments gitArgs) {
 	this.args = gitArgs;
 	logger.trace("New instance");
 	initGit();
@@ -120,12 +120,12 @@ public class SunshineGitDriver {
 	    logger.info("Checking out commit {}/{} with hash {}",
 		    currentCommitIndex++, numCommits, commit.getId().getName());
 	    File savedCache = null;
-	    if (Environment.INSTANCE().getLaunchConfiguration().incremental)
+	    if (!Environment.INSTANCE().getMainArguments().nonincremental)
 		savedCache = saveCacheFolder();
 	    GitUtils.cleanVeryHard(git);
 
 	    GitUtils.stepRevision(git, pCommit, commit);
-	    if (Environment.INSTANCE().getLaunchConfiguration().incremental)
+	    if (!Environment.INSTANCE().getMainArguments().nonincremental)
 		restoreCacheFolder(savedCache);
 	    else
 		unloadIndex();
@@ -137,6 +137,7 @@ public class SunshineGitDriver {
 	    pCommit = commit;
 	}
 	GitUtils.cleanVeryHard(git);
+	// FIXME: checkout the master branch after we are done
     }
 
     private File saveCacheFolder() {

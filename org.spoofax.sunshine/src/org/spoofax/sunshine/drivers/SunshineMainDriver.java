@@ -53,7 +53,7 @@ public class SunshineMainDriver {
 
     public void init() throws CompilerException {
 	logger.trace("Beginning init");
-	if (!Environment.INSTANCE().getLaunchConfiguration().incremental) {
+	if (Environment.INSTANCE().getMainArguments().nonincremental) {
 	    try {
 		FileUtils.deleteDirectory(Environment.INSTANCE().getCacheDir());
 	    } catch (IOException ioex) {
@@ -69,8 +69,10 @@ public class SunshineMainDriver {
 
     private void initPipeline() {
 	logger.debug("Initializing pipeline");
+	Environment env = Environment.INSTANCE();
+
 	Statistics.startTimer("PIPELINE_CONSTRUCT");
-	filesSource = new FileSource(Environment.INSTANCE().projectDir);
+	filesSource = new FileSource(env.projectDir);
 	logger.trace("Created file source {}", filesSource);
 	LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
 		new JSGLRLink());
@@ -88,15 +90,12 @@ public class SunshineMainDriver {
 	analyzerLink.addSink(messageSelector);
 	messageSelector.addSink(messageSink);
 
-	if (Environment.INSTANCE().getLaunchConfiguration().postAnalysisBuilder != null) {
-	    logger.trace("Creating builder links for builder {}", Environment
-		    .INSTANCE().getLaunchConfiguration().postAnalysisBuilder);
+	SunshineMainArguments args = env.getMainArguments();
+	if (args.builder != null) {
+	    logger.trace("Creating builder links for builder {}", args.builder);
 	    BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-		    new File(Environment.INSTANCE().projectDir, Environment
-			    .INSTANCE().getLaunchConfiguration().builderTarget
-			    .getPath()));
-	    BuilderSink compileBuilder = new BuilderSink(Environment.INSTANCE()
-		    .getLaunchConfiguration().postAnalysisBuilder);
+		    new File(env.projectDir, args.tobuildfile));
+	    BuilderSink compileBuilder = new BuilderSink(args.builder);
 	    logger.trace("Wiring builder up into pipeline");
 	    analyzerLink.addSink(inputMakeLink);
 	    inputMakeLink.addSink(compileBuilder);
@@ -115,8 +114,8 @@ public class SunshineMainDriver {
 	Statistics
 		.addDataPoint(
 			"INCREMENTAL",
-			Environment.INSTANCE().getLaunchConfiguration().incremental ? IValidatable.ALWAYS_VALIDATABLE
-				: IValidatable.NEVER_VALIDATABLE);
+			Environment.INSTANCE().getMainArguments().nonincremental ? IValidatable.NEVER_VALIDATABLE
+				: IValidatable.ALWAYS_VALIDATABLE);
 	logger.trace("Beginning pushing file changes");
 	Statistics.startTimer("POKE");
 	filesSource.poke();

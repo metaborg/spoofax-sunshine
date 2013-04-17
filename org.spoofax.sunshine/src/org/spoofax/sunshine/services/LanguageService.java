@@ -12,6 +12,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.model.language.ALanguage;
 
 /**
@@ -27,6 +29,9 @@ import org.spoofax.sunshine.model.language.ALanguage;
  * 
  */
 public class LanguageService {
+
+    private static final Logger logger = LogManager
+	    .getLogger(LanguageService.class.getName());
 
     private static LanguageService INSTANCE;
     private final Map<String, ALanguage> exten2lang = new HashMap<String, ALanguage>();
@@ -58,6 +63,7 @@ public class LanguageService {
 	for (String exten : lang.getFileExtensions()) {
 	    exten2lang.put(exten, lang);
 	}
+	logger.debug("Registered language {}", lang);
     }
 
     public void registerLanguage(Collection<ALanguage> langs) {

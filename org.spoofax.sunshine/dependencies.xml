@@ -13,15 +13,6 @@
 		<get src="http://search.maven.org/remotecontent?filepath=com/google/guava/guava/14.0.1/guava-14.0.1.jar"
 		     dest="${lib.dir}/guava-14.0.1.jar" />
 
-		<get src="http://downloads.sourceforge.net/project/jsch/jsch.jar/0.1.49/jsch-0.1.49.jar?r=&amp;ts=1364338684&amp;use_mirror=kent"
-		     dest="${lib.dir}/jsch-0.1.49.jar" />
-
-		<get src="http://download.eclipse.org/jgit/maven/org/eclipse/jgit/org.eclipse.jgit/2.3.1.201302201838-r/org.eclipse.jgit-2.3.1.201302201838-r.jar"
-		     dest="${lib.dir}/org.eclipse.jgit-2.3.jar" />
-
-		<get src="http://search.maven.org/remotecontent?filepath=org/gitective/gitective-core/0.9.9/gitective-core-0.9.9.jar"
-		     dest="${lib.dir}/gitective-core-0.9.9.jar" />
-
 		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-beta4/apache-log4j-2.0-beta4-bin.zip"
 		     dest="${lib.dir}/tmp" />
 		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin.zip" dest="${lib.dir}/tmp" />
@@ -29,6 +20,9 @@
 		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-api-2.0-beta4-javadoc.jar" todir="${lib.dir}" />
 		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-core-2.0-beta4.jar" todir="${lib.dir}" />
 		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta4-bin/log4j-core-2.0-beta4-javadoc.jar" todir="${lib.dir}" />
+
+		<get src="http://repo1.maven.org/maven2/com/beust/jcommander/1.30/jcommander-1.30.jar"
+		     dest="${lib.dir}/jcommander-1.30.jar" />
 
 		<delete dir="${lib.dir}/tmp" />
 	</target>

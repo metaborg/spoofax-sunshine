@@ -42,7 +42,7 @@ public class FileSource implements ISourceMany<File> {
 
     public void poke() {
 	logger.trace("Poked for changes");
-	if (!Environment.INSTANCE().getLaunchConfiguration().incremental) {
+	if (Environment.INSTANCE().getMainArguments().nonincremental) {
 	    logger.warn("Resetting the directory monitor for full analysis");
 	    monitor.reset();
 	}

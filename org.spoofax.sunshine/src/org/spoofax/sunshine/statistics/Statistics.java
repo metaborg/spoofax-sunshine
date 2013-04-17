@@ -36,7 +36,7 @@ public class Statistics {
     private static Statistics INSTANCE;
 
     private Statistics() {
-	File f = Environment.INSTANCE().getLaunchConfiguration().storeStatsAt;
+	File f = new File(Environment.INSTANCE().getMainArguments().statstarget);
 	targetFile = new File(f.getParent(), FilenameUtils.getBaseName(f
 		.getName())
 		+ "_"

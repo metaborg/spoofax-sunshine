@@ -42,10 +42,6 @@ public abstract class ALanguage {
 
     public abstract String getAnalysisFunction();
 
-    public abstract void overrideAnalysisFunction(String newFunction);
-
-    public abstract void restoreAnalysisFunction();
-
     @Override
     public boolean equals(Object obj) {
 	if (obj instanceof ALanguage) {
@@ -58,6 +54,18 @@ public abstract class ALanguage {
     @Override
     public int hashCode() {
 	return getName().hashCode() + 42;
+    }
+
+    @Override
+    public String toString() {
+	String s = "";
+	s += "Name: " + name + "\n";
+	s += "Nature: " + nature + "\n";
+	s += "Extensions: " + getFileExtensions() + "\n";
+	s += "Parsetable: " + getParseTableProvider() + "\n";
+	s += "Code files: " + getCompilerFiles() + "\n";
+	s += "Observer: " + getAnalysisFunction() + "\n";
+	return s;
     }
 
 }

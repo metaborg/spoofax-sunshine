@@ -15,7 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.spoofax.sunshine.model.language.ALanguage;
-import org.spoofax.sunshine.model.language.AdHocJarBasedLanguage;
+import org.spoofax.sunshine.model.language.Language;
 import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
 
 /**
@@ -31,7 +31,7 @@ public class AdHocJarBasedLanguageTest {
      */
     @Before
     public void setUp() throws Exception {
-	lang = new AdHocJarBasedLanguage("foolang", new String[] { ".txt",
+	lang = new Language("foolang", new String[] { ".txt",
 		".foo" }, "StartS", new File("hello"), "some-analysis",
 		new File("jar.jar"));
     }
@@ -46,7 +46,7 @@ public class AdHocJarBasedLanguageTest {
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#getFileExtensions()}
+     * {@link org.spoofax.sunshine.model.language.Language#getFileExtensions()}
      * .
      */
     @Test
@@ -60,7 +60,7 @@ public class AdHocJarBasedLanguageTest {
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#getStartSymbol()}
+     * {@link org.spoofax.sunshine.model.language.Language#getStartSymbol()}
      * .
      */
     @Test
@@ -70,7 +70,7 @@ public class AdHocJarBasedLanguageTest {
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#getParseTableProvider()}
+     * {@link org.spoofax.sunshine.model.language.Language#getParseTableProvider()}
      * .
      */
     @Test
@@ -81,7 +81,7 @@ public class AdHocJarBasedLanguageTest {
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#getCompilerFiles()}
+     * {@link org.spoofax.sunshine.model.language.Language#getCompilerFiles()}
      * .
      */
     @Test
@@ -93,7 +93,7 @@ public class AdHocJarBasedLanguageTest {
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#getAnalysisFunction()}
+     * {@link org.spoofax.sunshine.model.language.Language#getAnalysisFunction()}
      * .
      */
     @Test
@@ -103,124 +103,124 @@ public class AdHocJarBasedLanguageTest {
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test
     public void testAdHocJarBasedLanguage1() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"StartS", new File("hello"), "some-analysis", new File(
 			"jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage2() {
-	new AdHocJarBasedLanguage(null, new String[] { ".txt", ".foo" },
+	new Language(null, new String[] { ".txt", ".foo" },
 		"StartS", new File("hello"), "some-analysis", new File(
 			"jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage3() {
-	new AdHocJarBasedLanguage("foolang", null, "StartS", new File("hello"),
+	new Language("foolang", null, "StartS", new File("hello"),
 		"some-analysis", new File("jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage4() {
-	new AdHocJarBasedLanguage("foolang", new String[0], "StartS", new File(
+	new Language("foolang", new String[0], "StartS", new File(
 		"hello"), "some-analysis", new File("jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage5() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		null, new File("hello"), "some-analysis", new File("jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage6() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"", new File("hello"), "some-analysis", new File("jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage7() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"StartS", null, "some-analysis", new File("jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage8() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"StartS", new File("hello"), null, new File("jar.jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage9() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"StartS", new File("hello"), "some-analysis", null);
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage10() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"StartS", new File("hello"), "some-analysis", new File("jar"));
     }
 
     /**
      * Test method for
-     * {@link org.spoofax.sunshine.model.language.AdHocJarBasedLanguage#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+     * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
      * .
      */
     @Test(expected = AssertionError.class)
     public void testAdHocJarBasedLanguage11() {
-	new AdHocJarBasedLanguage("foolang", new String[] { ".txt", ".foo" },
+	new Language("foolang", new String[] { ".txt", ".foo" },
 		"StartS", new File("hello"), "", new File("jar.jar"));
     }
 }

@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.spoofax.sunshine.drivers.SunshineLanguageArguments;
 import org.spoofax.sunshine.parser.model.IParseTableProvider;
 import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
 
@@ -14,16 +15,25 @@ import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class AdHocJarBasedLanguage extends ALanguage {
+public class Language extends ALanguage {
 
     public final String[] extens;
     public final String startSymbol;
     public final FileBasedParseTableProvider parseTableProvider;
     public final String analysisFunction;
     public final File[] jarfiles;
-    public String overrideAnalysisFunction;
 
-    public AdHocJarBasedLanguage(String name, String[] extens,
+    public static Language fromArguments(SunshineLanguageArguments args) {
+	String[] extens = args.extens.toArray(new String[args.extens.size()]);
+	File[] jars = new File[args.jars.size()];
+	for (int idx = 0; idx < jars.length; idx++) {
+	    jars[idx] = new File(args.jars.get(idx));
+	}
+	return new Language(args.lang, extens, args.ssymb, new File(args.tbl),
+		args.observer, jars);
+    }
+
+    public Language(String name, String[] extens,
 	    String startSymbol, File parseTable, String analysisFunction,
 	    File[] jars) {
 	super(name, LanguageNature.JAR_NATURE);
@@ -35,13 +45,11 @@ public class AdHocJarBasedLanguage extends ALanguage {
 	assert analysisFunction != null && analysisFunction.length() > 0;
 	assert jars != null && jars.length > 0;
 
-	this.extens = new String[extens.length];
-	System.arraycopy(extens, 0, this.extens, 0, extens.length);
+	this.extens = extens;
 	this.startSymbol = startSymbol;
 	this.parseTableProvider = new FileBasedParseTableProvider(parseTable);
 	this.analysisFunction = analysisFunction;
-	this.jarfiles = new File[jars.length];
-	System.arraycopy(jars, 0, this.jarfiles, 0, jars.length);
+	this.jarfiles = jars;
     }
 
     @Override
@@ -61,25 +69,12 @@ public class AdHocJarBasedLanguage extends ALanguage {
 
     @Override
     public String getAnalysisFunction() {
-	if (overrideAnalysisFunction != null) {
-	    return overrideAnalysisFunction;
-	}
 	return analysisFunction;
     }
 
     @Override
     public File[] getCompilerFiles() {
 	return this.jarfiles;
-    }
-
-    @Override
-    public void overrideAnalysisFunction(String newFunction) {
-	overrideAnalysisFunction = newFunction;
-    }
-
-    @Override
-    public void restoreAnalysisFunction() {
-	overrideAnalysisFunction = null;
     }
 
 }

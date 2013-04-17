@@ -7,7 +7,7 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.spoofax.sunshine.gitdrive.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--extens app&#10;--lang-jar&#10;&#9;../../webdsl2/include/webdsl.jar&#10;&#9;../../webdsl2/include/webdsl-java.jar&#10;&#9;../../webdsl2/lib/task.jar&#10;--lang-tbl&#10;&#9;../../webdsl2/include/WebDSL.tbl&#10;--start-symbol Unit&#10;--lang-name WebDSL&#10;--proj-dir&#10;&#9;../../yellowgrass/&#10;--builder webdsl-metrics&#10;--build-on yellowgrass.app&#10;--stats stats/stats_yg.csv&#10;--from 6777fcf3a54dce7b26d8fa17e8dd8fe99c4a9186&#10;--to 1a3bdd0c11fc64ba8b9b5a63cd87f1fcf5ca20f9"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--lang WebDSL&#10;--jar ../../webdsl2/include/webdsl.jar&#10;--jar ../../webdsl2/include/webdsl-java.jar&#10;--jar ../../webdsl2/lib/task.jar&#10;--table ../../webdsl2/include/WebDSL.tbl&#10;--ssymb Unit&#10;--ext app&#10;&#10;--project ../../yellowgrass/&#10;--builder webdsl-metrics&#10;--build-on yellowgrass.app&#10;--stats stats/stats_yg.csv&#10;&#10;--from 6777fcf3a54dce7b26d8fa17e8dd8fe99c4a9186&#10;--to 1a3bdd0c11fc64ba8b9b5a63cd87f1fcf5ca20f9"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.spoofax.sunshine.gitdrive"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea:org.spoofax.sunshine…,org.metaborg.runtime...&#10;-server&#10;-Xss16m&#10;-Xms1G&#10;-Xmx2G"/>
 </launchConfiguration>

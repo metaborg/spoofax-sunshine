@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="lib/gitective-core-0.9.9.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.49.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.3.jar"/>
-	<classpathentry kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

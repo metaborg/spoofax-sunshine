@@ -17,5 +17,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta4-javadoc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

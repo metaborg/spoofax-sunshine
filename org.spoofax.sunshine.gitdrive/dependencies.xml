@@ -15,9 +15,6 @@
 		<get src="http://search.maven.org/remotecontent?filepath=org/gitective/gitective-core/0.9.9/gitective-core-0.9.9.jar"
 		     dest="${lib.dir}/gitective-core-0.9.9.jar" />
 
-		<get src="http://repo1.maven.org/maven2/com/beust/jcommander/1.30/jcommander-1.30.jar"
-				     dest="${lib.dir}/jcommander-1.30.jar" />
-		
 		<delete dir="${lib.dir}/tmp" />
 	</target>
 </project>

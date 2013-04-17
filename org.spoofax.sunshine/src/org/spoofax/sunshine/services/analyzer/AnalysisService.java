@@ -76,7 +76,7 @@ public class AnalysisService {
     private Collection<IStrategoParseOrAnalyzeResult> analyze(ALanguage lang,
 	    Collection<File> files) throws CompilerException {
 	logger.debug("Analyzing {} files of the {} language", files.size(),
-		lang);
+		lang.getName());
 	final ITermFactory termFactory = Environment.INSTANCE().termFactory;
 	final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(
 		lang);
