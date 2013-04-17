@@ -48,6 +48,7 @@ public class Main {
 
     private static void parseArguments(String[] args, SunshineGitArguments into) {
 	logger.trace("Parsing arguments");
+	jc = new JCommander();
 	jc.setColumnSize(120);
 	jc.addObject(into);
 	try {

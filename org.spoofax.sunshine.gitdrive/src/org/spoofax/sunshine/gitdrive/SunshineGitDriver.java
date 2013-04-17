@@ -137,7 +137,9 @@ public class SunshineGitDriver {
 	    pCommit = commit;
 	}
 	GitUtils.cleanVeryHard(git);
-	// FIXME: checkout the master branch after we are done
+	GitUtils.checkoutBranch(git, "master");
+	GitUtils.updateSubmodule(git);
+	GitUtils.deleteBranch(git, pCommit.getName());
     }
 
     private File saveCacheFolder() {

@@ -78,13 +78,30 @@ public final class GitUtils {
 	}
     }
 
-    private static void deleteBranch(Git git, String branchname)
-	    throws GitAPIException {
-	git.branchDelete().setBranchNames(branchname).setForce(true).call();
+    public static void checkoutBranch(Git git, String branchname) {
+	try {
+	    git.checkout().setName(branchname).call();
+	} catch (GitAPIException gitex) {
+	    throw new CompilerException("Failed to checkout out branch "
+		    + branchname, gitex);
+	}
     }
 
-    private static void updateSubmodule(Git git) throws GitAPIException {
-	git.submoduleUpdate().call();
+    public static void deleteBranch(Git git, String branchname) {
+	try {
+	    git.branchDelete().setBranchNames(branchname).setForce(true).call();
+	} catch (GitAPIException gitex) {
+	    throw new CompilerException(
+		    "Failed to delete branch " + branchname, gitex);
+	}
+    }
+
+    public static void updateSubmodule(Git git) {
+	try {
+	    git.submoduleUpdate().call();
+	} catch (GitAPIException gitex) {
+	    throw new CompilerException("Failed to update submodules", gitex);
+	}
     }
 
 }
