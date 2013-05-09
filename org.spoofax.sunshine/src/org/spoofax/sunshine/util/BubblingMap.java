@@ -119,7 +119,8 @@ public class BubblingMap<K, V> extends AbstractMap<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-	return top.containsKey(key) || bottom.containsKey(key);
+		return top.containsKey(key)
+				|| (bottom != null && bottom.containsKey(key));
     }
 
     public Map<K, V> top() {
