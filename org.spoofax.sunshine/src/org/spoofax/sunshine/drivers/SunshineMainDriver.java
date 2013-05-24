@@ -32,102 +32,95 @@ import org.spoofax.sunshine.statistics.Statistics;
  * 
  */
 public class SunshineMainDriver {
-    private static final Logger logger = LogManager
-	    .getLogger(SunshineMainDriver.class.getName());
+	private static final Logger logger = LogManager.getLogger(SunshineMainDriver.class.getName());
 
-    private MessageSink messageSink;
-    private FileSource filesSource;
+	private MessageSink messageSink;
+	private FileSource filesSource;
 
-    public SunshineMainDriver() {
-	logger.trace("Initializing & setting uncaught exception handler");
-	Thread.currentThread().setUncaughtExceptionHandler(
-		new CompilerCrashHandler());
-    }
-
-    protected void emitMessages() {
-	final Collection<IMessage> msgs = messageSink.getMessages();
-	for (IMessage msg : msgs) {
-	    System.err.println(msg);
-	}
-    }
-
-    public void init() throws CompilerException {
-	logger.trace("Beginning init");
-	if (Environment.INSTANCE().getMainArguments().nonincremental) {
-	    try {
-		FileUtils.deleteDirectory(Environment.INSTANCE().getCacheDir());
-	    } catch (IOException ioex) {
-		logger.error(
-			"Could not delete cache directory {} because of exception {}",
-			Environment.INSTANCE().getCacheDir(), ioex);
-		throw new CompilerException("Could not delete cache directory",
-			ioex);
-	    }
-	}
-	logger.trace("Init completed");
-    }
-
-    private void initPipeline() {
-	logger.debug("Initializing pipeline");
-	Environment env = Environment.INSTANCE();
-	SunshineMainArguments args = env.getMainArguments();
-
-	Statistics.startTimer("PIPELINE_CONSTRUCT");
-	filesSource = new FileSource(env.projectDir);
-	logger.trace("Created file source {}", filesSource);
-	LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
-		new JSGLRLink());
-	logger.trace("Created mapper {} for parser", parserMapper);
-
-	messageSink = new MessageSink();
-	filesSource.addSink(parserMapper);
-	ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
-	parserMapper.addSink(messageSelector);
-	logger.trace("Message selector {} linked on parse mapper {}",
-		messageSelector, parserMapper);
-
-	messageSelector.addSink(messageSink);
-
-
-	if (!args.parseonly) {
-	    ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
-	    filesSource.addSink(analyzerLink);
-	    analyzerLink.addSink(messageSelector);
-	    if (args.builder != null) {
-		logger.trace("Creating builder links for builder {}",
-			args.builder);
-		BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-			new File(env.projectDir, args.tobuildfile));
-		BuilderSink compileBuilder = new BuilderSink(args.builder);
-		logger.trace("Wiring builder up into pipeline");
-		analyzerLink.addSink(inputMakeLink);
-		inputMakeLink.addSink(compileBuilder);
-	    }
+	public SunshineMainDriver() {
+		logger.trace("Initializing & setting uncaught exception handler");
+		Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
 	}
 
-	Statistics.stopTimer();
+	protected void emitMessages() {
+		final Collection<IMessage> msgs = messageSink.getMessages();
+		for (IMessage msg : msgs) {
+			System.err.println(msg);
+		}
+	}
 
-	logger.info("Pipeline initialized");
-    }
+	public void init() throws CompilerException {
+		logger.trace("Beginning init");
+		if (Environment.INSTANCE().getMainArguments().nonincremental) {
+			try {
+				FileUtils.deleteDirectory(Environment.INSTANCE().getCacheDir());
+			} catch (IOException ioex) {
+				logger.error("Could not delete cache directory {} because of exception {}",
+						Environment.INSTANCE().getCacheDir(), ioex);
+				throw new CompilerException("Could not delete cache directory", ioex);
+			}
+		}
+		logger.trace("Init completed");
+	}
 
-    public void run() {
-	Statistics.startTimer("RUN");
-	logger.debug("Beginning run");
-	init();
-	initPipeline();
-	Statistics
-		.addDataPoint(
-			"INCREMENTAL",
-			Environment.INSTANCE().getMainArguments().nonincremental ? IValidatable.NEVER_VALIDATABLE
-				: IValidatable.ALWAYS_VALIDATABLE);
-	logger.trace("Beginning pushing file changes");
-	Statistics.startTimer("POKE");
-	filesSource.poke();
-	Statistics.stopTimer();
-	logger.trace("Emitting messages");
-	emitMessages();
-	Statistics.stopTimer();
-	Statistics.toNext();
-    }
+	private void initPipeline() {
+		logger.debug("Initializing pipeline");
+		Environment env = Environment.INSTANCE();
+		SunshineMainArguments args = env.getMainArguments();
+
+		Statistics.startTimer("PIPELINE_CONSTRUCT");
+		filesSource = new FileSource(env.projectDir);
+		logger.trace("Created file source {}", filesSource);
+		LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
+				new JSGLRLink());
+		logger.trace("Created mapper {} for parser", parserMapper);
+
+		messageSink = new MessageSink();
+		filesSource.addSink(parserMapper);
+		ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
+		parserMapper.addSink(messageSelector);
+		logger.trace("Message selector {} linked on parse mapper {}", messageSelector, parserMapper);
+
+		messageSelector.addSink(messageSink);
+
+		if (!args.parseonly) {
+			ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
+			filesSource.addSink(analyzerLink);
+			analyzerLink.addSink(messageSelector);
+			if (args.builder != null) {
+				logger.trace("Creating builder links for builder {}", args.builder);
+				BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+						new File(env.projectDir, args.tobuildfile));
+				BuilderSink compileBuilder = new BuilderSink(args.builder);
+				logger.trace("Wiring builder up into pipeline");
+				analyzerLink.addSink(inputMakeLink);
+				inputMakeLink.addSink(compileBuilder);
+			}
+		}
+
+		Statistics.stopTimer();
+
+		logger.info("Pipeline initialized");
+	}
+
+	public void run() {
+		Statistics.startTimer("RUN");
+		logger.debug("Beginning run");
+		init();
+		initPipeline();
+		Statistics
+				.addDataPoint(
+						"INCREMENTAL",
+						Environment.INSTANCE().getMainArguments().nonincremental ? IValidatable.NEVER_VALIDATABLE
+								: IValidatable.ALWAYS_VALIDATABLE);
+		logger.trace("Beginning pushing file changes");
+		Statistics.startTimer("POKE");
+		filesSource.poke();
+		Statistics.stopTimer();
+		logger.trace("Emitting messages");
+		emitMessages();
+		Statistics.stopTimer();
+		Statistics.toNext();
+	}
 
 }

@@ -16,25 +16,22 @@ import org.spoofax.sunshine.pipeline.diff.MultiDiff;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class MessageExtractorLink extends
-	ALinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> {
-    private static final Logger logger = LogManager
-	    .getLogger(MessageExtractorLink.class.getName());
+public class MessageExtractorLink extends ALinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> {
+	private static final Logger logger = LogManager.getLogger(MessageExtractorLink.class.getName());
 
-    @Override
-    public MultiDiff<IMessage> sinkWork(
-	    MultiDiff<IStrategoParseOrAnalyzeResult> input) {
-	logger.trace("Selecting messages from {} inputs", input.size());
-	final MultiDiff<IMessage> result = new MultiDiff<IMessage>();
+	@Override
+	public MultiDiff<IMessage> sinkWork(MultiDiff<IStrategoParseOrAnalyzeResult> input) {
+		logger.trace("Selecting messages from {} inputs", input.size());
+		final MultiDiff<IMessage> result = new MultiDiff<IMessage>();
 
-	for (Diff<IStrategoParseOrAnalyzeResult> diff : input) {
-	    final DiffKind kind = diff.getDiffKind();
-	    for (IMessage msg : diff.getPayload().messages()) {
-		result.add(new Diff<IMessage>(msg, kind));
-	    }
+		for (Diff<IStrategoParseOrAnalyzeResult> diff : input) {
+			final DiffKind kind = diff.getDiffKind();
+			for (IMessage msg : diff.getPayload().messages()) {
+				result.add(new Diff<IMessage>(msg, kind));
+			}
+		}
+		logger.trace("Messages selected");
+		return result;
 	}
-	logger.trace("Messages selected");
-	return result;
-    }
 
 }

@@ -16,35 +16,35 @@ import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
  */
 public class JSGLRParseResult implements IStrategoParseOrAnalyzeResult {
 
-    private File file;
-    private IStrategoTerm ast;
-    private Collection<IMessage> messages;
+	private File file;
+	private IStrategoTerm ast;
+	private Collection<IMessage> messages;
 
-    public JSGLRParseResult(File f) {
-	this.file = f;
-    }
+	public JSGLRParseResult(File f) {
+		this.file = f;
+	}
 
-    public void setAst(IStrategoTerm ast) {
-	this.ast = ast;
-    }
+	public void setAst(IStrategoTerm ast) {
+		this.ast = ast;
+	}
 
-    public void setMessages(Collection<IMessage> messages) {
-	this.messages = messages;
-    }
+	public void setMessages(Collection<IMessage> messages) {
+		this.messages = messages;
+	}
 
-    @Override
-    public File file() {
-	return file;
-    }
+	@Override
+	public File file() {
+		return file;
+	}
 
-    @Override
-    public IStrategoTerm ast() {
-	return ast;
-    }
+	@Override
+	public IStrategoTerm ast() {
+		return ast;
+	}
 
-    @Override
-    public Collection<IMessage> messages() {
-	return messages;
-    }
+	@Override
+	public Collection<IMessage> messages() {
+		return messages;
+	}
 
 }

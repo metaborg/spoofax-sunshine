@@ -5,15 +5,15 @@ package org.spoofax.sunshine.model.messages;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  */
 public interface IMessage {
-    MessageType type();
+	MessageType type();
 
-    MessageSeverity severity();
+	MessageSeverity severity();
 
-    String file();
+	String file();
 
-    String message();
+	String message();
 
-    ARegion region();
+	ARegion region();
 
-    Throwable getAttachedException();
+	Throwable getAttachedException();
 }

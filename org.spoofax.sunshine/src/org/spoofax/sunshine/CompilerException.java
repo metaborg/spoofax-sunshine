@@ -9,20 +9,20 @@ package org.spoofax.sunshine;
  */
 public class CompilerException extends RuntimeException {
 
-    /**
+	/**
 	 * 
 	 */
-    private static final long serialVersionUID = 1786746541057331233L;
+	private static final long serialVersionUID = 1786746541057331233L;
 
-    public CompilerException(String msg) {
-	super(msg);
-    }
+	public CompilerException(String msg) {
+		super(msg);
+	}
 
-    public CompilerException(String msg, Throwable t) {
-	super(msg, t);
-    }
+	public CompilerException(String msg, Throwable t) {
+		super(msg, t);
+	}
 
-    public CompilerException(Throwable t) {
-	super(t);
-    }
+	public CompilerException(Throwable t) {
+		super(t);
+	}
 }

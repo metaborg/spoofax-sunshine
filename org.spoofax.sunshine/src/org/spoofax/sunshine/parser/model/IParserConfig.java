@@ -8,9 +8,9 @@ package org.spoofax.sunshine.parser.model;
  * 
  */
 public interface IParserConfig {
-    String getStartSymbol();
+	String getStartSymbol();
 
-    IParseTableProvider getParseTableProvider();
+	IParseTableProvider getParseTableProvider();
 
-    int getTimeout();
+	int getTimeout();
 }

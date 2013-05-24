@@ -13,15 +13,15 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  */
 public class CompleteWorkUnitPrimitive extends AbstractPrimitive {
 
-    public CompleteWorkUnitPrimitive() {
-	super("SSL_EXT_complete_work_unit", 0, 0);
-    }
+	public CompleteWorkUnitPrimitive() {
+		super("SSL_EXT_complete_work_unit", 0, 0);
+	}
 
-    @Override
-    public boolean call(IContext env, Strategy[] svars, IStrategoTerm[] tvars)
-	    throws InterpreterException {
+	@Override
+	public boolean call(IContext env, Strategy[] svars, IStrategoTerm[] tvars)
+			throws InterpreterException {
 
-	return true;
-    }
+		return true;
+	}
 
 }

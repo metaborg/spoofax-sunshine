@@ -10,5 +10,5 @@ import org.spoofax.sunshine.pipeline.diff.MultiDiff;
  * 
  */
 public interface ISinkMany<P> {
-    public void sink(MultiDiff<P> product);
+	public void sink(MultiDiff<P> product);
 }

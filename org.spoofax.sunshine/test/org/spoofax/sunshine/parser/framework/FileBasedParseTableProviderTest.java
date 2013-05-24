@@ -21,100 +21,91 @@ import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
  */
 public class FileBasedParseTableProviderTest {
 
-    File tbl;
+	File tbl;
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-	tbl = new File(this.getClass().getClassLoader()
-		.getResource("Entity.tbl").toURI());
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-	tbl = null;
-    }
-
-    /**
-     * Test method for
-     * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()}
-     * .
-     */
-    @Test
-    public void testGetParseTable1() {
-	FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(tbl);
-	try {
-	    ParseTable tbl = tblp.getParseTable();
-	    assertNotNull(tbl);
-	} catch (ParserException e) {
-	    assertFalse(true);
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		tbl = new File(this.getClass().getClassLoader().getResource("Entity.tbl").toURI());
 	}
-    }
 
-    /**
-     * Test method for
-     * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()}
-     * .
-     */
-    @Test
-    public void testGetParseTable2() {
-	FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(tbl,
-		true);
-	try {
-	    ParseTable tbl1 = tblp.getParseTable();
-	    ParseTable tbl2 = tblp.getParseTable();
-	    assertEquals(tbl1, tbl2);
-	} catch (ParserException e) {
-	    assertFalse(true);
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		tbl = null;
 	}
-    }
 
-    /**
-     * Test method for
-     * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()}
-     * .
-     */
-    @Test
-    public void testGetParseTable3() {
-	FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(tbl,
-		false);
-	try {
-	    ParseTable tbl1 = tblp.getParseTable();
-	    ParseTable tbl2 = tblp.getParseTable();
-	    assertFalse(tbl1.equals(tbl2));
-	} catch (ParserException e) {
-	    assertFalse(true);
+	/**
+	 * Test method for
+	 * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()} .
+	 */
+	@Test
+	public void testGetParseTable1() {
+		FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(tbl);
+		try {
+			ParseTable tbl = tblp.getParseTable();
+			assertNotNull(tbl);
+		} catch (ParserException e) {
+			assertFalse(true);
+		}
 	}
-    }
 
-    /**
-     * Test method for
-     * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()}
-     * .
-     * 
-     * @throws ParserException
-     */
-    @Test(expected = ParserException.class)
-    public void testGetParseTable4() throws ParserException {
-	FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(
-		new File("foo"), true);
+	/**
+	 * Test method for
+	 * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()} .
+	 */
+	@Test
+	public void testGetParseTable2() {
+		FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(tbl, true);
+		try {
+			ParseTable tbl1 = tblp.getParseTable();
+			ParseTable tbl2 = tblp.getParseTable();
+			assertEquals(tbl1, tbl2);
+		} catch (ParserException e) {
+			assertFalse(true);
+		}
+	}
 
-	tblp.getParseTable();
-    }
+	/**
+	 * Test method for
+	 * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()} .
+	 */
+	@Test
+	public void testGetParseTable3() {
+		FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(tbl, false);
+		try {
+			ParseTable tbl1 = tblp.getParseTable();
+			ParseTable tbl2 = tblp.getParseTable();
+			assertFalse(tbl1.equals(tbl2));
+		} catch (ParserException e) {
+			assertFalse(true);
+		}
+	}
 
-    /**
-     * Test method for
-     * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()}
-     * .
-     */
-    @Test(expected = AssertionError.class)
-    public void testGetParseTable5() {
-	new FileBasedParseTableProvider(null, false);
-    }
+	/**
+	 * Test method for
+	 * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()} .
+	 * 
+	 * @throws ParserException
+	 */
+	@Test(expected = ParserException.class)
+	public void testGetParseTable4() throws ParserException {
+		FileBasedParseTableProvider tblp = new FileBasedParseTableProvider(new File("foo"), true);
+
+		tblp.getParseTable();
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.spoofax.sunshine.services.parser.FileBasedParseTableProvider#getParseTable()} .
+	 */
+	@Test(expected = AssertionError.class)
+	public void testGetParseTable5() {
+		new FileBasedParseTableProvider(null, false);
+	}
 
 }

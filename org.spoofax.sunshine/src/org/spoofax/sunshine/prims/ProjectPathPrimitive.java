@@ -15,20 +15,20 @@ import org.spoofax.sunshine.Environment;
  */
 public class ProjectPathPrimitive extends AbstractPrimitive {
 
-    public ProjectPathPrimitive() {
-	super("SSL_EXT_projectpath", 0, 0);
-    }
+	public ProjectPathPrimitive() {
+		super("SSL_EXT_projectpath", 0, 0);
+	}
 
-    @Override
-    public boolean call(IContext env, Strategy[] svars, IStrategoTerm[] tvars)
-	    throws InterpreterException {
+	@Override
+	public boolean call(IContext env, Strategy[] svars, IStrategoTerm[] tvars)
+			throws InterpreterException {
 
-	final Environment sunshineEnv = Environment.INSTANCE();
+		final Environment sunshineEnv = Environment.INSTANCE();
 
-	final IStrategoString projectPath = sunshineEnv.termFactory
-		.makeString(sunshineEnv.projectDir.getAbsolutePath());
-	env.setCurrent(projectPath);
-	return true;
-    }
+		final IStrategoString projectPath = sunshineEnv.termFactory
+				.makeString(sunshineEnv.projectDir.getAbsolutePath());
+		env.setCurrent(projectPath);
+		return true;
+	}
 
 }

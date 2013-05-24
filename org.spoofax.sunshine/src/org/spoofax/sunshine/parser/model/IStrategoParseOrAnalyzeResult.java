@@ -13,12 +13,11 @@ import org.spoofax.sunshine.model.messages.IMessage;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public interface IStrategoParseOrAnalyzeResult extends
-	IParseOrAnalyzeResult<IStrategoTerm> {
+public interface IStrategoParseOrAnalyzeResult extends IParseOrAnalyzeResult<IStrategoTerm> {
 
-    public IStrategoTerm ast();
+	public IStrategoTerm ast();
 
-    public Collection<IMessage> messages();
+	public Collection<IMessage> messages();
 
-    public File file();
+	public File file();
 }

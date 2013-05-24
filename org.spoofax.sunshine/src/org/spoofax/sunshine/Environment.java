@@ -18,55 +18,54 @@ import org.spoofax.terms.TermFactory;
  */
 public class Environment {
 
-    public final ITermFactory termFactory;
-    public final ParseTableManager parseTableMgr;
-    public File projectDir;
-    private SunshineMainArguments mainArgs;
+	public final ITermFactory termFactory;
+	public final ParseTableManager parseTableMgr;
+	public File projectDir;
+	private SunshineMainArguments mainArgs;
 
-    // private LaunchConfiguration launchConfiguration;
+	// private LaunchConfiguration launchConfiguration;
 
-    private static Environment INSTANCE;
+	private static Environment INSTANCE;
 
-    public static final Environment INSTANCE() {
-	if (INSTANCE == null) {
-	    INSTANCE = new Environment();
+	public static final Environment INSTANCE() {
+		if (INSTANCE == null) {
+			INSTANCE = new Environment();
+		}
+		return INSTANCE;
 	}
-	return INSTANCE;
-    }
 
-    private Environment() {
-	this.termFactory = new TermFactory()
-		.getFactoryWithStorageType(IStrategoTerm.MUTABLE);
-	this.parseTableMgr = new ParseTableManager(termFactory);
-    }
-
-    public void setProjectDir(File pdir) {
-	try {
-	    projectDir = pdir.getCanonicalFile();
-	} catch (IOException e) {
-	    throw new RuntimeException(e);
+	private Environment() {
+		this.termFactory = new TermFactory().getFactoryWithStorageType(IStrategoTerm.MUTABLE);
+		this.parseTableMgr = new ParseTableManager(termFactory);
 	}
-    }
 
-    public File getCacheDir() {
-	assert projectDir != null;
-	File cacheDir = new File(projectDir, ".cache");
-	if (!cacheDir.exists()) {
-	    cacheDir.mkdir();
+	public void setProjectDir(File pdir) {
+		try {
+			projectDir = pdir.getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
-	return cacheDir;
-    }
 
-    public boolean isStatEnabled() {
-	return mainArgs.statstarget != null;
-    }
+	public File getCacheDir() {
+		assert projectDir != null;
+		File cacheDir = new File(projectDir, ".cache");
+		if (!cacheDir.exists()) {
+			cacheDir.mkdir();
+		}
+		return cacheDir;
+	}
 
-    public void setMainArguments(SunshineMainArguments args) {
-	this.mainArgs = args;
-    }
+	public boolean isStatEnabled() {
+		return mainArgs.statstarget != null;
+	}
 
-    public SunshineMainArguments getMainArguments() {
-	return this.mainArgs;
-    }
+	public void setMainArguments(SunshineMainArguments args) {
+		this.mainArgs = args;
+	}
+
+	public SunshineMainArguments getMainArguments() {
+		return this.mainArgs;
+	}
 
 }

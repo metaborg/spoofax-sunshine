@@ -15,11 +15,10 @@ import org.spoofax.sunshine.util.BubblingMapTest;
 import org.spoofax.sunshine.util.DiffingHashMapTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ MessageTest.class, PositionRegionTest.class,
-	TokenRegionTest.class, ALanguageTest.class,
-	AdHocJarBasedLanguageTest.class, FileBasedParseTableProviderTest.class,
-	AParserTest.class, BubblingMapTest.class, DiffingHashMapTest.class,
-	DirMonitorTest.class })
+@SuiteClasses({ MessageTest.class, PositionRegionTest.class, TokenRegionTest.class,
+		ALanguageTest.class, AdHocJarBasedLanguageTest.class,
+		FileBasedParseTableProviderTest.class, AParserTest.class, BubblingMapTest.class,
+		DiffingHashMapTest.class, DirMonitorTest.class })
 public class SunshineTest {
 
 }

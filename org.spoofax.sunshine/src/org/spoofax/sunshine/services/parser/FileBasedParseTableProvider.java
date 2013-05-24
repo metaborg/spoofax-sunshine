@@ -15,39 +15,39 @@ import org.spoofax.sunshine.parser.model.IParseTableProvider;
  */
 public class FileBasedParseTableProvider implements IParseTableProvider {
 
-    private final File file;
-    private final boolean caching;
+	private final File file;
+	private final boolean caching;
 
-    private ParseTable table;
+	private ParseTable table;
 
-    public FileBasedParseTableProvider(File file) {
-	this(file, true);
-    }
-
-    public FileBasedParseTableProvider(File file, boolean caching) {
-	assert file != null;
-	this.file = file;
-	this.caching = caching;
-    }
-
-    @Override
-    public ParseTable getParseTable() {
-	if (this.table != null)
-	    return this.table;
-
-	InputStream stream;
-	ParseTable table;
-	try {
-	    stream = new FileInputStream(file);
-	    table = Environment.INSTANCE().parseTableMgr.loadFromStream(stream);
-	} catch (Exception e) {
-	    throw new CompilerException("Could not load parse table", e);
+	public FileBasedParseTableProvider(File file) {
+		this(file, true);
 	}
 
-	if (caching) {
-	    this.table = table;
+	public FileBasedParseTableProvider(File file, boolean caching) {
+		assert file != null;
+		this.file = file;
+		this.caching = caching;
 	}
-	return table;
-    }
+
+	@Override
+	public ParseTable getParseTable() {
+		if (this.table != null)
+			return this.table;
+
+		InputStream stream;
+		ParseTable table;
+		try {
+			stream = new FileInputStream(file);
+			table = Environment.INSTANCE().parseTableMgr.loadFromStream(stream);
+		} catch (Exception e) {
+			throw new CompilerException("Could not load parse table", e);
+		}
+
+		if (caching) {
+			this.table = table;
+		}
+		return table;
+	}
 
 }

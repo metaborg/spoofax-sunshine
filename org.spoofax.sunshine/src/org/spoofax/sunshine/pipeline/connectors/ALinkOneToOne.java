@@ -16,20 +16,20 @@ import org.spoofax.sunshine.pipeline.diff.Diff;
  */
 public abstract class ALinkOneToOne<I, P> implements ILinkOneToOne<I, P> {
 
-    private final Collection<ISinkOne<P>> sinks = new HashSet<ISinkOne<P>>();
+	private final Collection<ISinkOne<P>> sinks = new HashSet<ISinkOne<P>>();
 
-    @Override
-    public void addSink(ISinkOne<P> sink) {
-	sinks.add(sink);
-    }
-
-    @Override
-    public void sink(Diff<I> product) {
-	final Diff<P> result = sinkWork(product);
-	for (ISinkOne<P> sink : sinks) {
-	    sink.sink(result);
+	@Override
+	public void addSink(ISinkOne<P> sink) {
+		sinks.add(sink);
 	}
-    }
 
-    public abstract Diff<P> sinkWork(Diff<I> input);
+	@Override
+	public void sink(Diff<I> product) {
+		final Diff<P> result = sinkWork(product);
+		for (ISinkOne<P> sink : sinks) {
+			sink.sink(result);
+		}
+	}
+
+	public abstract Diff<P> sinkWork(Diff<I> input);
 }

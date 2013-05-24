@@ -17,29 +17,28 @@ import org.spoofax.sunshine.pipeline.diff.MultiDiff;
  * 
  */
 public abstract class ALinkManyToMany<I, P> implements ILinkManyToMany<I, P> {
-    private static final Logger logger = LogManager
-	    .getLogger(ALinkManyToMany.class.getName());
+	private static final Logger logger = LogManager.getLogger(ALinkManyToMany.class.getName());
 
-    private final Collection<ISinkMany<P>> sinks = new HashSet<ISinkMany<P>>();
+	private final Collection<ISinkMany<P>> sinks = new HashSet<ISinkMany<P>>();
 
-    @Override
-    public void addSink(ISinkMany<P> sink) {
-	assert sink != null;
-	sinks.add(sink);
-    }
-
-    @Override
-    public void sink(MultiDiff<I> product) {
-	assert product != null;
-	logger.trace("Sinking work for product");
-	final MultiDiff<P> result = sinkWork(product);
-	logger.trace("Sinking changes to {} sinks", sinks.size());
-	for (ISinkMany<P> sink : sinks) {
-	    logger.trace("Now sinking to sink {}", sink);
-	    sink.sink(result);
+	@Override
+	public void addSink(ISinkMany<P> sink) {
+		assert sink != null;
+		sinks.add(sink);
 	}
-    }
 
-    public abstract MultiDiff<P> sinkWork(MultiDiff<I> input);
+	@Override
+	public void sink(MultiDiff<I> product) {
+		assert product != null;
+		logger.trace("Sinking work for product");
+		final MultiDiff<P> result = sinkWork(product);
+		logger.trace("Sinking changes to {} sinks", sinks.size());
+		for (ISinkMany<P> sink : sinks) {
+			logger.trace("Now sinking to sink {}", sink);
+			sink.sink(result);
+		}
+	}
+
+	public abstract MultiDiff<P> sinkWork(MultiDiff<I> input);
 
 }

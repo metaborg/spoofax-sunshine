@@ -6,5 +6,5 @@ package org.spoofax.sunshine.model.language;
  * 
  */
 public enum LanguageNature {
-    JAR_NATURE, CTREE_NATURE
+	JAR_NATURE, CTREE_NATURE
 }

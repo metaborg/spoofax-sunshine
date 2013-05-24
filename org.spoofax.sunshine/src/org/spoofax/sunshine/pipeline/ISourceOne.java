@@ -9,5 +9,5 @@ package org.spoofax.sunshine.pipeline;
  */
 public interface ISourceOne<P> {
 
-    public void addSink(ISinkOne<P> sink);
+	public void addSink(ISinkOne<P> sink);
 }

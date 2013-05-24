@@ -9,7 +9,7 @@ package org.spoofax.sunshine.util;
  */
 public interface IMerger<T> {
 
-    public boolean areDifferent(T older, T newer);
+	public boolean areDifferent(T older, T newer);
 
-    public T merge(T older, T newer);
+	public T merge(T older, T newer);
 }

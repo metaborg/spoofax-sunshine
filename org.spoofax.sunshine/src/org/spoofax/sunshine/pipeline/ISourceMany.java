@@ -8,5 +8,5 @@ package org.spoofax.sunshine.pipeline;
  * 
  */
 public interface ISourceMany<P> {
-    public void addSink(ISinkMany<P> sink);
+	public void addSink(ISinkMany<P> sink);
 }

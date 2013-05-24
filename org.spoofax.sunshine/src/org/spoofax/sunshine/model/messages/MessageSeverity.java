@@ -6,5 +6,5 @@ package org.spoofax.sunshine.model.messages;
  * 
  */
 public enum MessageSeverity {
-    ERROR, WARNING, NOTE
+	ERROR, WARNING, NOTE
 }

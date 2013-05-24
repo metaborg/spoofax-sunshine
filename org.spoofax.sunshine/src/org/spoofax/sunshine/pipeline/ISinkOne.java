@@ -10,5 +10,5 @@ import org.spoofax.sunshine.pipeline.diff.Diff;
  * 
  */
 public interface ISinkOne<I> {
-    public void sink(Diff<I> product);
+	public void sink(Diff<I> product);
 }

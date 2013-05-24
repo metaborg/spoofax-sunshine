@@ -11,5 +11,5 @@ import org.spoofax.jsglr.client.ParseTable;
  */
 public interface IParseTableProvider {
 
-    ParseTable getParseTable();
+	ParseTable getParseTable();
 }

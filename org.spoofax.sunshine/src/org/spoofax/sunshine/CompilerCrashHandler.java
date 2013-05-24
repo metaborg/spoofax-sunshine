@@ -14,16 +14,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class CompilerCrashHandler implements UncaughtExceptionHandler {
 
-    private static final Logger logger = LogManager
-	    .getLogger(CompilerCrashHandler.class.getName());
+	private static final Logger logger = LogManager.getLogger(CompilerCrashHandler.class.getName());
 
-    @Override
-    public void uncaughtException(Thread arg0, Throwable arg1) {
-	logger.fatal("Thread {} died with uncaught exception {}",
-		arg0.getName(), arg1);
-	arg1.printStackTrace();
-	logger.fatal("Exiting because of previous error");
-	System.exit(1);
-    }
+	@Override
+	public void uncaughtException(Thread arg0, Throwable arg1) {
+		logger.fatal("Thread {} died with uncaught exception {}", arg0.getName(), arg1);
+		arg1.printStackTrace();
+		logger.fatal("Exiting because of previous error");
+		System.exit(1);
+	}
 
 }
