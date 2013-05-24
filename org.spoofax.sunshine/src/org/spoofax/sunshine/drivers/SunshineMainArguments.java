@@ -26,6 +26,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--parse-only", description = "Only parse and report errors, no analysis or compilation")
 	public boolean parseonly;
 
+	@Parameter(names = "--no-analysis", description = "Perform no static analysis, linking the builder directly to the parser")
+	public boolean noanalysis;
+
 	@Parameter(names = "--help", help = true)
 	public boolean help;
 
@@ -41,6 +44,9 @@ public class SunshineMainArguments {
 		}
 		if (builder != null && tobuildfile == null) {
 			throw new IllegalArgumentException("No file to apply builder to was given");
+		}
+		if (parseonly && noanalysis) {
+			throw new IllegalArgumentException("Cannot skip analysis in parse-only mode");
 		}
 		if (parseonly && builder != null) {
 			throw new IllegalArgumentException("Cannot apply a builder in parse-only mode");
