@@ -1,12 +1,19 @@
 package org.spoofax.sunshine.services;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.jsglr.client.imploder.ImploderOriginTermFactory;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.SunshineIOAgent;
@@ -25,6 +32,11 @@ import org.strategoxt.NoInteropRegistererJarException;
  * 
  */
 public class RuntimeService {
+	private static final String EXTENSION_CTREE = "ctree";
+	private static final String EXTENSION_JAR = "jar";
+
+	private static final Logger logger = LogManager.getLogger(RuntimeService.class.getName());
+
 	private static RuntimeService INSTANCE;
 
 	private final Map<ALanguage, HybridInterpreter> prototypes = new HashMap<ALanguage, HybridInterpreter>();
@@ -87,25 +99,35 @@ public class RuntimeService {
 		final SunshineIOAgent agent = new SunshineIOAgent();
 		agent.setLanguage(lang);
 		interp.setIOAgent(agent);
-
-		switch (lang.getNature()) {
-		case CTREE_NATURE:
-			loadCompilerCTree(interp, lang);
-			break;
-		case JAR_NATURE:
-			loadCompilerJar(interp, lang);
-			break;
-		default:
-			throw new RuntimeException("Unsupported language nature " + lang.getNature());
-		}
+		loadCompilerFiles(interp, lang);
 
 		prototypes.put(lang, interp);
 
 		return interp;
 	}
 
-	private static void loadCompilerJar(HybridInterpreter interp, ALanguage lang) {
-		final File[] jars = lang.getCompilerFiles();
+	private static void loadCompilerFiles(HybridInterpreter interp, ALanguage lang) {
+		LinkedList<File> jars = new LinkedList<File>();
+		LinkedList<File> ctrees = new LinkedList<File>();
+		for (File file : lang.getCompilerFiles()) {
+			if (FilenameUtils.getExtension(file.getAbsolutePath())
+					.equalsIgnoreCase(EXTENSION_CTREE)) {
+				ctrees.add(file);
+			} else if (FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase(
+					EXTENSION_JAR)) {
+				jars.add(file);
+			} else {
+				throw new RuntimeException("Unsupported file extension for compiler file: " + file);
+			}
+		}
+		// for some reason the order is important. We must always load the ctrees first (if any).
+		if (ctrees.size() > 0)
+			loadCompilerCTree(interp, (File[]) ctrees.toArray(new File[ctrees.size()]));
+		if (jars.size() > 0)
+			loadCompilerJar(interp, (File[]) jars.toArray(new File[jars.size()]));
+	}
+
+	private static void loadCompilerJar(HybridInterpreter interp, File[] jars) {
 		final URL[] classpath = new URL[jars.length];
 
 		try {
@@ -114,6 +136,7 @@ public class RuntimeService {
 				jar = jar.isAbsolute() ? jar : jar.getAbsoluteFile();
 				classpath[idx] = jar.toURI().toURL();
 			}
+			logger.trace("Loading jar files {}", (Object) classpath);
 			interp.loadJars(classpath);
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Failed to load jar", e);
@@ -128,9 +151,17 @@ public class RuntimeService {
 		}
 	}
 
-	private static void loadCompilerCTree(HybridInterpreter interp, ALanguage lang) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("CTree-based compilers are not supported yet");
+	private static void loadCompilerCTree(HybridInterpreter interp, File[] ctrees) {
+		try {
+			for (File file : ctrees) {
+				logger.trace("Loading ctree {}", file.getPath());
+				interp.load(new BufferedInputStream(new FileInputStream(file.getAbsolutePath())));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to load ctree", e);
+		} catch (InterpreterException e) {
+			throw new RuntimeException("Failed to load ctree", e);
+		}
 	}
 
 }
