@@ -84,16 +84,22 @@ public class SunshineMainDriver {
 		messageSelector.addSink(messageSink);
 
 		if (!args.parseonly) {
-			ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = new AnalyzerLink();
-			filesSource.addSink(analyzerLink);
-			analyzerLink.addSink(messageSelector);
+			ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = null;
+			if (!args.noanalysis) {
+				analyzerLink = new AnalyzerLink();
+				filesSource.addSink(analyzerLink);
+				analyzerLink.addSink(messageSelector);
+			}
 			if (args.builder != null) {
 				logger.trace("Creating builder links for builder {}", args.builder);
 				BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-						new File(env.projectDir, args.tobuildfile));
+						new File(env.projectDir, args.filetobuildon));
 				BuilderSink compileBuilder = new BuilderSink(args.builder);
 				logger.trace("Wiring builder up into pipeline");
-				analyzerLink.addSink(inputMakeLink);
+				if (!args.noanalysis)
+					analyzerLink.addSink(inputMakeLink);
+				else
+					parserMapper.addSink(inputMakeLink);
 				inputMakeLink.addSink(compileBuilder);
 			}
 		}

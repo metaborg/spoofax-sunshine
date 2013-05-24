@@ -21,7 +21,7 @@ public class SunshineMainArguments {
 	public String statstarget;
 
 	@Parameter(names = "--build-on", description = "[PATH] Path (relative to project) to invoke the builder on")
-	public String tobuildfile;
+	public String filetobuildon;
 
 	@Parameter(names = "--parse-only", description = "Only parse and report errors, no analysis or compilation")
 	public boolean parseonly;
@@ -39,10 +39,10 @@ public class SunshineMainArguments {
 	SunshineLanguageArguments languageArgs = new SunshineLanguageArguments();
 
 	public void validate() {
-		if (builder == null && tobuildfile != null) {
+		if (builder == null && filetobuildon != null) {
 			throw new IllegalArgumentException("No builder to invoke has been specified");
 		}
-		if (builder != null && tobuildfile == null) {
+		if (builder != null && filetobuildon == null) {
 			throw new IllegalArgumentException("No file to apply builder to was given");
 		}
 		if (parseonly && noanalysis) {
@@ -60,7 +60,7 @@ public class SunshineMainArguments {
 		s += languageArgs.toString();
 		s += "Target project: " + project + "\n";
 		s += "Builder name: " + builder + "\n";
-		s += "Build on file: " + tobuildfile + "\n";
+		s += "Build on file: " + filetobuildon + "\n";
 		s += "Rec stats in: " + statstarget + "\n";
 		s += "Parse only: " + parseonly + "\n";
 		s += "Incremental: " + !nonincremental + "\n";
