@@ -8,7 +8,6 @@ Many. This is most likely an incomplete list:
 * Only one language at a time
 * No support for concrete object syntax embedding
 * Completely single-threaded
-* Only supports languages built to Jar, i.e. CTrees not yet supported
 * Not all Spoofax primitives are implemented
 * Only supports multi-file analysis. Classic `editor-analyse` is not supported.
 
@@ -23,6 +22,7 @@ A basic example of command line parameters is given below, which causes Sunshine
 
     java -cp sunshine.jar Main
     --lang WebDSL
+    --ctree ../../webdsl2/include/webdsl.ctree
     --jar ../../webdsl2/include/webdsl.jar
     --jar ../../webdsl2/include/webdsl-java.jar
     --jar ../../webdsl2/lib/task.jar
