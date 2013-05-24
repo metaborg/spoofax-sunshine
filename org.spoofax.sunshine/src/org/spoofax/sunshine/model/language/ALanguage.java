@@ -15,21 +15,14 @@ import org.spoofax.sunshine.parser.model.IParseTableProvider;
 public abstract class ALanguage {
 
 	protected final String name;
-	protected final LanguageNature nature;
 
-	protected ALanguage(String name, LanguageNature nature) {
+	protected ALanguage(String name) {
 		assert name != null && name.length() > 0;
-		assert nature != null;
 		this.name = name;
-		this.nature = nature;
 	}
 
 	public String getName() {
 		return this.name;
-	}
-
-	public LanguageNature getNature() {
-		return nature;
 	}
 
 	public abstract Collection<String> getFileExtensions();
@@ -60,7 +53,6 @@ public abstract class ALanguage {
 	public String toString() {
 		String s = "";
 		s += "Name: " + name + "\n";
-		s += "Nature: " + nature + "\n";
 		s += "Extensions: " + getFileExtensions() + "\n";
 		s += "Parsetable: " + getParseTableProvider() + "\n";
 		s += "Code files: " + getCompilerFiles() + "\n";

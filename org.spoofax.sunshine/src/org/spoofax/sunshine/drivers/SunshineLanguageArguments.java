@@ -17,8 +17,11 @@ public class SunshineLanguageArguments {
 	@Parameter(names = "--lang", description = "[NAME] The name of the language to be loaded", required = true)
 	public String lang;
 
-	@Parameter(names = "--jar", description = "[PATH] A relative path to a Jar", required = true)
+	@Parameter(names = "--jar", description = "[PATH] A relative path to a Jar")
 	public List<String> jars = new LinkedList<String>();
+
+	@Parameter(names = "--ctree", description = "[PATH] A relative path to a Jar")
+	public List<String> ctrees = new LinkedList<String>();
 
 	@Parameter(names = "--table", description = "[PATH] A relative path to a parse table", required = true)
 	public String tbl;
@@ -32,15 +35,24 @@ public class SunshineLanguageArguments {
 	@Parameter(names = "--observer", description = "[OBS] The name of the strategy to use as an observer")
 	public String observer = "editor-analyze";
 
+	public void validate() {
+		if (jars.size() == 0 && ctrees.size() == 0) {
+			throw new IllegalArgumentException(
+					"Neither any ctrees nor any jars specified. Compiler must consist of some files. Use either --ctree or --jar to specify some");
+		}
+	}
+
 	@Override
 	public String toString() {
 		String s = "";
-		s += "Language name: " + lang + "\n";
-		s += "Language jars: " + jars + "\n";
-		s += "Language exts: " + extens + "\n";
-		s += "Language tabl: " + tbl + "\n";
-		s += "Language ssym: " + ssymb + "\n";
-		s += "Language obsv: " + observer + "\n";
+		s += "Language name:   " + lang + "\n";
+		s += "Language jars:   " + jars + "\n";
+		s += "Language ctre:   " + ctrees + "\n";
+		s += "Language exts:   " + extens + "\n";
+		s += "Language tabl:   " + tbl + "\n";
+		s += "Language ssym:   " + ssymb + "\n";
+		s += "Language obsv:   " + observer + "\n";
 		return s;
 	}
+
 }

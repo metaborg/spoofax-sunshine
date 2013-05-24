@@ -45,6 +45,7 @@ public class SunshineMainArguments {
 		if (parseonly && builder != null) {
 			throw new IllegalArgumentException("Cannot apply a builder in parse-only mode");
 		}
+		languageArgs.validate();
 	}
 
 	@Override
