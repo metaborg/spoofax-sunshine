@@ -41,8 +41,17 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 * <code>
 	 * builder:
 	 * 	(node, position, ast, path, project-path) -> (filename, result)
-	 * 	
 	 * </code>
+	 * 
+	 * or
+	 * 
+	 * <code>
+	 * builder:
+	 * 	(node, position, ast, path, project-path) -> None()
+	 * </code>
+	 * 
+	 * In the latter option the assumption being that the builder code itself is taking care of
+	 * writing files to disk if necessary.
 	 * 
 	 * NB: The current implementation calls the builder on the following input:
 	 * 

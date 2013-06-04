@@ -126,10 +126,11 @@ public class SunshineMainDriver {
 							new File(env.projectDir, args.filetobuildon));
 					BuilderSink compileBuilder = new BuilderSink(args.builder);
 					logger.trace("Wiring builder up into pipeline");
-					if (!args.noanalysis)
-						analyzerMapper.addSink(inputMakeLink);
-					else
+					if (args.noanalysis || args.buildonsource) {
 						parserMapper.addSink(inputMakeLink);
+					} else {
+						analyzerMapper.addSink(inputMakeLink);
+					}
 					inputMakeLink.addSink(compileBuilder);
 				}
 			}
