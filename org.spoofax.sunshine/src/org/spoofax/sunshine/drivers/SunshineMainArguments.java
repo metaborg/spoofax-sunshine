@@ -23,11 +23,17 @@ public class SunshineMainArguments {
 	@Parameter(names = "--build-on", description = "[PATH] Path (relative to project) to invoke the builder on")
 	public String filetobuildon;
 
+	@Parameter(names = "--build-on-source", description = "Apply builder to the non-analyzed AST, regardless of whether analysis was performed or not")
+	public boolean buildonsource;
+
 	@Parameter(names = "--parse-only", description = "Only parse and report errors, no analysis or compilation")
 	public boolean parseonly;
 
 	@Parameter(names = "--no-analysis", description = "Perform no static analysis, linking the builder directly to the parser")
 	public boolean noanalysis;
+
+	@Parameter(names = "--legacy-observer", description = "Use an observer with a legacy signature")
+	public boolean legacyobserver;
 
 	@Parameter(names = "--help", help = true)
 	public boolean help;
@@ -51,6 +57,14 @@ public class SunshineMainArguments {
 		if (parseonly && builder != null) {
 			throw new IllegalArgumentException("Cannot apply a builder in parse-only mode");
 		}
+		if (noanalysis && legacyobserver) {
+			throw new IllegalArgumentException(
+					"Invalid use of --legacacyobserver in combination with --no-analysis");
+		}
+		if (buildonsource && builder == null) {
+			throw new IllegalArgumentException(
+					"Option --build-on-source requires a builder to be specified with --builder");
+		}
 		languageArgs.validate();
 	}
 
@@ -64,6 +78,8 @@ public class SunshineMainArguments {
 		s += "Rec stats in: " + statstarget + "\n";
 		s += "Parse only: " + parseonly + "\n";
 		s += "Incremental: " + !nonincremental + "\n";
+		s += "Legacy obsrvr:" + legacyobserver + "\n";
+		s += "Build on src:" + buildonsource + "\n";
 		return s;
 	}
 }

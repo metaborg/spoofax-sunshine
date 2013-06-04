@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
@@ -20,6 +22,9 @@ import org.spoofax.sunshine.services.LanguageService;
  * 
  */
 public class JSGLRLink extends ALinkOneToOne<File, IStrategoParseOrAnalyzeResult> {
+
+	private static final Logger logger = LogManager.getLogger(JSGLRLink.class.getName());
+
 	public final static int PARSE_TIMEOUT = 5000;
 
 	private final Map<File, JSGLRI> parsers = new WeakHashMap<File, JSGLRI>();
@@ -34,6 +39,8 @@ public class JSGLRLink extends ALinkOneToOne<File, IStrategoParseOrAnalyzeResult
 		assert parser != null;
 
 		JSGLRParseResult parseResult = parser.parse();
+		logger.debug("Parsing of file {} produced AST {} and {} messages", input.getPayload(),
+				parseResult.ast(), parseResult.messages().size());
 		return new Diff<IStrategoParseOrAnalyzeResult>(parseResult, input.getDiffKind());
 	}
 
