@@ -100,7 +100,7 @@ public class AnalysisService {
 			} else {
 				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
 				logger.trace("Analysis resulted in a {} tuple", resultTup.getSubtermCount());
-				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(1);
+				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(0);
 				final int numItems = resultList.getSubtermCount();
 				logger.trace("Analysis contains {} results. Marshalling to analysis results.",
 						numItems);
