@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerException;
@@ -71,8 +72,13 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	public void sink(Diff<BuilderInputTerm> product) {
 		logger.debug("Invoking builder {} on file {}", builderName, product.getPayload().getFile());
 		File result = callBuilder(product.getPayload());
-		logger.info("Builder {} called on file {} and produced file {}", builderName, product
-				.getPayload().getFile(), result.getAbsolutePath());
+		if (result != null)
+			logger.info("Builder {} called on file {} and produced file {}", builderName, product
+					.getPayload().getFile(), result.getAbsolutePath());
+		else
+			logger.debug(
+					"Builder {} called on file {} did not return a file and contents to be written",
+					builderName, product.getPayload().getFile());
 	}
 
 	private File callBuilder(BuilderInputTerm input) throws CompilerException {
@@ -87,27 +93,29 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 
 		final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(input.getFile());
 
-		ensurePropertLanguage(lang);
+		ensureProperLanguage(lang);
 
 		IStrategoTerm result = null;
 		result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
 
-		ensureProperResult(result);
+		if (isWriteFile(result)) {
 
-		final File resultFile = new File(Environment.INSTANCE().projectDir,
-				((IStrategoString) result.getSubterm(0)).stringValue());
-		final String resultContents = ((IStrategoString) result.getSubterm(1)).stringValue();
-		// write the contents to the file
-		try {
-			FileUtils.writeStringToFile(resultFile, resultContents);
-		} catch (IOException e) {
-			throw new CompilerException("Builder " + builderName + "failed to save result", e);
+			final File resultFile = new File(Environment.INSTANCE().projectDir,
+					((IStrategoString) result.getSubterm(0)).stringValue());
+			final String resultContents = ((IStrategoString) result.getSubterm(1)).stringValue();
+			// write the contents to the file
+			try {
+				FileUtils.writeStringToFile(resultFile, resultContents);
+			} catch (IOException e) {
+				throw new CompilerException("Builder " + builderName + "failed to save result", e);
+			}
+			return resultFile;
+		} else {
+			return null;
 		}
-
-		return resultFile;
 	}
 
-	private void ensurePropertLanguage(final ALanguage lang) {
+	private void ensureProperLanguage(final ALanguage lang) {
 		assert lang != null;
 	}
 
@@ -115,11 +123,24 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
 	}
 
-	private void ensureProperResult(final IStrategoTerm result) {
-		assert result != null : "StrategoCallService returned null. BUG!";
-		assert result.getSubtermCount() == 2;
-		assert result.getSubterm(0) instanceof IStrategoString;
-		assert result.getSubterm(1) instanceof IStrategoString;
+	private boolean isWriteFile(final IStrategoTerm result) {
+		if (result instanceof IStrategoAppl) {
+			if (((IStrategoAppl) result).getName().equals("None")) {
+				return false;
+			} else {
+				logger.fatal("Builder returned an unsupported result type {}", result);
+				throw new CompilerException("Unsupported return value from builder: " + result);
+			}
+		} else {
+			if (result == null || result.getSubtermCount() != 2
+					|| !(result.getSubterm(0) instanceof IStrategoString)
+					|| !(result.getSubterm(1) instanceof IStrategoString)) {
+				logger.fatal("Builder returned an unsupported result type {}", result);
+				throw new CompilerException("Unsupported return value from builder: " + result);
+			} else {
+				return true;
+			}
+		}
 	}
 
 }
