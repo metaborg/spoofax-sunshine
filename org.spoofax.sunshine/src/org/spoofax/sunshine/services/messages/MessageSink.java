@@ -5,7 +5,6 @@ package org.spoofax.sunshine.services.messages;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,20 +26,8 @@ public class MessageSink implements ISinkMany<IMessage> {
 	public void sink(MultiDiff<IMessage> product) {
 		logger.info("Sinking {} messages", product.size());
 
-		final Iterator<Diff<IMessage>> diffIter = product.iterator();
-		while (diffIter.hasNext()) {
-			final Diff<IMessage> diff = diffIter.next();
-			switch (diff.getDiffKind()) {
-			case ADDITION:
-				messages.add(diff.getPayload());
-				break;
-			case DELETION:
-				messages.remove(diff.getPayload());
-				break;
-			default:
-				throw new UnsupportedOperationException("MessageSink does not support DiffKind "
-						+ diff.getDiffKind() + " for IMessage");
-			}
+		for (Diff<IMessage> msgDiff : product) {
+			messages.add(msgDiff.getPayload());
 		}
 	}
 
