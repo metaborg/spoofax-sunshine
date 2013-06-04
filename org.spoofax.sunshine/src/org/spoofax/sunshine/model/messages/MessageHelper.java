@@ -52,12 +52,14 @@ public class MessageHelper {
 			}
 
 			final ISimpleTerm node = minimizeMarkerSize(getClosestAstNode(term));
-			final IToken left = getLeftToken(node);
-			final IToken right = getRightToken(node);
 
-			final Message resMsg = newAnalysisMessage(file.getPath(), left, right, message,
-					severity);
-			result.add(resMsg);
+			if (node != null) {
+				final IToken left = getLeftToken(node);
+				final IToken right = getRightToken(node);
+				result.add(newAnalysisMessage(file.getPath(), left, right, message, severity));
+			} else {
+				result.add(newAnalysisMessageAtTop(file.getPath(), message, severity));
+			}
 		}
 
 		return result;
@@ -130,6 +132,10 @@ public class MessageHelper {
 
 	public static Message newParseWarningAtTop(String file, String msg) {
 		return newWarningAtTop(file, msg, MessageType.PARSER_MESSAGE);
+	}
+
+	public static Message newAnalysisMessageAtTop(String file, String msg, MessageSeverity severity) {
+		return newAtTop(file, msg, MessageType.ANALYSIS_MESSAGE, severity);
 	}
 
 	public static Message newAnalysisErrorAtTop(String file, String msg) {
