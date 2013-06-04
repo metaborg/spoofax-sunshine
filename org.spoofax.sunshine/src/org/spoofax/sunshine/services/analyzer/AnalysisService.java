@@ -115,4 +115,5 @@ public class AnalysisService {
 		logger.debug("Analysis done");
 		return results;
 	}
+
 }

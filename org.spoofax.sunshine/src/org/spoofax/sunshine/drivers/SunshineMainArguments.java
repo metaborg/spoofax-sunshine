@@ -29,6 +29,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--no-analysis", description = "Perform no static analysis, linking the builder directly to the parser")
 	public boolean noanalysis;
 
+	@Parameter(names = "--legacy-observer", description = "Use an observer with a legacy signature")
+	public boolean legacyobserver;
+
 	@Parameter(names = "--help", help = true)
 	public boolean help;
 
@@ -50,6 +53,10 @@ public class SunshineMainArguments {
 		}
 		if (parseonly && builder != null) {
 			throw new IllegalArgumentException("Cannot apply a builder in parse-only mode");
+		}
+		if (noanalysis && legacyobserver) {
+			throw new IllegalArgumentException(
+					"Invalid use of --legacacyobserver in combination with --no-analysis");
 		}
 		languageArgs.validate();
 	}

@@ -10,6 +10,7 @@ import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
@@ -18,6 +19,8 @@ import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
+import org.spoofax.sunshine.services.analyzer.legacy.AstExtractorLink;
+import org.spoofax.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
 import org.spoofax.sunshine.services.filesource.FileSource;
 import org.spoofax.sunshine.services.messages.MessageExtractorLink;
 import org.spoofax.sunshine.services.messages.MessageSink;
@@ -84,24 +87,53 @@ public class SunshineMainDriver {
 		messageSelector.addSink(messageSink);
 
 		if (!args.parseonly) {
-			ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = null;
-			if (!args.noanalysis) {
-				analyzerLink = new AnalyzerLink();
-				filesSource.addSink(analyzerLink);
-				analyzerLink.addSink(messageSelector);
+			if (!args.legacyobserver) {
+				ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = null;
+				if (!args.noanalysis) {
+					analyzerLink = new AnalyzerLink();
+					filesSource.addSink(analyzerLink);
+					analyzerLink.addSink(messageSelector);
+				}
+
+				if (args.builder != null) {
+					logger.trace("Creating builder links for builder {}", args.builder);
+					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+							new File(env.projectDir, args.filetobuildon));
+					BuilderSink compileBuilder = new BuilderSink(args.builder);
+					logger.trace("Wiring builder up into pipeline");
+					if (!args.noanalysis)
+						analyzerLink.addSink(inputMakeLink);
+					else
+						parserMapper.addSink(inputMakeLink);
+					inputMakeLink.addSink(compileBuilder);
+				}
+			} else {
+				ILinkManyToMany<IStrategoParseOrAnalyzeResult, IStrategoTerm> astSelector = null;
+				LinkMapperOneToOne<IStrategoTerm, IStrategoParseOrAnalyzeResult> analyzerMapper = null;
+				if (!args.noanalysis) {
+					astSelector = new AstExtractorLink();
+					analyzerMapper = new LinkMapperOneToOne<IStrategoTerm, IStrategoParseOrAnalyzeResult>(
+							new LegacyAnalyzerLink());
+					parserMapper.addSink(astSelector);
+					astSelector.addSink(analyzerMapper);
+					ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector2 = new MessageExtractorLink();
+					analyzerMapper.addSink(messageSelector2);
+					messageSelector2.addSink(messageSink);
+				}
+				if (args.builder != null) {
+					logger.trace("Creating builder links for builder {}", args.builder);
+					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+							new File(env.projectDir, args.filetobuildon));
+					BuilderSink compileBuilder = new BuilderSink(args.builder);
+					logger.trace("Wiring builder up into pipeline");
+					if (!args.noanalysis)
+						analyzerMapper.addSink(inputMakeLink);
+					else
+						parserMapper.addSink(inputMakeLink);
+					inputMakeLink.addSink(compileBuilder);
+				}
 			}
-			if (args.builder != null) {
-				logger.trace("Creating builder links for builder {}", args.builder);
-				BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-						new File(env.projectDir, args.filetobuildon));
-				BuilderSink compileBuilder = new BuilderSink(args.builder);
-				logger.trace("Wiring builder up into pipeline");
-				if (!args.noanalysis)
-					analyzerLink.addSink(inputMakeLink);
-				else
-					parserMapper.addSink(inputMakeLink);
-				inputMakeLink.addSink(compileBuilder);
-			}
+
 		}
 
 		Statistics.stopTimer();

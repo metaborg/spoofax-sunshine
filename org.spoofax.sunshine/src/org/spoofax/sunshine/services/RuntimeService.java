@@ -82,6 +82,7 @@ public class RuntimeService {
 		final HybridInterpreter interp = new HybridInterpreter(proto, new String[0]);
 		interp.getCompiledContext().getExceptionHandler().setEnabled(false);
 		interp.init();
+		
 		return interp;
 	}
 
@@ -89,7 +90,6 @@ public class RuntimeService {
 		final HybridInterpreter interp = new HybridInterpreter(new ImploderOriginTermFactory(
 				Environment.INSTANCE().termFactory));
 
-		interp.getCompiledContext().getExceptionHandler().setEnabled(false);
 		interp.getCompiledContext().registerComponent("stratego_lib");
 		interp.getCompiledContext().registerComponent("stratego_sglr");
 
