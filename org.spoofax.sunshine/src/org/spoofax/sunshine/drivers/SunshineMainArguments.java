@@ -35,11 +35,14 @@ public class SunshineMainArguments {
 	@Parameter(names = "--legacy-observer", description = "Use an observer with a legacy signature")
 	public boolean legacyobserver;
 
+	@Parameter(names = "--non-incremental", description = "Disable incremental processing where applicable")
+	public boolean nonincremental;
+
+	@Parameter(names = "--build-with-errors", description = "Call builder even if there are errors after analysis")
+	public boolean buildwitherrors;
+
 	@Parameter(names = "--help", help = true)
 	public boolean help;
-
-	@Parameter(names = "--non-incremental", description = "Disable incremental processing where applicable")
-	public boolean nonincremental = false;
 
 	@ParametersDelegate
 	SunshineLanguageArguments languageArgs = new SunshineLanguageArguments();

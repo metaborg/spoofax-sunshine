@@ -8,7 +8,6 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.DiffKind;
@@ -18,22 +17,22 @@ import org.spoofax.sunshine.pipeline.diff.MultiDiff;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class AnalyzerLink extends ALinkManyToMany<File, IStrategoParseOrAnalyzeResult> {
+public class AnalyzerLink extends ALinkManyToMany<File, AnalysisResult> {
 
 	private static final Logger logger = LogManager.getLogger(AnalyzerLink.class.getName());
 
 	@Override
-	public MultiDiff<IStrategoParseOrAnalyzeResult> sinkWork(MultiDiff<File> input) {
+	public MultiDiff<AnalysisResult> sinkWork(MultiDiff<File> input) {
 		logger.debug("Analyzing {} changed files", input.size());
 
-		final Collection<IStrategoParseOrAnalyzeResult> aResults = AnalysisService.INSTANCE()
+		final Collection<AnalysisResult> aResults = AnalysisService.INSTANCE()
 				.analyze(input.values());
 
 		logger.trace("Analysis completed with {} results", aResults.size());
-		final MultiDiff<IStrategoParseOrAnalyzeResult> results = new MultiDiff<IStrategoParseOrAnalyzeResult>();
-		for (IStrategoParseOrAnalyzeResult res : aResults) {
+		final MultiDiff<AnalysisResult> results = new MultiDiff<AnalysisResult>();
+		for (AnalysisResult res : aResults) {
 			// TODO this may be wrong because not everything is an ADDITION
-			results.add(new Diff<IStrategoParseOrAnalyzeResult>(res, DiffKind.ADDITION));
+			results.add(new Diff<AnalysisResult>(res, DiffKind.ADDITION));
 		}
 		return results;
 	}

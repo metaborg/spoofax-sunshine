@@ -11,17 +11,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.model.language.ALanguage;
-import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.parser.model.ParserConfig;
 import org.spoofax.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class JSGLRLink extends ALinkOneToOne<File, IStrategoParseOrAnalyzeResult> {
+public class JSGLRLink extends ALinkOneToOne<File, AnalysisResult> {
 
 	private static final Logger logger = LogManager.getLogger(JSGLRLink.class.getName());
 
@@ -30,7 +30,7 @@ public class JSGLRLink extends ALinkOneToOne<File, IStrategoParseOrAnalyzeResult
 	private final Map<File, JSGLRI> parsers = new WeakHashMap<File, JSGLRI>();
 
 	@Override
-	public Diff<IStrategoParseOrAnalyzeResult> sinkWork(Diff<File> input) {
+	public Diff<AnalysisResult> sinkWork(Diff<File> input) {
 		JSGLRI parser = parsers.get(input.getPayload());
 		if (parser == null) {
 			parser = constructParser(input.getPayload());
@@ -38,10 +38,10 @@ public class JSGLRLink extends ALinkOneToOne<File, IStrategoParseOrAnalyzeResult
 		}
 		assert parser != null;
 
-		JSGLRParseResult parseResult = parser.parse();
+		AnalysisResult parseResult = parser.parse();
 		logger.debug("Parsing of file {} produced AST {} and {} messages", input.getPayload(),
 				parseResult.ast(), parseResult.messages().size());
-		return new Diff<IStrategoParseOrAnalyzeResult>(parseResult, input.getDiffKind());
+		return new Diff<AnalysisResult>(parseResult, input.getDiffKind());
 	}
 
 	private JSGLRI constructParser(File file) {

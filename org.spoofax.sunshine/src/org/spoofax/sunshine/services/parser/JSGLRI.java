@@ -20,6 +20,7 @@ import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.parser.model.IFileParser;
 import org.spoofax.sunshine.parser.model.IParserConfig;
+import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 import org.spoofax.terms.attachments.ParentTermFactory;
 
 /**
@@ -94,9 +95,8 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 	}
 
 	@Override
-	public JSGLRParseResult parse() {
+	public AnalysisResult parse() {
 		assert file != null;
-		JSGLRParseResult result = new JSGLRParseResult(file);
 		String input;
 		try {
 			input = FileUtils.readFileToString(file);
@@ -106,12 +106,12 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 
 		assert input != null;
 
+		IStrategoTerm ast = null;
+
 		errorHandler.reset();
 		currentTokenizer = new NullTokenizer(input, file.getName());
-		IStrategoTerm ast = null;
 		try {
 			ast = actuallyParse(input, file.getName());
-			result.setAst(ast);
 			SourceAttachment.putSource(ast, file, config);
 		} catch (Exception e) {
 			errorHandler.setRecoveryFailed(true);
@@ -124,9 +124,8 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 			errorHandler.gatherNonFatalErrors(ast);
 		}
 
-		result.setMessages(errorHandler.getCollectedMessages());
-
-		return result;
+		// result.setMessages(errorHandler.getCollectedMessages());
+		return new AnalysisResult(null, file, errorHandler.getCollectedMessages(), ast);
 	}
 
 	private IStrategoTerm actuallyParse(String input, String filename) throws SGLRException,

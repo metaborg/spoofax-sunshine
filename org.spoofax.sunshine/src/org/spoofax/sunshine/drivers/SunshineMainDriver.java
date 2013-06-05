@@ -10,16 +10,14 @@ import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.messages.IMessage;
-import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
+import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
-import org.spoofax.sunshine.services.analyzer.legacy.AstExtractorLink;
 import org.spoofax.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
 import org.spoofax.sunshine.services.filesource.FileSource;
 import org.spoofax.sunshine.services.messages.MessageExtractorLink;
@@ -74,13 +72,13 @@ public class SunshineMainDriver {
 		Statistics.startTimer("PIPELINE_CONSTRUCT");
 		filesSource = new FileSource(env.projectDir);
 		logger.trace("Created file source {}", filesSource);
-		LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult> parserMapper = new LinkMapperOneToOne<File, IStrategoParseOrAnalyzeResult>(
+		LinkMapperOneToOne<File, AnalysisResult> parserMapper = new LinkMapperOneToOne<File, AnalysisResult>(
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
 
 		messageSink = new MessageSink();
 		filesSource.addSink(parserMapper);
-		ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector = new MessageExtractorLink();
+		ILinkManyToMany<AnalysisResult, IMessage> messageSelector = new MessageExtractorLink();
 		parserMapper.addSink(messageSelector);
 		logger.trace("Message selector {} linked on parse mapper {}", messageSelector, parserMapper);
 
@@ -88,7 +86,7 @@ public class SunshineMainDriver {
 
 		if (!args.parseonly) {
 			if (!args.legacyobserver) {
-				ILinkManyToMany<File, IStrategoParseOrAnalyzeResult> analyzerLink = null;
+				ILinkManyToMany<File, AnalysisResult> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
 					filesSource.addSink(analyzerLink);
@@ -99,7 +97,7 @@ public class SunshineMainDriver {
 					logger.trace("Creating builder links for builder {}", args.builder);
 					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
 							new File(env.projectDir, args.filetobuildon), args.noanalysis
-									|| args.buildonsource);
+									|| args.buildonsource, args.buildwitherrors);
 					BuilderSink compileBuilder = new BuilderSink(args.builder);
 					logger.trace("Wiring builder up into pipeline");
 					if (!args.noanalysis)
@@ -109,15 +107,14 @@ public class SunshineMainDriver {
 					inputMakeLink.addSink(compileBuilder);
 				}
 			} else {
-				ILinkManyToMany<IStrategoParseOrAnalyzeResult, IStrategoTerm> astSelector = null;
-				LinkMapperOneToOne<IStrategoTerm, IStrategoParseOrAnalyzeResult> analyzerMapper = null;
+				// ILinkManyToMany<AnalysisResult, IStrategoTerm> astSelector = null;
+				LinkMapperOneToOne<AnalysisResult, AnalysisResult> analyzerMapper = null;
 				if (!args.noanalysis) {
-					astSelector = new AstExtractorLink();
-					analyzerMapper = new LinkMapperOneToOne<IStrategoTerm, IStrategoParseOrAnalyzeResult>(
+					// astSelector = new AstExtractorLink();
+					analyzerMapper = new LinkMapperOneToOne<AnalysisResult, AnalysisResult>(
 							new LegacyAnalyzerLink());
-					parserMapper.addSink(astSelector);
-					astSelector.addSink(analyzerMapper);
-					ILinkManyToMany<IStrategoParseOrAnalyzeResult, IMessage> messageSelector2 = new MessageExtractorLink();
+					parserMapper.addSink(analyzerMapper);
+					ILinkManyToMany<AnalysisResult, IMessage> messageSelector2 = new MessageExtractorLink();
 					analyzerMapper.addSink(messageSelector2);
 					messageSelector2.addSink(messageSink);
 				}
@@ -125,7 +122,7 @@ public class SunshineMainDriver {
 					logger.trace("Creating builder links for builder {}", args.builder);
 					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
 							new File(env.projectDir, args.filetobuildon), args.noanalysis
-									|| args.buildonsource);
+									|| args.buildonsource, args.buildwitherrors);
 					BuilderSink compileBuilder = new BuilderSink(args.builder);
 					logger.trace("Wiring builder up into pipeline");
 

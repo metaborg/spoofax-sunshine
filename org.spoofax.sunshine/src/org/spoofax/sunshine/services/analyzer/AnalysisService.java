@@ -10,15 +10,17 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.interpreter.core.InterpreterException;
-import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoString;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.IStrategoTuple;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.language.ALanguage;
-import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
+import org.spoofax.sunshine.model.messages.IMessage;
+import org.spoofax.sunshine.model.messages.MessageHelper;
+import org.spoofax.sunshine.model.messages.MessageSeverity;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.RuntimeService;
 import org.strategoxt.HybridInterpreter;
@@ -52,8 +54,7 @@ public class AnalysisService {
 	 * @param files
 	 * @throws CompilerException
 	 */
-	public Collection<IStrategoParseOrAnalyzeResult> analyze(Collection<File> files)
-			throws CompilerException {
+	public Collection<AnalysisResult> analyze(Collection<File> files) throws CompilerException {
 		logger.debug("Analyzing {} files", files.size());
 		final Map<ALanguage, Collection<File>> lang2files = new HashMap<ALanguage, Collection<File>>();
 		for (File file : files) {
@@ -64,14 +65,14 @@ public class AnalysisService {
 			lang2files.get(lang).add(file);
 		}
 		logger.trace("Files grouped in {} languages", lang2files.size());
-		final Collection<IStrategoParseOrAnalyzeResult> results = new HashSet<IStrategoParseOrAnalyzeResult>();
+		final Collection<AnalysisResult> results = new HashSet<AnalysisResult>();
 		for (ALanguage lang : lang2files.keySet()) {
 			results.addAll(analyze(lang, lang2files.get(lang)));
 		}
 		return results;
 	}
 
-	private Collection<IStrategoParseOrAnalyzeResult> analyze(ALanguage lang, Collection<File> files)
+	private Collection<AnalysisResult> analyze(ALanguage lang, Collection<File> files)
 			throws CompilerException {
 		logger.debug("Analyzing {} files of the {} language", files.size(), lang.getName());
 		final ITermFactory termFactory = Environment.INSTANCE().termFactory;
@@ -88,7 +89,7 @@ public class AnalysisService {
 		runtime.setCurrent(inputTerm);
 		logger.trace("Input term set to {}", inputTerm);
 
-		final Collection<IStrategoParseOrAnalyzeResult> results = new HashSet<IStrategoParseOrAnalyzeResult>();
+		final Collection<AnalysisResult> results = new HashSet<AnalysisResult>();
 		try {
 			final String function = lang.getAnalysisFunction();
 			logger.debug("Invoking analysis strategy {}", function);
@@ -104,8 +105,7 @@ public class AnalysisService {
 				logger.trace("Analysis contains {} results. Marshalling to analysis results.",
 						numItems);
 				for (int idx = 0; idx < numItems; idx++) {
-					results.add(new ResultApplAnalysisResult((IStrategoAppl) resultList
-							.getSubterm(idx)));
+					results.add(makeAnalysisResult(resultList.getSubterm(idx)));
 				}
 			}
 		} catch (InterpreterException interpex) {
@@ -113,6 +113,22 @@ public class AnalysisService {
 		}
 		logger.debug("Analysis done");
 		return results;
+	}
+
+	private AnalysisResult makeAnalysisResult(IStrategoTerm res) {
+		assert res != null;
+		assert res.getSubtermCount() == 7;
+		File file = new File(((IStrategoString) res.getSubterm(0)).stringValue());
+		IStrategoTerm ast = res.getSubterm(2);
+		Collection<IMessage> messages = new HashSet<IMessage>();
+		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.ERROR,
+				(IStrategoList) res.getSubterm(4)));
+		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.WARNING,
+				(IStrategoList) res.getSubterm(5)));
+		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.NOTE,
+				(IStrategoList) res.getSubterm(6)));
+
+		return new AnalysisResult(null, file, messages, ast);
 	}
 
 }

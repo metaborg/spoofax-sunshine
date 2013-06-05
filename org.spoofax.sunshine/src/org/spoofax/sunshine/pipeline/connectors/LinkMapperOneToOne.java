@@ -74,7 +74,8 @@ public class LinkMapperOneToOne<I, P> implements ISinkMany<I>, ISourceMany<P> {
 		@Override
 		public void sink(Diff<PR> product) {
 			assert aggregated != null;
-			aggregated.add(product);
+			if (product != null && product.getPayload() != null)
+				aggregated.add(product);
 		}
 
 	}

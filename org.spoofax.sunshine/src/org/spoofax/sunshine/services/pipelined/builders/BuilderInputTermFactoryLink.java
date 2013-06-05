@@ -12,18 +12,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.parser.model.IStrategoParseOrAnalyzeResult;
 import org.spoofax.sunshine.pipeline.ILinkManyToOne;
 import org.spoofax.sunshine.pipeline.ISinkOne;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
+import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
 public class BuilderInputTermFactoryLink implements
-		ILinkManyToOne<IStrategoParseOrAnalyzeResult, BuilderInputTerm> {
+		ILinkManyToOne<AnalysisResult, BuilderInputTerm> {
 
 	private static final Logger logger = LogManager.getLogger(BuilderInputTermFactoryLink.class
 			.getName());
@@ -34,9 +34,12 @@ public class BuilderInputTermFactoryLink implements
 
 	private boolean onSource;
 
-	public BuilderInputTermFactoryLink(File file, boolean onSource) {
+	private boolean ignoreErrors;
+
+	public BuilderInputTermFactoryLink(File file, boolean onSource, boolean ignoreErrors) {
 		this.path = file;
 		this.onSource = onSource;
+		this.ignoreErrors = ignoreErrors;
 	}
 
 	@Override
@@ -46,11 +49,11 @@ public class BuilderInputTermFactoryLink implements
 	}
 
 	@Override
-	public void sink(MultiDiff<IStrategoParseOrAnalyzeResult> product) {
+	public void sink(MultiDiff<AnalysisResult> product) {
 		assert product != null;
 		logger.trace("Creating builder input term for product");
-		Diff<IStrategoParseOrAnalyzeResult> select = null;
-		for (Diff<IStrategoParseOrAnalyzeResult> diff : product) {
+		Diff<AnalysisResult> select = null;
+		for (Diff<AnalysisResult> diff : product) {
 			try {
 				if (diff.getPayload().file().getCanonicalFile().equals(path.getCanonicalFile())) {
 					select = diff;
@@ -64,16 +67,23 @@ public class BuilderInputTermFactoryLink implements
 			}
 		}
 		if (select != null) {
-			logger.trace("Selected file {} for creating input", select.getPayload().file());
-			IStrategoTerm ast = onSource && select.getPayload().previousAst() != null ? select
-					.getPayload().previousAst() : select.getPayload().ast();
-			BuilderInputTerm payload = new BuilderInputTerm(Environment.INSTANCE().termFactory,
-					ast, select.getPayload().file(), Environment.INSTANCE().projectDir);
-			Diff<BuilderInputTerm> result = new Diff<BuilderInputTerm>(payload,
-					select.getDiffKind());
-			for (ISinkOne<BuilderInputTerm> sink : sinks) {
-				logger.trace("Sinking input term for file {} to builder {}", path, sink);
-				sink.sink(result);
+			if (ignoreErrors || select.getPayload().messages().size() == 0) {
+				logger.trace("Selected file {} for creating input", select.getPayload().file());
+
+				IStrategoTerm ast = onSource && select.getPayload().previousResult() != null ? select
+						.getPayload().previousResult().ast()
+						: select.getPayload().ast();
+
+				BuilderInputTerm payload = new BuilderInputTerm(Environment.INSTANCE().termFactory,
+						ast, select.getPayload().file(), Environment.INSTANCE().projectDir);
+				Diff<BuilderInputTerm> result = new Diff<BuilderInputTerm>(payload,
+						select.getDiffKind());
+				for (ISinkOne<BuilderInputTerm> sink : sinks) {
+					logger.trace("Sinking input term for file {} to builder {}", path, sink);
+					sink.sink(result);
+				}
+			} else {
+				logger.info("Builder is skipping because of previous errors");
 			}
 		} else {
 			logger.trace("No file in result matched the prebaked file {}", path);
