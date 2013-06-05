@@ -47,4 +47,9 @@ public class JSGLRParseResult implements IStrategoParseOrAnalyzeResult {
 		return messages;
 	}
 
+	@Override
+	public IStrategoTerm previousAst() {
+		return null;
+	}
+
 }

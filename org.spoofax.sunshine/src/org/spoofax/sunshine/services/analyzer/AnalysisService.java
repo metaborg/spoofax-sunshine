@@ -82,7 +82,6 @@ public class AnalysisService {
 		for (File file : files) {
 			fileNames.add(termFactory.makeString(Environment.INSTANCE().projectDir.toURI()
 					.relativize(file.toURI()).toString()));
-			// fileNames.add(termFactory.makeString(file.getPath()));
 		}
 		logger.trace("Converted file names to Stratego strings");
 		final IStrategoList inputTerm = termFactory.makeList(fileNames);

@@ -15,6 +15,8 @@ import org.spoofax.sunshine.model.messages.IMessage;
  */
 public interface IStrategoParseOrAnalyzeResult extends IParseOrAnalyzeResult<IStrategoTerm> {
 
+	public IStrategoTerm previousAst();
+
 	public IStrategoTerm ast();
 
 	public Collection<IMessage> messages();
