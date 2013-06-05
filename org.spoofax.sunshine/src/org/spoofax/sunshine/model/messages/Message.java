@@ -81,7 +81,7 @@ public class Message implements IMessage {
 		str.append(severity);
 		str.append(" ");
 		str.append(file);
-		str.append("@");
+		str.append("\t");
 		str.append(region.toString());
 		str.append(" ");
 		str.append("\n\t");
