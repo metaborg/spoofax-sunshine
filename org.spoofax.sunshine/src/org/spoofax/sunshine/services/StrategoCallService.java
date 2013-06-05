@@ -3,6 +3,8 @@
  */
 package org.spoofax.sunshine.services;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.interpreter.core.InterpreterErrorExit;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.core.InterpreterExit;
@@ -17,6 +19,9 @@ import org.strategoxt.HybridInterpreter;
  * 
  */
 public class StrategoCallService {
+
+	private static final Logger logger = LogManager.getLogger(StrategoCallService.class.getName());
+
 	private static StrategoCallService INSTANCE;
 
 	private StrategoCallService() {
@@ -34,9 +39,9 @@ public class StrategoCallService {
 		assert lang != null;
 		assert strategy != null && strategy.length() > 0;
 		assert input != null;
+		logger.trace("Calling strategy {} with input {}", strategy, input);
 
 		final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(lang);
-
 		runtime.setCurrent(input);
 		boolean success = false;
 		try {
