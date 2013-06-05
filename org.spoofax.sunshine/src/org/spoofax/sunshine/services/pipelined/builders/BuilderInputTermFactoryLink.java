@@ -32,8 +32,11 @@ public class BuilderInputTermFactoryLink implements
 
 	private final File path;
 
-	public BuilderInputTermFactoryLink(File file) {
+	private boolean onSource;
+
+	public BuilderInputTermFactoryLink(File file, boolean onSource) {
 		this.path = file;
+		this.onSource = onSource;
 	}
 
 	@Override
@@ -62,7 +65,8 @@ public class BuilderInputTermFactoryLink implements
 		}
 		if (select != null) {
 			logger.trace("Selected file {} for creating input", select.getPayload().file());
-			IStrategoTerm ast = select.getPayload().ast();
+			IStrategoTerm ast = onSource && select.getPayload().previousAst() != null ? select
+					.getPayload().previousAst() : select.getPayload().ast();
 			BuilderInputTerm payload = new BuilderInputTerm(Environment.INSTANCE().termFactory,
 					ast, select.getPayload().file(), Environment.INSTANCE().projectDir);
 			Diff<BuilderInputTerm> result = new Diff<BuilderInputTerm>(payload,

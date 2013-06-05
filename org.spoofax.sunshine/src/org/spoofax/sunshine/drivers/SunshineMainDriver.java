@@ -98,7 +98,8 @@ public class SunshineMainDriver {
 				if (args.builder != null) {
 					logger.trace("Creating builder links for builder {}", args.builder);
 					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-							new File(env.projectDir, args.filetobuildon));
+							new File(env.projectDir, args.filetobuildon), args.noanalysis
+									|| args.buildonsource);
 					BuilderSink compileBuilder = new BuilderSink(args.builder);
 					logger.trace("Wiring builder up into pipeline");
 					if (!args.noanalysis)
@@ -123,14 +124,17 @@ public class SunshineMainDriver {
 				if (args.builder != null) {
 					logger.trace("Creating builder links for builder {}", args.builder);
 					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-							new File(env.projectDir, args.filetobuildon));
+							new File(env.projectDir, args.filetobuildon), args.noanalysis
+									|| args.buildonsource);
 					BuilderSink compileBuilder = new BuilderSink(args.builder);
 					logger.trace("Wiring builder up into pipeline");
-					if (args.noanalysis || args.buildonsource) {
+
+					if (args.noanalysis) {
 						parserMapper.addSink(inputMakeLink);
 					} else {
 						analyzerMapper.addSink(inputMakeLink);
 					}
+
 					inputMakeLink.addSink(compileBuilder);
 				}
 			}
