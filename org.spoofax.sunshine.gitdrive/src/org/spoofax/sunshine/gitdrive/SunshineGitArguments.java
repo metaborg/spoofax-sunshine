@@ -1,5 +1,8 @@
 package org.spoofax.sunshine.gitdrive;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.spoofax.sunshine.drivers.SunshineMainArguments;
 
 import com.beust.jcommander.Parameter;
@@ -12,21 +15,25 @@ import com.beust.jcommander.ParametersDelegate;
  */
 public class SunshineGitArguments {
 
-    @Parameter(names = "--from", description = "<HASH> Start at commit HASH")
-    String fromCommit;
+	@Parameter(names = "--from", description = "<HASH> Start at commit HASH")
+	String fromCommit;
 
-    @Parameter(names = "--to", description = "<HASH> Stop at commit HASH")
-    String toCommit;
+	@Parameter(names = "--to", description = "<HASH> Stop at commit HASH")
+	String toCommit;
 
-    @ParametersDelegate
-    SunshineMainArguments sunshineArgs = new SunshineMainArguments();
+	@Parameter(names = "--skip", description = "<HASH>+ Skip the listed commits (space separated)")
+	List<String> skipCommits = new ArrayList<String>();
 
-    @Override
-    public String toString() {
-	String s = "";
-	s += sunshineArgs.toString();
-	s += "From commit: " + fromCommit + "\n";
-	s += "To commit: " + toCommit + "\n";
-	return s;
-    }
+	@ParametersDelegate
+	SunshineMainArguments sunshineArgs = new SunshineMainArguments();
+
+	@Override
+	public String toString() {
+		String s = "";
+		s += sunshineArgs.toString();
+		s += "From commit: " + fromCommit + "\n";
+		s += "To commit: " + toCommit + "\n";
+		s += "To skip: " + skipCommits + "\n";
+		return s;
+	}
 }
