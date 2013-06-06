@@ -91,7 +91,7 @@ public class MessageHelper {
 
 	public static Message newAnalysisMessage(String file, IToken left, IToken right, String msg,
 			MessageSeverity severity) {
-		return newMessage(file, left, right, msg, MessageSeverity.ERROR,
+		return newMessage(file, left, right, msg, severity,
 				MessageType.ANALYSIS_MESSAGE);
 	}
 

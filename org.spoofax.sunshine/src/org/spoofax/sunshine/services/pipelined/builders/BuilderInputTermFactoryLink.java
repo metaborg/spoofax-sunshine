@@ -12,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.Environment;
+import org.spoofax.sunshine.model.messages.IMessage;
+import org.spoofax.sunshine.model.messages.MessageSeverity;
 import org.spoofax.sunshine.pipeline.ILinkManyToOne;
 import org.spoofax.sunshine.pipeline.ISinkOne;
 import org.spoofax.sunshine.pipeline.diff.Diff;
@@ -67,7 +69,14 @@ public class BuilderInputTermFactoryLink implements
 			}
 		}
 		if (select != null) {
-			if (ignoreErrors || select.getPayload().messages().size() == 0) {
+			boolean errors_exist = false;
+			for (IMessage msg : select.getPayload().messages()) {
+				if (msg.severity() == MessageSeverity.ERROR) {
+					errors_exist = true;
+					break;
+				}
+			}
+			if (!errors_exist || ignoreErrors) {
 				logger.trace("Selected file {} for creating input", select.getPayload().file());
 
 				IStrategoTerm ast = onSource && select.getPayload().previousResult() != null ? select

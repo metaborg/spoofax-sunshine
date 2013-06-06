@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.prims;
+package org.spoofax.sunshine.prims.dummies;
 
 import org.spoofax.interpreter.core.IContext;
 import org.spoofax.interpreter.core.InterpreterException;
@@ -13,12 +13,11 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-@Deprecated
 public class QueueStrategyPrimitive extends AbstractPrimitive {
 
 	private static final String NAME = "SSL_EXT_queue_strategy";
 
-	QueueStrategyPrimitive() {
+	public QueueStrategyPrimitive() {
 		super(NAME, 0, 2);
 	}
 

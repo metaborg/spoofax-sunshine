@@ -1,6 +1,11 @@
 package org.spoofax.sunshine.prims;
 
 import org.spoofax.interpreter.library.AbstractStrategoOperatorRegistry;
+import org.spoofax.sunshine.prims.dummies.CompleteWorkUnitPrimitive;
+import org.spoofax.sunshine.prims.dummies.QueueStrategyPrimitive;
+import org.spoofax.sunshine.prims.dummies.RefreshResourcePrimitive;
+import org.spoofax.sunshine.prims.dummies.SetMarkersPrimitive;
+import org.spoofax.sunshine.prims.dummies.SetTotalWorkUnitsPrimitive;
 
 /**
  * 
@@ -22,7 +27,7 @@ public class SunshineLibrary extends AbstractStrategoOperatorRegistry {
 		// add(new SubtermPrimitive());
 		// add(new TermPathPrimitive());
 		// add(new PluginPathPrimitive());
-		// add(new RefreshResourcePrimitive());
+		add(new RefreshResourcePrimitive());
 		// add(new QueueAnalysisPrimitive());
 		// add(new QueueAnalysisCountPrimitive());
 		// add(new CandidateSortsPrimitive());
