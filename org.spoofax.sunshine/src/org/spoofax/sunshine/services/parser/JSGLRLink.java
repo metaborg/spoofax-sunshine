@@ -39,7 +39,7 @@ public class JSGLRLink extends ALinkOneToOne<File, AnalysisResult> {
 		assert parser != null;
 
 		AnalysisResult parseResult = parser.parse();
-		logger.debug("Parsing of file {} produced AST {} and {} messages", input.getPayload(),
+		logger.trace("Parsing of file {} produced AST {} and {} messages", input.getPayload(),
 				parseResult.ast(), parseResult.messages().size());
 		return new Diff<AnalysisResult>(parseResult, input.getDiffKind());
 	}
