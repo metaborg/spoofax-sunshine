@@ -9,7 +9,9 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.messages.IMessage;
+import org.spoofax.sunshine.model.messages.MessageSeverity;
 import org.spoofax.sunshine.pipeline.ISinkMany;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
@@ -27,7 +29,10 @@ public class MessageSink implements ISinkMany<IMessage> {
 		logger.info("Sinking {} messages", product.size());
 
 		for (Diff<IMessage> msgDiff : product) {
-			messages.add(msgDiff.getPayload());
+			if (msgDiff.getPayload().severity() == MessageSeverity.ERROR
+					|| !Environment.INSTANCE().getMainArguments().suppresswarnings) {
+				messages.add(msgDiff.getPayload());
+			}
 		}
 	}
 

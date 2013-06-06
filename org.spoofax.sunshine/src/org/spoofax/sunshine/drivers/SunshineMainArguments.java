@@ -41,6 +41,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--build-with-errors", description = "Call builder even if there are errors after analysis")
 	public boolean buildwitherrors;
 
+	@Parameter(names = "--no-warn", description = "Disable reporting of warnings and notes. Only errors are reported.")
+	public boolean suppresswarnings;
+
 	@Parameter(names = "--help", help = true)
 	public boolean help;
 
