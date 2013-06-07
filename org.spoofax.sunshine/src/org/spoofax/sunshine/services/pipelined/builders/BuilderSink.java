@@ -76,7 +76,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 			logger.info("Builder {} called on file {} and produced file {}", builderName, product
 					.getPayload().getFile(), result.getAbsolutePath());
 		else
-			logger.debug(
+			logger.info(
 					"Builder {} called on file {} did not return a file and contents to be written",
 					builderName, product.getPayload().getFile());
 	}

@@ -70,7 +70,7 @@ public class LegacyAnalyzerLink extends ALinkOneToOne<AnalysisResult, AnalysisRe
 			if (!success) {
 				throw new CompilerException(ANALYSIS_CRASHED_MSG);
 			} else {
-				logger.warn("Ignoring further files to analyze. Not implemented");
+				logger.debug("Ignoring further files to analyze. Not implemented");
 				IStrategoTuple resultTuple = (IStrategoTuple) runtime.current();
 				logger.trace("Analysis resulted in a {} tuple", resultTuple.getSubtermCount());
 				return makeAnalysisResult(parseResult, resultTuple);
