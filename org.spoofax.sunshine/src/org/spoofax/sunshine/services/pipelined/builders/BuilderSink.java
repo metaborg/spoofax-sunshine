@@ -81,6 +81,14 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 					builderName, product.getPayload().getFile());
 	}
 
+	private Throwable rootCause(Throwable t) {
+		if (t.getCause() != null) {
+			return rootCause(t.getCause());
+		} else {
+			return t;
+		}
+	}
+
 	private File callBuilder(BuilderInputTerm input) throws CompilerException {
 		assert builderName != null && builderName.length() > 0;
 
@@ -96,8 +104,19 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 		ensureProperLanguage(lang);
 
 		IStrategoTerm result = null;
-		result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
-
+		try {
+			result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
+		} catch (CompilerException ex) {
+			Throwable cause = rootCause(ex);
+			if (cause != null && cause.getMessage().startsWith("Smart constructor failed for")) {
+				logger.fatal("Builder {} produced incorrect AST for file {}: {}", builderName,
+						input.getFile().getName(), cause.getMessage());
+				return null;
+			} else {
+				logger.warn("Exception {} is not a typesmart violation");
+				throw ex;
+			}
+		}
 		if (isWriteFile(result)) {
 
 			final File resultFile = new File(Environment.INSTANCE().projectDir,
