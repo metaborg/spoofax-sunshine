@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -63,7 +64,11 @@ public final class GitUtils {
 	public static void stepRevision(Git git, RevCommit from, RevCommit to) {
 		try {
 			git.checkout().setName(to.getName()).setCreateBranch(true).setStartPoint(to).call();
-			updateSubmodule(git);
+			try {
+				updateSubmodule(git);
+			} catch (CompilerException e) {
+				// Ignore.
+			}
 			cleanVeryHard(git);
 			if (from != null) {
 				deleteBranch(git, from.getName());
@@ -95,6 +100,8 @@ public final class GitUtils {
 		try {
 			git.submoduleUpdate().call();
 		} catch (GitAPIException gitex) {
+			throw new CompilerException("Failed to update submodules", gitex);
+		} catch (JGitInternalException gitex) {
 			throw new CompilerException("Failed to update submodules", gitex);
 		}
 	}
