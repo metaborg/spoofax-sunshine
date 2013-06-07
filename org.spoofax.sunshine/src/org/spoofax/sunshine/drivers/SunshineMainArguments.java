@@ -23,6 +23,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--build-on", description = "[PATH] Path (relative to project) to invoke the builder on")
 	public String filetobuildon;
 
+	@Parameter(names = "--build-on-all", description = "[PATH] A folder (relative to the project) to invoke the builder on all of the files inside.")
+	public String filestobuildon;
+
 	@Parameter(names = "--build-on-source", description = "Apply builder to the non-analyzed AST, regardless of whether analysis was performed or not")
 	public boolean buildonsource;
 
@@ -51,10 +54,10 @@ public class SunshineMainArguments {
 	SunshineLanguageArguments languageArgs = new SunshineLanguageArguments();
 
 	public void validate() {
-		if (builder == null && filetobuildon != null) {
+		if (builder == null && (filetobuildon != null || filestobuildon != null)) {
 			throw new IllegalArgumentException("No builder to invoke has been specified");
 		}
-		if (builder != null && filetobuildon == null) {
+		if (builder != null && (filetobuildon == null && filestobuildon == null)) {
 			throw new IllegalArgumentException("No file to apply builder to was given");
 		}
 		if (parseonly && noanalysis) {
@@ -70,6 +73,10 @@ public class SunshineMainArguments {
 		if (buildonsource && builder == null) {
 			throw new IllegalArgumentException(
 					"Option --build-on-source requires a builder to be specified with --builder");
+		}
+		if (filetobuildon != null && filestobuildon != null) {
+			throw new IllegalArgumentException(
+					"Options --build-on and --build-on-all cannot be combined");
 		}
 		languageArgs.validate();
 	}

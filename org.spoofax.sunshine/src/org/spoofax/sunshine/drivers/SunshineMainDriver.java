@@ -6,6 +6,7 @@ package org.spoofax.sunshine.drivers;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,7 @@ import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
+import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
 import org.spoofax.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
@@ -94,23 +96,22 @@ public class SunshineMainDriver {
 				}
 
 				if (args.builder != null) {
-					logger.trace("Creating builder links for builder {}", args.builder);
-					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-							new File(env.projectDir, args.filetobuildon), args.noanalysis
-									|| args.buildonsource, args.buildwitherrors);
-					BuilderSink compileBuilder = new BuilderSink(args.builder);
-					logger.trace("Wiring builder up into pipeline");
-					if (!args.noanalysis)
-						analyzerLink.addSink(inputMakeLink);
-					else
-						parserMapper.addSink(inputMakeLink);
-					inputMakeLink.addSink(compileBuilder);
+					for (File file : getFilesToBuild()) {
+						logger.trace("Creating builder links for builder {}", args.builder);
+						BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+								file, args.noanalysis || args.buildonsource, args.buildwitherrors);
+						BuilderSink compileBuilder = new BuilderSink(args.builder);
+						logger.trace("Wiring builder up into pipeline");
+						if (!args.noanalysis)
+							analyzerLink.addSink(inputMakeLink);
+						else
+							parserMapper.addSink(inputMakeLink);
+						inputMakeLink.addSink(compileBuilder);
+					}
 				}
 			} else {
-				// ILinkManyToMany<AnalysisResult, IStrategoTerm> astSelector = null;
 				LinkMapperOneToOne<AnalysisResult, AnalysisResult> analyzerMapper = null;
 				if (!args.noanalysis) {
-					// astSelector = new AstExtractorLink();
 					analyzerMapper = new LinkMapperOneToOne<AnalysisResult, AnalysisResult>(
 							new LegacyAnalyzerLink());
 					parserMapper.addSink(analyzerMapper);
@@ -119,20 +120,21 @@ public class SunshineMainDriver {
 					messageSelector2.addSink(messageSink);
 				}
 				if (args.builder != null) {
-					logger.trace("Creating builder links for builder {}", args.builder);
-					BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-							new File(env.projectDir, args.filetobuildon), args.noanalysis
-									|| args.buildonsource, args.buildwitherrors);
-					BuilderSink compileBuilder = new BuilderSink(args.builder);
-					logger.trace("Wiring builder up into pipeline");
+					for (File file : getFilesToBuild()) {
+						logger.trace("Creating builder links for builder {}", args.builder);
+						BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
+								file, args.noanalysis || args.buildonsource, args.buildwitherrors);
+						BuilderSink compileBuilder = new BuilderSink(args.builder);
+						logger.trace("Wiring builder up into pipeline");
 
-					if (args.noanalysis) {
-						parserMapper.addSink(inputMakeLink);
-					} else {
-						analyzerMapper.addSink(inputMakeLink);
+						if (args.noanalysis) {
+							parserMapper.addSink(inputMakeLink);
+						} else {
+							analyzerMapper.addSink(inputMakeLink);
+						}
+
+						inputMakeLink.addSink(compileBuilder);
 					}
-
-					inputMakeLink.addSink(compileBuilder);
 				}
 			}
 
@@ -141,6 +143,26 @@ public class SunshineMainDriver {
 		Statistics.stopTimer();
 
 		logger.info("Pipeline initialized");
+	}
+
+	private Collection<File> getFilesToBuild() {
+		Environment env = Environment.INSTANCE();
+		SunshineMainArguments args = env.getMainArguments();
+		Collection<File> files = new LinkedList<File>();
+		if (args.filetobuildon != null) {
+			files.add(new File(env.projectDir, args.filetobuildon));
+		}
+		if (args.filestobuildon != null) {
+			files.addAll(FileUtils.listFiles(
+					new File(env.projectDir, args.filestobuildon),
+					LanguageService
+							.INSTANCE()
+							.getSupportedExtens()
+							.toArray(
+									new String[LanguageService.INSTANCE().getSupportedExtens()
+											.size()]), true));
+		}
+		return files;
 	}
 
 	public void run() {
