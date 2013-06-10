@@ -14,6 +14,7 @@ import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.parser.model.ParserConfig;
 import org.spoofax.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.spoofax.sunshine.pipeline.diff.Diff;
+import org.spoofax.sunshine.pipeline.diff.DiffKind;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 
@@ -31,6 +32,11 @@ public class JSGLRLink extends ALinkOneToOne<File, AnalysisResult> {
 
 	@Override
 	public Diff<AnalysisResult> sinkWork(Diff<File> input) {
+		if (input.getDiffKind() == DiffKind.DELETION) {
+			logger.debug("File {} has been deleted therefore has no AST", input.getPayload()
+					.getName());
+			return null;
+		}
 		JSGLRI parser = parsers.get(input.getPayload());
 		if (parser == null) {
 			parser = constructParser(input.getPayload());
