@@ -3,11 +3,14 @@
  */
 package org.spoofax.sunshine.gitdrive;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -106,4 +109,48 @@ public final class GitUtils {
 		}
 	}
 
+	public static int getDeltaLoc(Git git, RevCommit from, RevCommit to, String fileExtension) {
+
+		File gitDir = git.getRepository().getDirectory();
+		if (from != null) {
+
+			String[] cmd = {
+					"/bin/sh",
+					"-c",
+					"git --git-dir=\"" + gitDir.getAbsolutePath() + "\" --work-tree=\""
+							+ gitDir.getParentFile().getAbsolutePath() + "\" diff --numstat "
+							+ from.getId().getName() + " " + to.getId().getName() + " | grep ."
+							+ fileExtension };
+			try {
+				Process proc = Runtime.getRuntime().exec(cmd);
+				String output = IOUtils.toString(proc.getInputStream());
+				String[] lines = output.split("\n");
+				int deltalines = 0;
+				for (String line : lines) {
+					String[] lineBits = line.trim().split("\t");
+					deltalines += Integer.parseInt(lineBits[0]) + Integer.parseInt(lineBits[1]);
+				}
+				return deltalines;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			String[] cmd = {
+					"/bin/sh",
+					"-c",
+					"find \"" + gitDir.getParentFile().getAbsolutePath() + "\" -name \\*."
+							+ fileExtension + " | xargs wc -l | tail -n 1" };
+			try {
+				Process proc = Runtime.getRuntime().exec(cmd);
+				Thread.sleep(500);
+				String output = IOUtils.toString(proc.getInputStream());
+				return Integer.parseInt(output.trim().split(" ")[0]);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+	}
 }
