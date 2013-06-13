@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.Git;
@@ -14,19 +13,12 @@ import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.util.FS;
-import org.spoofax.interpreter.core.InterpreterException;
-import org.spoofax.interpreter.library.AbstractPrimitive;
-import org.spoofax.interpreter.library.IOperatorRegistry;
-import org.spoofax.interpreter.stratego.Strategy;
-import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.drivers.SunshineMainDriver;
+import org.spoofax.sunshine.prims.ProjectUtils;
 import org.spoofax.sunshine.services.LanguageService;
-import org.spoofax.sunshine.services.RuntimeService;
 import org.spoofax.sunshine.statistics.BoxValidatable;
 import org.spoofax.sunshine.statistics.Statistics;
-import org.strategoxt.HybridInterpreter;
 
 /**
  * 
@@ -118,15 +110,21 @@ public class SunshineGitDriver {
 			logger.info("Checking out commit {}/{} with hash {}", currentCommitIndex++, numCommits,
 					commit.getId().getName());
 			File savedCache = null;
-			if (!Environment.INSTANCE().getMainArguments().nonincremental)
-				savedCache = saveCacheFolder();
-			GitUtils.cleanVeryHard(git);
 
+			if (Environment.INSTANCE().getMainArguments().nonincremental) {
+				ProjectUtils.cleanProject();
+				ProjectUtils.unloadIndex();
+				ProjectUtils.unloadTasks();
+			} else {
+				savedCache = ProjectUtils.saveProjectState();
+			}
+
+			GitUtils.cleanVeryHard(git);
 			GitUtils.stepRevision(git, prevCommit, commit);
-			if (!Environment.INSTANCE().getMainArguments().nonincremental)
-				restoreCacheFolder(savedCache);
-			else
-				unloadIndex();
+
+			if (savedCache != null) {
+				ProjectUtils.restoreProjectState(savedCache);
+			}
 
 			currentDriver = new SunshineMainDriver();
 			Statistics.addDataPoint("COMMIT", new BoxValidatable<String>(commit.getId().getName()));
@@ -142,56 +140,4 @@ public class SunshineGitDriver {
 		GitUtils.deleteBranch(git, prevCommit.getName());
 	}
 
-	private File saveCacheFolder() {
-		logger.trace("Saving cache folder to a temporary directory");
-		File cacheDir = Environment.INSTANCE().getCacheDir();
-		File tempDir = new File(FileUtils.getTempDirectory(), "_sunshine_"
-				+ System.currentTimeMillis());
-		if (cacheDir.exists() && cacheDir.isDirectory()) {
-			try {
-				FileUtils.moveDirectory(cacheDir, tempDir);
-			} catch (IOException ioex) {
-				logger.fatal("Could not move cache dir out of the way because of exception", ioex);
-				throw new RuntimeException("Failed to move cache directory", ioex);
-			}
-			logger.trace("Moved cache dir {} to temporary {}", cacheDir, tempDir);
-			return tempDir;
-		} else {
-			logger.warn("Failed to save cacheDir {} because it does not exist", cacheDir);
-			return null;
-		}
-	}
-
-	private void restoreCacheFolder(File tmp) {
-		File cacheDir = Environment.INSTANCE().getCacheDir();
-		logger.trace("Restoring saved cache {} to original location {}", tmp, cacheDir);
-		try {
-			if (cacheDir.exists())
-				FileUtils.deleteDirectory(cacheDir);
-			FileUtils.moveDirectory(tmp, cacheDir);
-		} catch (IOException ioex) {
-			logger.fatal("Could not move cache dir back in the project because of exception", ioex);
-			throw new RuntimeException("Failed to restore saved cache dir", ioex);
-		}
-	}
-
-	protected void unloadIndex() {
-		HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(
-				LanguageService.INSTANCE().getAnyLanguage());
-		IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry("INDEX");
-		AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
-		try {
-			boolean unloadSuccess = unloadIdxPrim.call(
-					runtime.getContext(),
-					new Strategy[0],
-					new IStrategoTerm[] { runtime.getFactory().makeString(
-							Environment.INSTANCE().projectDir.getAbsolutePath()) });
-			if (!unloadSuccess) {
-				throw new CompilerException("Could not unload index");
-			}
-		} catch (InterpreterException intex) {
-			throw new CompilerException("Could not unload index", intex);
-		}
-
-	}
 }

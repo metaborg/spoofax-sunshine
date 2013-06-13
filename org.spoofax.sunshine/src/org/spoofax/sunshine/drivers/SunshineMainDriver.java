@@ -4,7 +4,6 @@
 package org.spoofax.sunshine.drivers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -17,6 +16,7 @@ import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
+import org.spoofax.sunshine.prims.ProjectUtils;
 import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
@@ -55,13 +55,7 @@ public class SunshineMainDriver {
 	public void init() throws CompilerException {
 		logger.trace("Beginning init");
 		if (Environment.INSTANCE().getMainArguments().nonincremental) {
-			try {
-				FileUtils.deleteDirectory(Environment.INSTANCE().getCacheDir());
-			} catch (IOException ioex) {
-				logger.error("Could not delete cache directory {} because of exception {}",
-						Environment.INSTANCE().getCacheDir(), ioex);
-				throw new CompilerException("Could not delete cache directory", ioex);
-			}
+			ProjectUtils.cleanProject();
 		}
 		logger.trace("Init completed");
 	}
