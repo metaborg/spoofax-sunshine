@@ -113,7 +113,7 @@ public class SunshineGitDriver {
 	public void run() {
 		int numCommits = commits.size();
 		logger.debug("Going to iterate over {} commits", numCommits);
-		RevCommit pCommit = null;
+		RevCommit prevCommit = null;
 		for (RevCommit commit : commits) {
 			logger.info("Checking out commit {}/{} with hash {}", currentCommitIndex++, numCommits,
 					commit.getId().getName());
@@ -122,7 +122,7 @@ public class SunshineGitDriver {
 				savedCache = saveCacheFolder();
 			GitUtils.cleanVeryHard(git);
 
-			GitUtils.stepRevision(git, pCommit, commit);
+			GitUtils.stepRevision(git, prevCommit, commit);
 			if (!Environment.INSTANCE().getMainArguments().nonincremental)
 				restoreCacheFolder(savedCache);
 			else
@@ -130,13 +130,16 @@ public class SunshineGitDriver {
 
 			currentDriver = new SunshineMainDriver();
 			Statistics.addDataPoint("COMMIT", new BoxValidatable<String>(commit.getId().getName()));
+			int deltaLoc = GitUtils.getDeltaLoc(git, prevCommit, commit, LanguageService.INSTANCE()
+					.getAnyLanguage().getFileExtensions().iterator().next());
+			Statistics.addDataPoint("DELTALOC", new BoxValidatable<Integer>(deltaLoc));
 			currentDriver.run();
-			pCommit = commit;
+			prevCommit = commit;
 		}
 		GitUtils.cleanVeryHard(git);
 		GitUtils.checkoutBranch(git, "master");
 		GitUtils.updateSubmodule(git);
-		GitUtils.deleteBranch(git, pCommit.getName());
+		GitUtils.deleteBranch(git, prevCommit.getName());
 	}
 
 	private File saveCacheFolder() {
