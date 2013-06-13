@@ -99,6 +99,7 @@ public class AnalysisService {
 				throw new CompilerException(ANALYSIS_CRASHED_MSG);
 			} else {
 				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
+				System.err.println("FOOBAR COUNT " + resultTup.getSubterm(2));
 				logger.trace("Analysis resulted in a {} tuple", resultTup.getSubtermCount());
 				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(0);
 				final int numItems = resultList.getSubtermCount();

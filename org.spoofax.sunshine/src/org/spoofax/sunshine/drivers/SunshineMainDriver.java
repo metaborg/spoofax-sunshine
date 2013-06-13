@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spoofax.interpreter.terms.IStrategoList;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
@@ -20,6 +22,7 @@ import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.spoofax.sunshine.prims.ProjectUtils;
 import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.StrategoCallService;
 import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
 import org.spoofax.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
@@ -184,6 +187,11 @@ public class SunshineMainDriver {
 		emitMessages();
 		Statistics.stopTimer();
 		Statistics.toNext();
+		IStrategoTerm taskData = StrategoCallService.INSTANCE().callStratego(
+				LanguageService.INSTANCE().getAnyLanguage(), "task-debug-info",
+				Environment.INSTANCE().termFactory.makeTuple());
+		System.out
+				.println(taskData.getClass() + " " + ((IStrategoList) taskData).getSubtermCount());
 	}
 
 }
