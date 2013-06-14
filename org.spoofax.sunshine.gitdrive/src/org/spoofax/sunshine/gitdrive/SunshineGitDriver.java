@@ -151,8 +151,9 @@ public class SunshineGitDriver {
 			Statistics.addDataPoint("TOTALLOC", new BoxValidatable<Integer>(totalLoc));
 			currentDriver.run();
 			try {
-				FileUtils.copyDirectory(Environment.INSTANCE().getCacheDir(), new File(Statistics
-						.INSTANCE().getStatisticsFile().getParentFile(), seqnum + "-cache"));
+				File toDir = new File(Statistics.INSTANCE().getStatisticsFile().getParentFile(), seqnum + "");
+				toDir.mkdirs();
+				FileUtils.copyDirectoryToDirectory(Environment.INSTANCE().getCacheDir(), toDir);
 			} catch (IOException e) {
 				throw new CompilerException("Failed to save cache folder", e);
 			}
