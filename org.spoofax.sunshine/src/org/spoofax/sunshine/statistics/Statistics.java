@@ -51,6 +51,10 @@ public class Statistics {
 		}
 	}
 
+	public File getStatisticsFile() {
+		return targetFile;
+	}
+
 	public static Statistics INSTANCE() {
 		if (INSTANCE == null) {
 			INSTANCE = new Statistics();

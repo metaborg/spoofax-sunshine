@@ -24,6 +24,9 @@ public class SunshineGitArguments {
 	@Parameter(names = "--skip", description = "<HASH>+ Skip the listed commits (space separated)")
 	List<String> skipCommits = new ArrayList<String>();
 
+	@Parameter(names = "--with-lib", description = "[PATH] A folder contents of which will be copied into the project prior to the rest of the work.")
+	public String withlib;
+	
 	@ParametersDelegate
 	SunshineMainArguments sunshineArgs = new SunshineMainArguments();
 

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.Git;
@@ -13,10 +14,13 @@ import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.util.FS;
+import org.spoofax.interpreter.terms.IStrategoList;
+import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.drivers.SunshineMainDriver;
 import org.spoofax.sunshine.prims.ProjectUtils;
 import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.StrategoCallService;
 import org.spoofax.sunshine.statistics.BoxValidatable;
 import org.spoofax.sunshine.statistics.Statistics;
 
@@ -106,6 +110,7 @@ public class SunshineGitDriver {
 		int numCommits = commits.size();
 		logger.debug("Going to iterate over {} commits", numCommits);
 		RevCommit prevCommit = null;
+		int seqnum = 1;
 		for (RevCommit commit : commits) {
 			logger.info("Checking out commit {}/{} with hash {}", currentCommitIndex++, numCommits,
 					commit.getId().getName());
@@ -113,8 +118,8 @@ public class SunshineGitDriver {
 
 			if (Environment.INSTANCE().getMainArguments().nonincremental) {
 				ProjectUtils.cleanProject();
-				ProjectUtils.unloadIndex();
-				ProjectUtils.unloadTasks();
+
+				assert FileUtils.sizeOfDirectory(Environment.INSTANCE().getCacheDir()) == 0;
 			} else {
 				savedCache = ProjectUtils.saveProjectState();
 			}
@@ -125,13 +130,33 @@ public class SunshineGitDriver {
 			if (savedCache != null) {
 				ProjectUtils.restoreProjectState(savedCache);
 			}
+			if (args.withlib != null) {
+				File[] withlibsfiles = new File(args.withlib).listFiles();
+				for (File f : withlibsfiles) {
+					try {
+						FileUtils.copyFileToDirectory(f, Environment.INSTANCE().projectDir);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
 
 			currentDriver = new SunshineMainDriver();
 			Statistics.addDataPoint("COMMIT", new BoxValidatable<String>(commit.getId().getName()));
 			int deltaLoc = GitUtils.getDeltaLoc(git, prevCommit, commit, LanguageService.INSTANCE()
 					.getAnyLanguage().getFileExtensions().iterator().next());
 			Statistics.addDataPoint("DELTALOC", new BoxValidatable<Integer>(deltaLoc));
+			int totalLoc = GitUtils.totalLinesOfCode(git, LanguageService.INSTANCE()
+					.getAnyLanguage().getFileExtensions().iterator().next());
+			Statistics.addDataPoint("TOTALLOC", new BoxValidatable<Integer>(totalLoc));
 			currentDriver.run();
+			try {
+				FileUtils.copyDirectory(Environment.INSTANCE().getCacheDir(), new File(Statistics
+						.INSTANCE().getStatisticsFile().getParentFile(), seqnum + "-cache"));
+			} catch (IOException e) {
+				throw new CompilerException("Failed to save cache folder", e);
+			}
+			seqnum++;
 			prevCommit = commit;
 		}
 		GitUtils.cleanVeryHard(git);

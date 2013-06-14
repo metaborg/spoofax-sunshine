@@ -142,15 +142,29 @@ public final class GitUtils {
 							+ fileExtension + " | xargs wc -l | tail -n 1" };
 			try {
 				Process proc = Runtime.getRuntime().exec(cmd);
-				Thread.sleep(500);
 				String output = IOUtils.toString(proc.getInputStream());
 				return Integer.parseInt(output.trim().split(" ")[0]);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
 			}
 
 		}
+	}
+
+	public static int totalLinesOfCode(Git git, String extension) {
+		File gitDir = git.getRepository().getDirectory();
+		String[] cmd = {
+				"/bin/sh",
+				"-c",
+				"find " + gitDir.getParentFile().getAbsolutePath() + " -name \\*." + extension
+						+ " | xargs wc -l | tail -n 1" };
+		try {
+			Process proc = Runtime.getRuntime().exec(cmd);
+			String output = IOUtils.toString(proc.getInputStream());
+			return Integer.parseInt(output.trim().split(" ")[0]);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }
