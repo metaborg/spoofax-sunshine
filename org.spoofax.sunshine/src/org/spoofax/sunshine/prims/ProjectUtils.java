@@ -107,4 +107,18 @@ public class ProjectUtils {
 		}
 	}
 
+	public static void copyLibsIntoProject() {
+		String withLib = Environment.INSTANCE().getMainArguments().withlib;
+		if (withLib != null) {
+			File[] withlibsfiles = new File(withLib).listFiles();
+			for (File f : withlibsfiles) {
+				try {
+					FileUtils.copyFileToDirectory(f, Environment.INSTANCE().projectDir);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+	}
+
 }

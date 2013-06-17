@@ -47,6 +47,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--no-warn", description = "Disable reporting of warnings and notes. Only errors are reported.")
 	public boolean suppresswarnings;
 
+	@Parameter(names = "--with-lib", description = "[PATH] A folder contents of which will be copied into the project prior to the rest of the work.")
+	public String withlib;
+
 	@Parameter(names = "--help", help = true)
 	public boolean help;
 

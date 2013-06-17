@@ -61,8 +61,6 @@ public class SunshineMainDriver {
 		logger.trace("Beginning init");
 		if (Environment.INSTANCE().getMainArguments().nonincremental) {
 			ProjectUtils.cleanProject();
-			ProjectUtils.unloadTasks();
-			ProjectUtils.unloadIndex();
 		}
 		logger.trace("Init completed");
 	}
@@ -166,14 +164,6 @@ public class SunshineMainDriver {
 		return files;
 	}
 
-	// (taskID,
-	// instruction,
-	// list of dependencies (task ids),
-	// list of results OR Fail() if task failed OR None() if the task was not evaluated,
-	// list of produced messages OR none() if the task did not produce messages,
-	// time taken in nanoseconds (maximum size = Java int),
-	// exec count)
-
 	public void run() {
 		Statistics.startTimer("RUN");
 		logger.debug("Beginning run");
@@ -192,38 +182,5 @@ public class SunshineMainDriver {
 		emitMessages();
 		Statistics.stopTimer();
 		Statistics.toNext();
-
-		// logger.info("Obtaining statics from the task engine");
-		// IStrategoList taskDataList = (IStrategoList) StrategoCallService.INSTANCE().callStratego(
-		// LanguageService.INSTANCE().getAnyLanguage(), "task-debug-info",
-		// Environment.INSTANCE().termFactory.makeTuple());
-		// logger.info("Task engine contents downloaded");
-		// logger.info("Computing task stats...");
-		//
-		//
-		// long startTime = System.currentTimeMillis();
-		// int numTasks = 0;
-		// long minDuration = Long.MAX_VALUE;
-		// long maxDuration = Long.MIN_VALUE;
-		// int maxReexecs = Integer.MIN_VALUE;
-		// Set<String> instructionTypes = new HashSet<String>();
-		// for (IStrategoTerm td : taskDataList) {
-		// IStrategoTuple tup = (IStrategoTuple) td;
-		// numTasks += ((IStrategoInt) tup.getSubterm(6)).intValue();
-		// minDuration = Math.min(minDuration, ((IStrategoInt) tup.getSubterm(5)).intValue());
-		// maxDuration = Math.max(maxDuration, ((IStrategoInt) tup.getSubterm(5)).intValue());
-		// maxReexecs = Math.max(maxReexecs, ((IStrategoInt) tup.getSubterm(6)).intValue());
-		// instructionTypes.add(((IStrategoAppl) tup.getSubterm(1)).getName());
-		// }
-		//
-		// // System.out
-		// // .println(taskData.getClass() + " " + ((IStrategoList) taskData).getSubtermCount());
-		// logger.info("Task stats computed. Duration {} ms", System.currentTimeMillis() -
-		// startTime);
-		// System.out.println("Num task executions: " + numTasks);
-		// System.out.println("Min duration cummulated: " + minDuration);
-		// System.out.println("Max duration commulated: " + maxDuration);
-		// System.out.println("Max rexecutions: " + maxReexecs);
-		// System.out.println("Instructions names: " + instructionTypes);
 	}
 }

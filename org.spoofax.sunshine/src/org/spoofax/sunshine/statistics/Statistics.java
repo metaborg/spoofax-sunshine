@@ -62,6 +62,10 @@ public class Statistics {
 		return INSTANCE;
 	}
 
+	public static void forceReinitialization() {
+		INSTANCE = new Statistics();
+	}
+
 	private DataRecording next() {
 		if (recordingStack.size() > 0) {
 			recordingStack.peek().close();
