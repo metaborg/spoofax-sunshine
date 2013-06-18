@@ -124,6 +124,9 @@ public final class GitUtils {
 			try {
 				Process proc = Runtime.getRuntime().exec(cmd);
 				String output = IOUtils.toString(proc.getInputStream());
+				if(output.equalsIgnoreCase("")){
+					return 0;
+				}
 				String[] lines = output.split("\n");
 				int deltalines = 0;
 				for (String line : lines) {

@@ -128,17 +128,16 @@ public class SunshineGitDriver {
 				throw new RuntimeException("Not clean");
 			}
 			GitUtils.stepRevision(git, prevCommit, commit);
-			
+
 			System.gc();
-			
+			ProjectUtils.copyLibsIntoProject();
 			if (savedCache != null) {
 				ProjectUtils.restoreProjectState(savedCache);
 			}
-			if (Environment.INSTANCE().getCacheDir().listFiles().length == 0 && seqnum != 1) {
+			if (!Environment.INSTANCE().getMainArguments().nonincremental
+					&& Environment.INSTANCE().getCacheDir().listFiles().length == 0 && seqnum != 1) {
 				throw new RuntimeException("Too clean");
 			}
-
-			ProjectUtils.copyLibsIntoProject();
 
 			currentDriver = new SunshineMainDriver();
 			Statistics.addDataPoint("COMMIT", new BoxValidatable<String>(commit.getId().getName()));
