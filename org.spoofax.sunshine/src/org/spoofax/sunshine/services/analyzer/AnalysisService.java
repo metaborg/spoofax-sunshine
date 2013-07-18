@@ -98,6 +98,11 @@ public class AnalysisService {
 			if (!success) {
 				throw new CompilerException(ANALYSIS_CRASHED_MSG);
 			} else {
+				if (!(runtime.current() instanceof IStrategoTuple)) {
+					logger.fatal("Unexpected results from analysis {}", runtime.current());
+					throw new CompilerException("Unexpected results from analysis: "
+							+ runtime.current());
+				}
 				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
 				logger.trace("Analysis resulted in a {} tuple", resultTup.getSubtermCount());
 				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(0);
