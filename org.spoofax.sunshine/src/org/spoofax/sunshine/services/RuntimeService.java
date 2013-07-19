@@ -13,7 +13,9 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.runtime.task.primitives.TaskLibrary;
 import org.spoofax.interpreter.core.InterpreterException;
+import org.spoofax.interpreter.library.index.legacy.LegacyIndexLibrary;
 import org.spoofax.jsglr.client.imploder.ImploderOriginTermFactory;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.SunshineIOAgent;
@@ -92,6 +94,8 @@ public class RuntimeService {
 
 		interp.getCompiledContext().registerComponent("stratego_lib");
 		interp.getCompiledContext().registerComponent("stratego_sglr");
+		interp.getCompiledContext().addOperatorRegistry(new TaskLibrary());
+		interp.getCompiledContext().addOperatorRegistry(new LegacyIndexLibrary());
 
 		interp.addOperatorRegistry(new SunshineLibrary());
 		assert interp.getContext().getOperatorRegistry(SunshineLibrary.REGISTRY_NAME) instanceof SunshineLibrary;

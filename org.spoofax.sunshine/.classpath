@@ -2,6 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="test-files/" kind="src" path="test"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.metaborg.runtime.task_1.0.0.201307181748.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.spoofax.interpreter.library.index_1.0.0.201307181748.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.spoofax.terms_1.0.0.201307181748.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.spoofax.interpreter.library.jsglr_0.3.9.201307181748.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.spoofax.interpreter.core_0.4.1.201307181748.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/strategoxt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sdf2imp.jar">
