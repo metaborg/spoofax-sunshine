@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="jar" name="org.spoofax.sunshine">
+
+	<property name="src.dir" value="src" />
+	<property name="bin.dir" value="bin" />
+	<property name="lib.dir" value="lib" />
+	<property name="dist.dir" value="dist" />
+	<property name="jar.file" value="spoofax-sunshine.jar" />
+
+	<path id="build.classpath">
+		<pathelement path="${java.class.path}" />
+		<pathelement location="${build.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="build">
+		<mkdir dir="${bin.dir}" />
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="build.classpath">
+			<include name="**/*.java" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="build">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${jar.file}" filesetmanifest="mergewithoutmain">
+
+			<manifest>
+				<attribute name="Main-Class" value="org.spoofax.sunshine.drivers.Main" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+
+			<fileset dir="${bin.dir}" includes="**/*.class" />
+			<fileset dir="${bin.dir}" includes="**/*.class" />
+			<fileset dir="${src.dir}" includes="**/*.xml" />
+			
+			<zipgroupfileset dir="${lib.dir}" includes="**/*.jar" />
+
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${bin.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+</project>
