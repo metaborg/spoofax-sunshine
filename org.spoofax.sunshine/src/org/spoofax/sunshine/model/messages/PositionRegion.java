@@ -1,5 +1,7 @@
 package org.spoofax.sunshine.model.messages;
 
+import org.spoofax.jsglr.client.imploder.IToken;
+
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
@@ -13,6 +15,37 @@ public class PositionRegion extends ARegion {
 		this.column = column;
 		this.endrow = endrow;
 		this.endcolumn = endcolumn;
+	}
+
+	public static PositionRegion fromTokens(IToken left, IToken right) {
+		boolean leftDone = false, rightDone = false;
+		int leftLine = 0, leftColumn = 0, rightLine = 0, rightColumn = 0;
+
+		char[] input = left.getTokenizer().getInput().toCharArray();
+		int currentLine = 0;
+		int currentColumn = 0;
+		for (int i = 0; i < input.length; i++) {
+			char c = input[i];
+			if (c == '\n' || c == '\r') {
+				currentLine++;
+				currentColumn = 0;
+			} else {
+				currentColumn++;
+			}
+
+			if (!leftDone && i == left.getStartOffset()) {
+				leftLine = currentLine;
+				leftColumn = currentColumn;
+			}
+			if (!rightDone && i == right.getStartOffset()) {
+				rightLine = currentLine;
+				rightColumn = currentColumn;
+			}
+			if (rightDone && leftDone) {
+				break;
+			}
+		}
+		return new PositionRegion(leftLine, leftColumn, rightLine, rightColumn);
 	}
 
 	@Override
