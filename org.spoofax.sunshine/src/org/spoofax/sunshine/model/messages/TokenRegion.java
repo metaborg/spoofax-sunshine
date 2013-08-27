@@ -24,13 +24,13 @@ public class TokenRegion extends ARegion {
 	@Override
 	public String toString() {
 		final StringBuilder str = new StringBuilder();
-		str.append(left.getLine());
+		str.append(left.getLine() + 1);
 		str.append(COMMA);
-		str.append(left.getColumn());
+		str.append(left.getColumn() + 1);
 		str.append(COLON);
-		str.append(right.getEndLine());
+		str.append(right.getEndLine() + 1);
 		str.append(COMMA);
-		str.append(right.getEndColumn());
+		str.append(right.getEndColumn() + 1);
 		return str.toString();
 	}
 
