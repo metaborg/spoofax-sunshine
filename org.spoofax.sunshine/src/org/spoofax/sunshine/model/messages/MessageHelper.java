@@ -71,7 +71,11 @@ public class MessageHelper {
 		message.type = type;
 		message.severity = severity;
 		message.file = file;
-		message.region = new TokenRegion(left, right);
+		if (type == MessageType.PARSER_MESSAGE) {
+			message.region = PositionRegion.fromTokens(left, right);
+		} else {
+			message.region = new TokenRegion(left, right);
+		}
 		message.msg = msg;
 		return message;
 	}
@@ -91,8 +95,7 @@ public class MessageHelper {
 
 	public static Message newAnalysisMessage(String file, IToken left, IToken right, String msg,
 			MessageSeverity severity) {
-		return newMessage(file, left, right, msg, severity,
-				MessageType.ANALYSIS_MESSAGE);
+		return newMessage(file, left, right, msg, severity, MessageType.ANALYSIS_MESSAGE);
 	}
 
 	public static Message newAnalysisError(String file, IToken left, IToken right, String msg) {
