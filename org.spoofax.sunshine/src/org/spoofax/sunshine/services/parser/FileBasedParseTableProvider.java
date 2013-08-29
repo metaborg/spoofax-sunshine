@@ -50,4 +50,8 @@ public class FileBasedParseTableProvider implements IParseTableProvider {
 		return table;
 	}
 
+	public String toString() {
+		return file.getAbsolutePath();
+	};
+
 }

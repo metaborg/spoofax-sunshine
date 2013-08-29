@@ -47,6 +47,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--no-warn", description = "Disable reporting of warnings and notes. Only errors are reported.")
 	public boolean suppresswarnings;
 
+	@Parameter(names = "--auto-lang", description = "[PATH]. Automatically discover and register languages in the PATH.")
+	public String autolang;
+
 	@Parameter(names = "--help", help = true)
 	public boolean help;
 
@@ -78,13 +81,21 @@ public class SunshineMainArguments {
 			throw new IllegalArgumentException(
 					"Options --build-on and --build-on-all cannot be combined");
 		}
-		languageArgs.validate();
+		if (autolang != null && languageArgs.lang != null) {
+			throw new IllegalArgumentException(
+					"Auto-lang cannot be mixed with manual language configuration");
+		}
+		if (autolang == null)
+			languageArgs.validate();
 	}
 
 	@Override
 	public String toString() {
 		String s = "";
-		s += languageArgs.toString();
+		if (autolang != null)
+			s += "Auto-lang: " + autolang + "\n";
+		else
+			s += languageArgs.toString();
 		s += "Target project: " + project + "\n";
 		s += "Builder name: " + builder + "\n";
 		s += "Build on file: " + filetobuildon + "\n";

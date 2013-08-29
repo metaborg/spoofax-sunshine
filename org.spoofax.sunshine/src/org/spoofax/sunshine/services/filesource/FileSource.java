@@ -13,7 +13,7 @@ import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.pipeline.ISinkMany;
 import org.spoofax.sunshine.pipeline.ISourceMany;
 import org.spoofax.sunshine.pipeline.diff.MultiDiff;
-import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.language.LanguageService;
 import org.spoofax.sunshine.statistics.BoxValidatable;
 import org.spoofax.sunshine.statistics.Statistics;
 

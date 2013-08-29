@@ -11,7 +11,7 @@ import org.spoofax.interpreter.core.InterpreterExit;
 import org.spoofax.interpreter.core.UndefinedStrategyException;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerException;
-import org.spoofax.sunshine.model.language.ALanguage;
+import org.spoofax.sunshine.services.language.ALanguage;
 import org.strategoxt.HybridInterpreter;
 
 /**

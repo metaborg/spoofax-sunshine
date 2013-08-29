@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.spoofax.interpreter.library.LoggingIOAgent;
-import org.spoofax.sunshine.model.language.ALanguage;
+import org.spoofax.sunshine.services.language.ALanguage;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
