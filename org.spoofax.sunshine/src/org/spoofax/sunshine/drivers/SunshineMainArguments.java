@@ -20,6 +20,9 @@ public class SunshineMainArguments {
 	@Parameter(names = "--stats", description = "[PATH] Path to a file to store statistics in. Automatically enables statistics")
 	public String statstarget;
 
+	@Parameter(names = "--filter", description = "[REGEX] Files whose absolute paths do not match the given regular expression are skipped")
+	public String filefilter;
+
 	@Parameter(names = "--build-on", description = "[PATH] Path (relative to project) to invoke the builder on")
 	public String filetobuildon;
 

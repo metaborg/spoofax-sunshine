@@ -24,6 +24,7 @@ import org.spoofax.sunshine.services.analyzer.AnalysisResult;
 import org.spoofax.sunshine.services.analyzer.AnalyzerLink;
 import org.spoofax.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
 import org.spoofax.sunshine.services.filesource.FileSource;
+import org.spoofax.sunshine.services.filesource.FileSourceFilter;
 import org.spoofax.sunshine.services.messages.MessageExtractorLink;
 import org.spoofax.sunshine.services.messages.MessageSink;
 import org.spoofax.sunshine.services.parser.JSGLRLink;
@@ -75,12 +76,15 @@ public class SunshineMainDriver {
 		Statistics.startTimer("PIPELINE_CONSTRUCT");
 		filesSource = new FileSource(env.projectDir);
 		logger.trace("Created file source {}", filesSource);
+		FileSourceFilter fsf = new FileSourceFilter(args.filefilter);
+		filesSource.addSink(fsf);
+		logger.trace("Created file source filter {}", fsf);
 		LinkMapperOneToOne<File, AnalysisResult> parserMapper = new LinkMapperOneToOne<File, AnalysisResult>(
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
 
 		messageSink = new MessageSink();
-		filesSource.addSink(parserMapper);
+		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisResult, IMessage> messageSelector = new MessageExtractorLink();
 		parserMapper.addSink(messageSelector);
 		logger.trace("Message selector {} linked on parse mapper {}", messageSelector, parserMapper);
@@ -92,7 +96,7 @@ public class SunshineMainDriver {
 				ILinkManyToMany<File, AnalysisResult> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
-					filesSource.addSink(analyzerLink);
+					fsf.addSink(analyzerLink);
 					analyzerLink.addSink(messageSelector);
 				}
 
