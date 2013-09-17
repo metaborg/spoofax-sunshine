@@ -13,13 +13,13 @@
 		<get src="http://search.maven.org/remotecontent?filepath=com/google/guava/guava/14.0.1/guava-14.0.1.jar"
 		     dest="${lib.dir}/guava-14.0.1.jar" />
 
-		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-beta6/apache-log4j-2.0-beta6-bin.zip"
+		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-beta8/apache-log4j-2.0-beta8-bin.zip"
 		     dest="${lib.dir}/tmp" />
-		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-beta6-bin.zip" dest="${lib.dir}/tmp" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta6-bin/log4j-api-2.0-beta6.jar" todir="${lib.dir}" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta6-bin/log4j-api-2.0-beta6-javadoc.jar" todir="${lib.dir}" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta6-bin/log4j-core-2.0-beta6.jar" todir="${lib.dir}" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta6-bin/log4j-core-2.0-beta6-javadoc.jar" todir="${lib.dir}" />
+		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-beta8-bin.zip" dest="${lib.dir}/tmp" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta8-bin/log4j-api-2.0-beta8.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta8-bin/log4j-api-2.0-beta8-javadoc.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta8-bin/log4j-core-2.0-beta8.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-beta8-bin/log4j-core-2.0-beta8-javadoc.jar" todir="${lib.dir}" />
 
 		<get src="http://repo1.maven.org/maven2/com/beust/jcommander/1.30/jcommander-1.30.jar"
 		     dest="${lib.dir}/jcommander-1.30.jar" />
