@@ -8,8 +8,8 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.model.language.Language;
-import org.spoofax.sunshine.services.LanguageService;
+import org.spoofax.sunshine.services.language.LanguageDiscoveryService;
+import org.spoofax.sunshine.services.language.LanguageService;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -31,8 +31,7 @@ public class Main {
 		SunshineMainArguments params = new SunshineMainArguments();
 		parseArguments(args, params);
 		if (params.help) {
-			usage();
-			System.exit(1);
+			usage(true);
 		}
 		params.validate();
 		logger.info("Execution arguments are \n{}", params);
@@ -52,9 +51,8 @@ public class Main {
 		try {
 			jc.parse(args);
 		} catch (ParameterException pex) {
-			logger.fatal("Bad command line arguments", pex);
-			pex.printStackTrace();
-			usage();
+			System.err.println(pex.getMessage());
+			usage(true);
 		}
 		logger.trace("Done parsing arguments");
 	}
@@ -64,11 +62,18 @@ public class Main {
 		Environment env = Environment.INSTANCE();
 		env.setMainArguments(args);
 		env.setProjectDir(new File(args.project));
-		LanguageService.INSTANCE().registerLanguage(Language.fromArguments(args.languageArgs));
+		if (args.autolang != null) {
+			LanguageDiscoveryService.INSTANCE().discover(new File(args.autolang));
+		} else {
+			LanguageService.INSTANCE().registerLanguage(
+					LanguageDiscoveryService.INSTANCE().languageFromArguments(args.languageArgs));
+		}
 	}
 
-	public static void usage() {
+	public static void usage(boolean exit) {
 		jc.usage();
+		if (exit)
+			System.exit(1);
 	}
 
 }

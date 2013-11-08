@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.services;
+package org.spoofax.sunshine.services.language;
 
 import java.io.File;
 import java.util.Collection;
@@ -14,7 +14,6 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spoofax.sunshine.model.language.ALanguage;
 
 /**
  * Singleton service serving the purpose of {@link ALanguage} registry. This service maintains

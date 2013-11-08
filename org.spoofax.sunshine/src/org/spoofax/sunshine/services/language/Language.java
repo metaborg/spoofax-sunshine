@@ -1,13 +1,12 @@
 /**
  * 
  */
-package org.spoofax.sunshine.model.language;
+package org.spoofax.sunshine.services.language;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.spoofax.sunshine.drivers.SunshineLanguageArguments;
 import org.spoofax.sunshine.parser.model.IParseTableProvider;
 import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
 
@@ -22,23 +21,6 @@ public class Language extends ALanguage {
 	public final FileBasedParseTableProvider parseTableProvider;
 	public final String analysisFunction;
 	public final File[] compilerFiles;
-
-	public static Language fromArguments(SunshineLanguageArguments args) {
-		String[] extens = args.extens.toArray(new String[args.extens.size()]);
-
-		int numJars = args.jars.size();
-		int numCtrees = args.ctrees.size();
-		File[] compilerFiles = new File[numJars + numCtrees];
-		for (int i = 0; i < (numJars + numCtrees); i++) {
-			if (i < numJars)
-				compilerFiles[i] = new File(args.jars.get(i));
-			else
-				compilerFiles[i] = new File(args.ctrees.get(i - numJars));
-		}
-
-		return new Language(args.lang, extens, args.ssymb, new File(args.tbl), args.observer,
-				compilerFiles);
-	}
 
 	public Language(String name, String[] extens, String startSymbol, File parseTable,
 			String analysisFunction, File[] compilerFiles) {

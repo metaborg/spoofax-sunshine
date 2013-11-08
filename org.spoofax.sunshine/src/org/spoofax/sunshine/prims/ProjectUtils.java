@@ -16,9 +16,9 @@ import org.spoofax.interpreter.stratego.Strategy;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.RuntimeService;
 import org.spoofax.sunshine.services.StrategoCallService;
+import org.spoofax.sunshine.services.language.LanguageService;
 import org.strategoxt.HybridInterpreter;
 
 /**

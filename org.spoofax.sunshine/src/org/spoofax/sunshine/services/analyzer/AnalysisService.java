@@ -17,12 +17,12 @@ import org.spoofax.interpreter.terms.IStrategoTuple;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.model.messages.IMessage;
 import org.spoofax.sunshine.model.messages.MessageHelper;
 import org.spoofax.sunshine.model.messages.MessageSeverity;
-import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.RuntimeService;
+import org.spoofax.sunshine.services.language.ALanguage;
+import org.spoofax.sunshine.services.language.LanguageService;
 import org.strategoxt.HybridInterpreter;
 
 /**
