@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.metaborg.sunshine.util.BubblingMap;
 
 public class BubblingMapTest {
 

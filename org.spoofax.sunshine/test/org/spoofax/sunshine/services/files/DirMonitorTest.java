@@ -17,9 +17,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spoofax.sunshine.pipeline.diff.DiffKind;
-import org.spoofax.sunshine.pipeline.diff.MultiDiff;
-import org.spoofax.sunshine.services.filesource.DirMonitor;
+import org.metaborg.sunshine.pipeline.diff.DiffKind;
+import org.metaborg.sunshine.pipeline.diff.MultiDiff;
+import org.metaborg.sunshine.services.filesource.DirMonitor;
 
 public class DirMonitorTest {
 

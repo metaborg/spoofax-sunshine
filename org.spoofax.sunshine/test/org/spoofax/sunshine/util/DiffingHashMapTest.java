@@ -11,7 +11,10 @@ import java.util.Map.Entry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spoofax.sunshine.pipeline.diff.DiffKind;
+import org.metaborg.sunshine.pipeline.diff.DiffKind;
+import org.metaborg.sunshine.util.DiffingHashMap;
+import org.metaborg.sunshine.util.IMerger;
+import org.metaborg.sunshine.util.NoMerger;
 
 public class DiffingHashMapTest {
 
