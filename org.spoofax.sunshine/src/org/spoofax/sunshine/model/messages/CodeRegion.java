@@ -8,23 +8,25 @@ import org.spoofax.jsglr.client.imploder.IToken;
  * 
  */
 public class CodeRegion {
-	private static final String COMMA = ",";
-	private static final String COLON = ":";
+	public static final String COMMA = ",";
+	public static final String COLON = ":";
+	public static final String EMPTY = "";
+
 	private int row, column, endrow, endcolumn;
-	private String input;
+	private String[] affectedLines;
 
 	public CodeRegion(int row, int column, int endrow, int endcolumn, String input) {
 		this.row = row;
 		this.column = column;
 		this.endrow = endrow;
 		this.endcolumn = endcolumn;
-		this.input = input;
+		if (input != null)
+			this.affectedLines = CodeRegionHelper.getAffectedLines(input, row, endrow);
 	}
 
 	public static CodeRegion fromTokens(IToken left, IToken right) {
 		boolean leftDone = false, rightDone = false;
 		int leftLine = 0, leftColumn = 0, rightLine = 0, rightColumn = 0;
-
 		char[] input = left.getTokenizer().getInput().toCharArray();
 		int currentLine = 1;
 		int currentColumn = 0;
@@ -82,8 +84,16 @@ public class CodeRegion {
 		return endcolumn;
 	}
 
-	public String getDamagedRegion(String indendation) {
-		return "";
+	public String getDamagedRegion(String indentation) {
+		if (affectedLines == null)
+			return "" + CodeRegionHelper.NEWLINE;
+
+		String[] damagedLines = CodeRegionHelper.weaveDamageLines(affectedLines, column, endcolumn);
+		StringBuilder sb = new StringBuilder();
+		for (String dl : damagedLines) {
+			sb.append(indentation + dl + CodeRegionHelper.NEWLINE);
+		}
+		return sb.toString();
 	}
 
 	@Override

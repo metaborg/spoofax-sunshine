@@ -83,7 +83,6 @@ public class Message implements IMessage {
 		str.append(file);
 		str.append(" (at line " + region.getRow() + ")\n");
 		str.append(region.getDamagedRegion("\t"));
-		str.append("\n");
 		str.append(msg);
 		str.append("\n");
 		if (exception != null) {
@@ -93,6 +92,7 @@ public class Message implements IMessage {
 			exception.printStackTrace(pw);
 			str.append(sw.toString());
 		}
+		str.append("----------");
 		return str.toString();
 	}
 
