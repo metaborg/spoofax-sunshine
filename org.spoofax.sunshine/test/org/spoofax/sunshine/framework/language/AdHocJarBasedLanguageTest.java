@@ -14,8 +14,8 @@ import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.spoofax.sunshine.model.language.ALanguage;
-import org.spoofax.sunshine.model.language.Language;
+import org.spoofax.sunshine.services.language.ALanguage;
+import org.spoofax.sunshine.services.language.Language;
 import org.spoofax.sunshine.services.parser.FileBasedParseTableProvider;
 
 /**
@@ -44,7 +44,7 @@ public class AdHocJarBasedLanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.model.language.Language#getFileExtensions()} .
+	 * Test method for {@link org.spoofax.sunshine.services.language.Language#getFileExtensions()} .
 	 */
 	@Test
 	public void testGetFileExtensions() {
@@ -56,7 +56,7 @@ public class AdHocJarBasedLanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.model.language.Language#getStartSymbol()} .
+	 * Test method for {@link org.spoofax.sunshine.services.language.Language#getStartSymbol()} .
 	 */
 	@Test
 	public void testGetStartSymbol() {
@@ -64,7 +64,7 @@ public class AdHocJarBasedLanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.model.language.Language#getParseTableProvider()}
+	 * Test method for {@link org.spoofax.sunshine.services.language.Language#getParseTableProvider()}
 	 * .
 	 */
 	@Test
@@ -74,7 +74,7 @@ public class AdHocJarBasedLanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.model.language.Language#getCompilerFiles()} .
+	 * Test method for {@link org.spoofax.sunshine.services.language.Language#getCompilerFiles()} .
 	 */
 	@Test
 	public void testGetCompilerFiles() {
@@ -84,7 +84,7 @@ public class AdHocJarBasedLanguageTest {
 	}
 
 	/**
-	 * Test method for {@link org.spoofax.sunshine.model.language.Language#getAnalysisFunction()} .
+	 * Test method for {@link org.spoofax.sunshine.services.language.Language#getAnalysisFunction()} .
 	 */
 	@Test
 	public void testGetAnalysisFunction() {
@@ -93,7 +93,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test
@@ -104,7 +104,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -115,7 +115,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -126,7 +126,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -137,7 +137,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -148,7 +148,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -159,7 +159,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -170,7 +170,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -181,7 +181,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -192,7 +192,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)
@@ -203,7 +203,7 @@ public class AdHocJarBasedLanguageTest {
 
 	/**
 	 * Test method for
-	 * {@link org.spoofax.sunshine.model.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
+	 * {@link org.spoofax.sunshine.services.language.Language#AdHocJarBasedLanguage(java.lang.String, java.lang.String[], java.lang.String, java.io.File, java.lang.String, java.io.File)}
 	 * .
 	 */
 	@Test(expected = AssertionError.class)

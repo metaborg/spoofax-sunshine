@@ -14,7 +14,7 @@ import com.beust.jcommander.Parameter;
  */
 public class SunshineLanguageArguments {
 
-	@Parameter(names = "--lang", description = "[NAME] The name of the language to be loaded", required = true)
+	@Parameter(names = "--lang", description = "[NAME] The name of the language to be loaded")
 	public String lang;
 
 	@Parameter(names = "--jar", description = "[PATH] A relative path to a Jar")
@@ -23,13 +23,13 @@ public class SunshineLanguageArguments {
 	@Parameter(names = "--ctree", description = "[PATH] A relative path to a Jar")
 	public List<String> ctrees = new LinkedList<String>();
 
-	@Parameter(names = "--table", description = "[PATH] A relative path to a parse table", required = true)
+	@Parameter(names = "--table", description = "[PATH] A relative path to a parse table")
 	public String tbl;
 
-	@Parameter(names = "--ext", description = "[EXT] A file extension that is supported", required = true)
+	@Parameter(names = "--ext", description = "[EXT] A file extension that is supported")
 	public List<String> extens = new LinkedList<String>();
 
-	@Parameter(names = "--ssymb", description = "[SORT] A sort to use as the start symbol", required = true)
+	@Parameter(names = "--ssymb", description = "[SORT] A sort to use as the start symbol")
 	public String ssymb;
 
 	@Parameter(names = "--observer", description = "[OBS] The name of the strategy to use as an observer")
@@ -54,5 +54,4 @@ public class SunshineLanguageArguments {
 		s += "Language obsv:   " + observer + "\n";
 		return s;
 	}
-
 }

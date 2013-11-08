@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.spoofax.sunshine.model.language;
+package org.spoofax.sunshine.services.language;
 
 import java.io.File;
 import java.util.Collection;
@@ -55,7 +55,11 @@ public abstract class ALanguage {
 		s += "Name: " + name + "\n";
 		s += "Extensions: " + getFileExtensions() + "\n";
 		s += "Parsetable: " + getParseTableProvider() + "\n";
-		s += "Code files: " + getCompilerFiles() + "\n";
+		s += "Code files: \n";
+		File[] codefiles = getCompilerFiles();
+		for (File file : codefiles) {
+			s += "\t " + file.getAbsolutePath() + "\n";
+		}
 		s += "Observer: " + getAnalysisFunction() + "\n";
 		return s;
 	}

@@ -14,11 +14,11 @@ import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
-import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.pipeline.ISinkOne;
 import org.spoofax.sunshine.pipeline.diff.Diff;
-import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.StrategoCallService;
+import org.spoofax.sunshine.services.language.ALanguage;
+import org.spoofax.sunshine.services.language.LanguageService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

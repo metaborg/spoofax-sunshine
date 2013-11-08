@@ -10,13 +10,13 @@ import java.util.WeakHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.sunshine.CompilerException;
-import org.spoofax.sunshine.model.language.ALanguage;
 import org.spoofax.sunshine.parser.model.ParserConfig;
 import org.spoofax.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.spoofax.sunshine.pipeline.diff.Diff;
 import org.spoofax.sunshine.pipeline.diff.DiffKind;
-import org.spoofax.sunshine.services.LanguageService;
 import org.spoofax.sunshine.services.analyzer.AnalysisResult;
+import org.spoofax.sunshine.services.language.ALanguage;
+import org.spoofax.sunshine.services.language.LanguageService;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
