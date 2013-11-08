@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/org.spoofax.sunshine/src/org/spoofax/sunshine/drivers/Main.java"/>
+<listEntry value="/org.metaborg.sunshine/src/org/metaborg/sunshine/drivers/Main.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.spoofax.sunshine.drivers.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.metaborg.sunshine.drivers.Main"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--help"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.spoofax.sunshine"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.metaborg.sunshine"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea:org.spoofax.sunshine…,org.metaborg.runtime...&#10;-server&#10;-Xss16m&#10;-Xms1G&#10;-Xmx2G"/>
 </launchConfiguration>

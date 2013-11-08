@@ -5,7 +5,6 @@ Sunshine is a runtime library which runs Spoofax-based languages  outside of Ecl
 ## Limitations
 Many. This is most likely an incomplete list:
 
-* Only one language at a time
 * No support for concrete object syntax embedding
 * Completely single-threaded
 * Not all Spoofax primitives are implemented
