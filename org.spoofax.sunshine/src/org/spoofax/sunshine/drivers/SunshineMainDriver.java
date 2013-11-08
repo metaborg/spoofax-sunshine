@@ -4,7 +4,6 @@
 package org.spoofax.sunshine.drivers;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -15,7 +14,6 @@ import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.messages.IMessage;
-import org.spoofax.sunshine.model.messages.MessageSeverity;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.spoofax.sunshine.prims.ProjectUtils;
@@ -51,10 +49,7 @@ public class SunshineMainDriver {
 	protected void emitMessages() {
 		final Collection<IMessage> msgs = messageSink.getMessages();
 		for (IMessage msg : msgs) {
-			@SuppressWarnings("resource")
-			PrintStream outStream = msg.severity() == MessageSeverity.ERROR
-					|| msg.severity() == MessageSeverity.WARNING ? System.err : System.out;
-			outStream.println(msg);
+			System.out.println(msg);
 		}
 	}
 
