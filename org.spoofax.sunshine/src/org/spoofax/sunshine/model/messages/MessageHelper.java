@@ -29,12 +29,12 @@ import org.strategoxt.lang.Context;
  * 
  */
 public class MessageHelper {
+
 	public static Collection<IMessage> makeMessages(File file, MessageSeverity severity,
 			IStrategoList msgs) {
 		final Collection<IMessage> result = new ArrayList<IMessage>(msgs.getSubtermCount());
 
 		final Context context = RuntimeService.INSTANCE().getRuntime(file).getCompiledContext();
-		// final Context context = runtime.getCompiledContext();
 		sdf2imp.init(context);
 		final IStrategoList processedMsgs = (IStrategoList) postprocess_feedback_results_0_0.instance
 				.invoke(context, msgs);
@@ -71,11 +71,11 @@ public class MessageHelper {
 		message.type = type;
 		message.severity = severity;
 		message.file = file;
-		if (type == MessageType.PARSER_MESSAGE) {
-			message.region = PositionRegion.fromTokens(left, right);
-		} else {
-			message.region = new TokenRegion(left, right);
-		}
+		// if (type == MessageType.PARSER_MESSAGE) {
+		message.region = CodeRegion.fromTokens(left, right);
+		// } else {
+		// message.region = new TokenRegion(left, right);
+		// }
 		message.msg = msg;
 		return message;
 	}
@@ -117,7 +117,7 @@ public class MessageHelper {
 		message.severity = severity;
 		message.file = file;
 		message.msg = msg;
-		message.region = new PositionRegion(0, 0, 1, 0);
+		message.region = new CodeRegion(0, 0, 1, 0, null);
 		return message;
 	}
 
