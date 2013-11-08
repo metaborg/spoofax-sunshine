@@ -14,6 +14,7 @@ import org.spoofax.sunshine.CompilerCrashHandler;
 import org.spoofax.sunshine.CompilerException;
 import org.spoofax.sunshine.Environment;
 import org.spoofax.sunshine.model.messages.IMessage;
+import org.spoofax.sunshine.model.messages.MessageEmitter;
 import org.spoofax.sunshine.pipeline.ILinkManyToMany;
 import org.spoofax.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.spoofax.sunshine.prims.ProjectUtils;
@@ -38,19 +39,12 @@ import org.spoofax.sunshine.statistics.Statistics;
 public class SunshineMainDriver {
 	private static final Logger logger = LogManager.getLogger(SunshineMainDriver.class.getName());
 
-	private MessageSink messageSink;
+	private MessageEmitter emitter;
 	private FileSource filesSource;
 
 	public SunshineMainDriver() {
 		logger.trace("Initializing & setting uncaught exception handler");
 		Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
-	}
-
-	protected void emitMessages() {
-		final Collection<IMessage> msgs = messageSink.getMessages();
-		for (IMessage msg : msgs) {
-			System.out.println(msg);
-		}
 	}
 
 	public void init() throws CompilerException {
@@ -78,7 +72,8 @@ public class SunshineMainDriver {
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
 
-		messageSink = new MessageSink();
+		MessageSink messageSink = new MessageSink();
+		emitter = new MessageEmitter(messageSink);
 		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisResult, IMessage> messageSelector = new MessageExtractorLink();
 		parserMapper.addSink(messageSelector);
@@ -180,7 +175,8 @@ public class SunshineMainDriver {
 		filesSource.poke();
 		Statistics.stopTimer();
 		logger.trace("Emitting messages");
-		emitMessages();
+		emitter.emitMessages(System.out);
+		emitter.emitSummary(System.out);
 		Statistics.stopTimer();
 		Statistics.toNext();
 	}
