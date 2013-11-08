@@ -17,7 +17,7 @@ public class Message implements IMessage {
 	public String file;
 	public String msg;
 	public Throwable exception;
-	public ARegion region;
+	public CodeRegion region;
 
 	@Override
 	public MessageType type() {
@@ -71,7 +71,7 @@ public class Message implements IMessage {
 	}
 
 	@Override
-	public ARegion region() {
+	public CodeRegion region() {
 		return region;
 	}
 
@@ -79,12 +79,10 @@ public class Message implements IMessage {
 	public String toString() {
 		final StringBuilder str = new StringBuilder();
 		str.append(severity);
-		str.append(" ");
+		str.append(" in ");
 		str.append(file);
-		str.append("\t");
-		str.append(region.toString());
-		str.append(" ");
-		str.append("\n\t");
+		str.append(" (at line " + region.getRow() + ")\n");
+		str.append(region.getDamagedRegion("\t"));
 		str.append(msg);
 		str.append("\n");
 		if (exception != null) {
@@ -94,6 +92,7 @@ public class Message implements IMessage {
 			exception.printStackTrace(pw);
 			str.append(sw.toString());
 		}
+		str.append("----------");
 		return str.toString();
 	}
 

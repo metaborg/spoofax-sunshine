@@ -13,7 +13,7 @@ public interface IMessage {
 
 	String message();
 
-	ARegion region();
+	CodeRegion region();
 
 	Throwable getAttachedException();
 }
