@@ -13,8 +13,6 @@ import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.Environment;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
-import org.metaborg.sunshine.services.StrategoCallService;
-import org.metaborg.sunshine.services.language.ALanguage;
 import org.metaborg.sunshine.services.language.LanguageService;
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoString;
@@ -32,7 +30,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 
 	public BuilderSink(String builderName) {
 		this.builderName = builderName;
-		logger.trace("Created new builder for builder-name {}", builderName);
+		logger.trace("Created new builder for {}", builderName);
 	}
 
 	/**
@@ -70,33 +68,37 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 */
 	@Override
 	public void sink(Diff<BuilderInputTerm> product) {
-		logger.debug("Invoking builder {} on file {}", builderName, product.getPayload().getFile());
-		File result = callBuilder(product.getPayload());
+		IBuilder builder = LanguageService.INSTANCE()
+				.getLanguageByExten(product.getPayload().getFile()).getBuilder(builderName);
+		if (builder == null) {
+			logger.fatal("Builder {} could not be found", builderName);
+		}
+		logger.debug("Invoking builder {} on file {}", builder.getName(), product.getPayload()
+				.getFile());
+
+		File result = applyBuilder(builder, product.getPayload());
+
 		if (result != null)
-			logger.info("Builder {} called on file {} and produced file {}", builderName, product
-					.getPayload().getFile(), result.getAbsolutePath());
+			logger.info("Builder {} called on file {} and produced file {}", builder.getName(),
+					product.getPayload().getFile(), result.getAbsolutePath());
 		else
 			logger.info(
 					"Builder {} called on file {} did not return a file and contents to be written",
-					builderName, product.getPayload().getFile());
+					builder.getName(), product.getPayload().getFile());
 	}
 
-	private File callBuilder(BuilderInputTerm input) throws CompilerException {
-		assert builderName != null && builderName.length() > 0;
+	private static File applyBuilder(IBuilder builder, BuilderInputTerm input)
+			throws CompilerException {
+		assert builder != null;
 
 		if (input == null) {
-			throw new CompilerException("Builder " + builderName
+			throw new CompilerException("Builder " + builder.getName()
 					+ "failed. No input term available.");
 		}
 		final IStrategoTerm inputTuple = input.toStratego();
 		ensureProperInput(inputTuple);
 
-		final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(input.getFile());
-
-		ensureProperLanguage(lang);
-
-		IStrategoTerm result = null;
-		result = StrategoCallService.INSTANCE().callStratego(lang, builderName, inputTuple);
+		IStrategoTerm result = builder.invoke(inputTuple);
 
 		if (isWriteFile(result)) {
 
@@ -107,7 +109,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 			try {
 				FileUtils.writeStringToFile(resultFile, resultContents);
 			} catch (IOException e) {
-				throw new CompilerException("Builder " + builderName + "failed to save result", e);
+				throw new CompilerException("Builder " + builder.getName()
+						+ "failed to save result", e);
 			}
 			return resultFile;
 		} else {
@@ -115,15 +118,11 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 		}
 	}
 
-	private void ensureProperLanguage(final ALanguage lang) {
-		assert lang != null;
-	}
-
-	private void ensureProperInput(final IStrategoTerm inputTuple) {
+	private static void ensureProperInput(final IStrategoTerm inputTuple) {
 		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
 	}
 
-	private boolean isWriteFile(final IStrategoTerm result) {
+	private static boolean isWriteFile(final IStrategoTerm result) {
 		if (result instanceof IStrategoAppl) {
 			if (((IStrategoAppl) result).getName().equals("None")) {
 				return false;

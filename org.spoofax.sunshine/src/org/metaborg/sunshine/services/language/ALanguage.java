@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Collection;
 
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
+import org.metaborg.sunshine.services.pipelined.builders.IBuilder;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -35,6 +36,11 @@ public abstract class ALanguage {
 
 	public abstract String getAnalysisFunction();
 
+	public abstract IBuilder getBuilder(String name);
+
+	public abstract void registerBuilder(String name, String strategyName,
+			boolean onSource, boolean meta);
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ALanguage) {
@@ -46,7 +52,7 @@ public abstract class ALanguage {
 
 	@Override
 	public int hashCode() {
-		return getName().hashCode() + 42;
+		return getName().hashCode() * 31;
 	}
 
 	@Override
