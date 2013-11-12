@@ -42,10 +42,18 @@ Sunshine also has a mechanism to automatically discover and configure languages.
     java -cp sunshine.jar Main
     --auto-lang ../../webdsl2/include
     --project ../../yellowgrass/
-    --builder webdsl-metrics
+    --builder "Compute Metrics"
     --build-on yellowgrass.app
 
 The <code>--auto-lang</code> instructs Sunshine to recursively look for <code>LANG-packed.esv</code> files and load the corresponding languages.
+
+There are three pitfalls:
+
+1. Sunshine will assume that observer function (analysis strategy) to be used for CLI is called `analysis-default-cmd`.
+2. The builder invocation is done by the name defined in the `LANG-Menu.esv`. The argument to the `--builder` flag must match the name of the declared action:
+
+    action: "Compute Metrics" = webdsl-metrics ... 
+3. If the Spoofax project does not contain any menu declarations (e.g. it is old and still uses the `LANG-Builders.esv` file) then *no* builders will be discovered or registered.
 
 ### Hack for parsing
 If you want to also get parse errors you need to change all calls to `parse-file` to something else which calls the Sunshine `parse-file` primitive, for example:
