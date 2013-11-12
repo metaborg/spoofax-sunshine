@@ -47,3 +47,6 @@ The following are required in *lib* to compile and run Sunshine:
 * Google Guava: *guava-14.0.jar*
 * SDF2IMP: *sdf2imp.jar*
 * Stratego/XT: *strategoxt.jar*
+* Spoofax libs: *spoofax-libs.jar*
+* JCommander: *jcommander-1.30.jar*
+* Apache Log4j 2: *log4j-core-2.0-beta8.jar*, *log4j-api-2.0-beta8.jar*
