@@ -12,11 +12,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
-import org.metaborg.sunshine.services.StrategoCallService;
 import org.metaborg.sunshine.services.parser.FileBasedParseTableProvider;
-import org.metaborg.sunshine.services.pipelined.builders.ABuilder;
+import org.metaborg.sunshine.services.pipelined.builders.Builder;
 import org.metaborg.sunshine.services.pipelined.builders.IBuilder;
-import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -78,20 +76,13 @@ public class Language extends ALanguage {
 	}
 
 	@Override
-	public void registerBuilder(String name, final String strategyName, boolean onSource,
+	public void registerBuilder(String name, String strategyName, boolean onSource,
 			boolean meta) {
 		logger.trace("Registering builder {} to strategy {}", name, strategyName);
 		if (builders.containsKey(name)) {
 			logger.warn("Overriding previous registration of builder {}", name);
 		}
-		builders.put(name, new ABuilder(name, onSource, meta) {
-
-			@Override
-			public IStrategoTerm invoke(IStrategoTerm input) {
-				return StrategoCallService.INSTANCE().callStratego(Language.this, strategyName,
-						input);
-			}
-		});
+		builders.put(name, new Builder(name, strategyName, this, onSource, meta));
 	}
 
 	@Override

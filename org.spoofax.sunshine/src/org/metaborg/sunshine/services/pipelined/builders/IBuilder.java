@@ -3,6 +3,7 @@
  */
 package org.metaborg.sunshine.services.pipelined.builders;
 
+import org.metaborg.sunshine.services.language.ALanguage;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
@@ -35,6 +36,17 @@ public interface IBuilder {
 	 * @return
 	 */
 	public boolean isMeta();
+
+	/**
+	 * @return the name of strategy that this builder invokes
+	 */
+	public String getInvocationTarget();
+
+	/**
+	 * 
+	 * @return the {@link ALanguage} that defines this builder
+	 */
+	public ALanguage getLanguage();
 
 	/**
 	 * Invokes this builder on the given input returning the result.
