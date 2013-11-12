@@ -17,6 +17,8 @@ Basically:
 
 This will cause Sunshine to start and display a list of supported parameters.
 
+### Manual language parameterisation
+
 A basic example of command line parameters is given below, which causes Sunshine to analyse all files in the project directory incrementally and run the *webdsl-metrics* builder on *yellowgrass.app*.
 
     java -cp sunshine.jar Main
@@ -33,6 +35,18 @@ A basic example of command line parameters is given below, which causes Sunshine
     --builder webdsl-metrics
     --build-on yellowgrass.app
 
+### Automatic language discovery & configuration
+
+Sunshine also has a mechanism to automatically discover and configure languages. The example above becomes:
+
+    java -cp sunshine.jar Main
+    --auto-lang ../../webdsl2/include
+    --project ../../yellowgrass/
+    --builder webdsl-metrics
+    --build-on yellowgrass.app
+
+The <code>--auto-lang</code> instructs Sunshine to recursively look for <code>LANG-packed.esv</code> files and load the corresponding languages.
+
 ### Hack for parsing
 If you want to also get parse errors you need to change all calls to `parse-file` to something else which calls the Sunshine `parse-file` primitive, for example:
 
@@ -47,3 +61,6 @@ The following are required in *lib* to compile and run Sunshine:
 * Google Guava: *guava-14.0.jar*
 * SDF2IMP: *sdf2imp.jar*
 * Stratego/XT: *strategoxt.jar*
+* Spoofax libs: *spoofax-libs.jar*
+* JCommander: *jcommander-1.30.jar*
+* Apache Log4j 2: *log4j-core-2.0-beta8.jar*, *log4j-api-2.0-beta8.jar*
