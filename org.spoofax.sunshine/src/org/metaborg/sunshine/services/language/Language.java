@@ -3,7 +3,7 @@
  */
 package org.metaborg.sunshine.services.language;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
-import org.metaborg.sunshine.services.parser.FileBasedParseTableProvider;
+import org.metaborg.sunshine.services.parser.PathBasedParseTableProvider;
 import org.metaborg.sunshine.services.pipelined.builders.Builder;
 import org.metaborg.sunshine.services.pipelined.builders.IBuilder;
 
@@ -26,13 +26,13 @@ public class Language extends ALanguage {
 
 	private final String[] extens;
 	private final String startSymbol;
-	private final FileBasedParseTableProvider parseTableProvider;
+	private final PathBasedParseTableProvider parseTableProvider;
 	private final String analysisFunction;
-	private final File[] compilerFiles;
+	private final Path[] compilerFiles;
 	private final Map<String, IBuilder> builders = new HashMap<>();
 
-	public Language(String name, String[] extens, String startSymbol, File parseTable,
-			String analysisFunction, File[] compilerFiles) {
+	public Language(String name, String[] extens, String startSymbol, Path parseTable,
+			String analysisFunction, Path[] compilerFiles) {
 		super(name);
 
 		assert name != null && name.length() > 0;
@@ -45,7 +45,7 @@ public class Language extends ALanguage {
 
 		this.extens = extens;
 		this.startSymbol = startSymbol;
-		this.parseTableProvider = new FileBasedParseTableProvider(parseTable);
+		this.parseTableProvider = new PathBasedParseTableProvider(parseTable);
 		this.analysisFunction = analysisFunction;
 		this.compilerFiles = compilerFiles;
 	}
@@ -71,7 +71,7 @@ public class Language extends ALanguage {
 	}
 
 	@Override
-	public File[] getCompilerFiles() {
+	public Path[] getCompilerFiles() {
 		return this.compilerFiles;
 	}
 

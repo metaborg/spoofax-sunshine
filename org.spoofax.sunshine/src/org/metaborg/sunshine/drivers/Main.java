@@ -4,6 +4,7 @@
 package org.metaborg.sunshine.drivers;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +64,8 @@ public class Main {
 		env.setMainArguments(args);
 		env.setProjectDir(new File(args.project));
 		if (args.autolang != null) {
-			LanguageDiscoveryService.INSTANCE().discover(new File(args.autolang));
+			LanguageDiscoveryService.INSTANCE().discover(
+					FileSystems.getDefault().getPath(args.autolang));
 		} else {
 			LanguageService.INSTANCE().registerLanguage(
 					LanguageDiscoveryService.INSTANCE().languageFromArguments(args.languageArgs));

@@ -3,7 +3,7 @@
  */
 package org.metaborg.sunshine.services.language;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
@@ -32,7 +32,7 @@ public abstract class ALanguage {
 
 	public abstract IParseTableProvider getParseTableProvider();
 
-	public abstract File[] getCompilerFiles();
+	public abstract Path[] getCompilerFiles();
 
 	public abstract String getAnalysisFunction();
 
@@ -62,9 +62,9 @@ public abstract class ALanguage {
 		s += "Extensions: " + getFileExtensions() + "\n";
 		s += "Parsetable: " + getParseTableProvider() + "\n";
 		s += "Code files: \n";
-		File[] codefiles = getCompilerFiles();
-		for (File file : codefiles) {
-			s += "\t " + file.getAbsolutePath() + "\n";
+		Path[] codefiles = getCompilerFiles();
+		for (Path p : codefiles) {
+			s += "\t " + p.toAbsolutePath() + "\n";
 		}
 		s += "Observer: " + getAnalysisFunction() + "\n";
 		return s;

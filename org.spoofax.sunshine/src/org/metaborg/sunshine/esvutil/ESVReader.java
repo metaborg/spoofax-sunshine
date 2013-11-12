@@ -4,7 +4,7 @@ import static org.spoofax.interpreter.terms.IStrategoTerm.APPL;
 import static org.spoofax.interpreter.terms.IStrategoTerm.STRING;
 import static org.spoofax.terms.Term.tryGetName;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -130,11 +130,11 @@ public class ESVReader extends Tools {
 		return file;
 	}
 
-	public static Set<File> attachedFiles(IStrategoAppl document, File basepath) {
-		Set<File> attachedFiles = new LinkedHashSet<File>(); // (linked: must maintain jar order)
+	public static Set<Path> attachedFiles(IStrategoAppl document, Path basepath) {
+		Set<Path> attachedFiles = new LinkedHashSet<Path>(); // (linked: must maintain jar order)
 
 		for (IStrategoAppl s : collectTerms(document, "SemanticProvider")) {
-			attachedFiles.add(new File(basepath, termContents(s)));
+			attachedFiles.add(basepath.resolve(termContents(s)));
 		}
 
 		return attachedFiles;

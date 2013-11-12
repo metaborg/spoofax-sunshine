@@ -1,8 +1,9 @@
 package org.metaborg.sunshine.services.parser;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.Environment;
@@ -13,20 +14,20 @@ import org.spoofax.jsglr.client.ParseTable;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class FileBasedParseTableProvider implements IParseTableProvider {
+public class PathBasedParseTableProvider implements IParseTableProvider {
 
-	private final File file;
+	private final Path filePath;
 	private final boolean caching;
 
 	private ParseTable table;
 
-	public FileBasedParseTableProvider(File file) {
-		this(file, true);
+	public PathBasedParseTableProvider(Path filePath) {
+		this(filePath, true);
 	}
 
-	public FileBasedParseTableProvider(File file, boolean caching) {
-		assert file != null;
-		this.file = file;
+	public PathBasedParseTableProvider(Path filePath, boolean caching) {
+		assert filePath != null;
+		this.filePath = filePath;
 		this.caching = caching;
 	}
 
@@ -38,7 +39,7 @@ public class FileBasedParseTableProvider implements IParseTableProvider {
 		InputStream stream;
 		ParseTable table;
 		try {
-			stream = new FileInputStream(file);
+			stream = Files.newInputStream(filePath, StandardOpenOption.READ);
 			table = Environment.INSTANCE().parseTableMgr.loadFromStream(stream);
 		} catch (Exception e) {
 			throw new CompilerException("Could not load parse table", e);
@@ -51,7 +52,12 @@ public class FileBasedParseTableProvider implements IParseTableProvider {
 	}
 
 	public String toString() {
-		return file.getAbsolutePath();
-	};
+		return filePath.toAbsolutePath().toString();
+	}
+
+	@Override
+	public Path getPathToParseTable() {
+		return filePath;
+	}
 
 }

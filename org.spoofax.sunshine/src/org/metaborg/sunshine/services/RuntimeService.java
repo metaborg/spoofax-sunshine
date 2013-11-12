@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -114,7 +115,8 @@ public class RuntimeService {
 	private static void loadCompilerFiles(HybridInterpreter interp, ALanguage lang) {
 		LinkedList<File> jars = new LinkedList<File>();
 		LinkedList<File> ctrees = new LinkedList<File>();
-		for (File file : lang.getCompilerFiles()) {
+		for (Path p : lang.getCompilerFiles()) {
+			File file = p.toFile();
 			if (FilenameUtils.getExtension(file.getAbsolutePath())
 					.equalsIgnoreCase(EXTENSION_CTREE)) {
 				ctrees.add(file);

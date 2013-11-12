@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PushbackInputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -77,7 +79,7 @@ public class LanguageDiscoveryService {
 	 * @param location
 	 * @return a collection of {@link ALanguage} that have been discovered.
 	 */
-	public Collection<ALanguage> discover(File location) {
+	public Collection<ALanguage> discover(Path location) {
 		return discover(location, false);
 	}
 
@@ -90,9 +92,10 @@ public class LanguageDiscoveryService {
 	 *            {@link LanguageService}.
 	 * @return
 	 */
-	public Collection<ALanguage> discover(File location, boolean skipLoading) {
-		logger.debug("Auto-discovering languages at location {}", location.getAbsolutePath());
-		assert location != null;
+	public Collection<ALanguage> discover(Path locationPath, boolean skipLoading) {
+		assert locationPath != null;
+		logger.debug("Auto-discovering languages at location {}", locationPath.toAbsolutePath());
+		File location = locationPath.toFile();
 		if (!location.exists() || !location.isDirectory() || !location.canRead()) {
 			logger.fatal(
 					"Language source location is does not exist, is not a directory or cannot be read: {}",
@@ -103,7 +106,6 @@ public class LanguageDiscoveryService {
 		}
 
 		Collection<ALanguage> languages = new LinkedList<ALanguage>();
-
 		Iterator<File> esvs = FileUtils.iterateFiles(location, ESV_EXTENS, true);
 		while (esvs.hasNext()) {
 			File esv = esvs.next();
@@ -111,7 +113,7 @@ public class LanguageDiscoveryService {
 				logger.debug("Loading ESV {}", esv.getAbsolutePath());
 				PushbackInputStream input = new PushbackInputStream(new FileInputStream(esv), 100);
 				IStrategoAppl document = tryReadESV(input);
-				ALanguage language = languageFromEsv(document, esv.getParentFile().getParentFile());
+				ALanguage language = languageFromEsv(document, esv.toPath().getParent().getParent());
 				languages.add(language);
 			} catch (IOException e) {
 				throw new RuntimeException("Failed to load language", e);
@@ -158,15 +160,16 @@ public class LanguageDiscoveryService {
 
 		int numJars = args.jars.size();
 		int numCtrees = args.ctrees.size();
-		File[] compilerFiles = new File[numJars + numCtrees];
+		Path[] compilerFiles = new Path[numJars + numCtrees];
 		for (int i = 0; i < (numJars + numCtrees); i++) {
 			if (i < numJars)
-				compilerFiles[i] = new File(args.jars.get(i));
+				compilerFiles[i] = FileSystems.getDefault().getPath(args.jars.get(i));
 			else
-				compilerFiles[i] = new File(args.ctrees.get(i - numJars));
+				compilerFiles[i] = FileSystems.getDefault().getPath(args.ctrees.get(i - numJars));
 		}
 		SunshineMainArguments mainArgs = Environment.INSTANCE().getMainArguments();
-		ALanguage language = new Language(args.lang, extens, args.ssymb, new File(args.tbl),
+		ALanguage language = new Language(args.lang, extens, args.ssymb, FileSystems.getDefault()
+				.getPath(args.tbl),
 				args.observer, compilerFiles);
 		language.registerBuilder(mainArgs.builder, mainArgs.builder, mainArgs.buildonsource, false);
 		return language;
@@ -179,13 +182,13 @@ public class LanguageDiscoveryService {
 	 * @param document
 	 * @return
 	 */
-	public ALanguage languageFromEsv(IStrategoAppl document, File basepath) {
+	public ALanguage languageFromEsv(IStrategoAppl document, Path basepath) {
 		logger.trace("Configuring language from ESV");
 		String name = languageName(document);
 		String[] extens = extensions(document);
-		Set<File> codefiles = attachedFiles(document, basepath);
+		Set<Path> codefiles = attachedFiles(document, basepath);
 		String startsymb = startSymbol(document);
-		File parsetbl = new File(basepath, parseTableName(document));
+		Path parsetbl = basepath.resolve(parseTableName(document));
 		// String observer = observerFunction(document);
 		logger.warn("Using default cli observer {}", "analysis-default-cmd");
 		String observer = "analysis-default-cmd";
@@ -193,7 +196,7 @@ public class LanguageDiscoveryService {
 		Collection<IStrategoAppl> builders = builders(document);
 
 		ALanguage language = new Language(name, extens, startsymb, parsetbl, observer,
-				codefiles.toArray(new File[codefiles.size()]));
+				codefiles.toArray(new Path[codefiles.size()]));
 
 		for (IStrategoAppl action : builders) {
 			language.registerBuilder(builderName(action), builderTarget(action),
