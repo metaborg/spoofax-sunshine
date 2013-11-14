@@ -3,6 +3,8 @@
  */
 package org.metaborg.sunshine.parser.model;
 
+import java.nio.file.Path;
+
 import org.spoofax.jsglr.client.ParseTable;
 
 /**
@@ -12,4 +14,6 @@ import org.spoofax.jsglr.client.ParseTable;
 public interface IParseTableProvider {
 
 	ParseTable getParseTable();
+
+	Path getPathToParseTable();
 }

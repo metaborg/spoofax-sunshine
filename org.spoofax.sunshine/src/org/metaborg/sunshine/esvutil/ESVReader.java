@@ -1,12 +1,14 @@
-package org.metaborg.sunshine.services.language;
+package org.metaborg.sunshine.esvutil;
 
 import static org.spoofax.interpreter.terms.IStrategoTerm.APPL;
 import static org.spoofax.interpreter.terms.IStrategoTerm.STRING;
 import static org.spoofax.terms.Term.tryGetName;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.spoofax.interpreter.core.Tools;
@@ -128,11 +130,11 @@ public class ESVReader extends Tools {
 		return file;
 	}
 
-	public static Set<File> attachedFiles(IStrategoAppl document, File basepath) {
-		Set<File> attachedFiles = new LinkedHashSet<File>(); // (linked: must maintain jar order)
+	public static Set<Path> attachedFiles(IStrategoAppl document, Path basepath) {
+		Set<Path> attachedFiles = new LinkedHashSet<Path>(); // (linked: must maintain jar order)
 
 		for (IStrategoAppl s : collectTerms(document, "SemanticProvider")) {
-			attachedFiles.add(new File(basepath, termContents(s)));
+			attachedFiles.add(basepath.resolve(termContents(s)));
 		}
 
 		return attachedFiles;
@@ -144,6 +146,54 @@ public class ESVReader extends Tools {
 
 	public static String[] extensions(IStrategoAppl document) {
 		return getProperty(document, "Extensions").split(",");
+	}
+
+	public static Collection<IStrategoAppl> builders(IStrategoAppl document) {
+		return collectTerms(document, "Action");
+	}
+
+	public static String builderName(IStrategoAppl action) {
+		assert action.getName().equals("Action");
+		assert action.getSubtermCount() == 3;
+
+		return asJavaString(action.getSubterm(0).getSubterm(0)).replace("\\", "").replace("\"", "");
+	}
+
+	public static String builderTarget(IStrategoAppl action) {
+		assert action.getConstructor().getName().equals("Action");
+		assert action.getConstructor().getArity() == 3;
+		return asJavaString(action.getSubterm(1).getSubterm(0));
+	}
+
+	public static boolean builderIsOpenEditor(IStrategoAppl action) {
+		assert action.getConstructor().getName().equals("Action");
+		assert action.getConstructor().getArity() == 3;
+
+		return builderAnnos(action).contains("OpenEditor");
+	}
+
+	public static boolean builderIsMeta(IStrategoAppl action) {
+		assert action.getConstructor().getName().equals("Action");
+		assert action.getConstructor().getArity() == 3;
+		return builderAnnos(action).contains("Meta");
+	}
+
+	public static boolean builderIsOnSource(IStrategoAppl action) {
+		assert action.getConstructor().getName().equals("Action");
+		assert action.getConstructor().getArity() == 3;
+
+		return builderAnnos(action).contains("Source");
+	}
+
+	public static Collection<String> builderAnnos(IStrategoAppl action) {
+		assert action.getConstructor().getName().equals("Action");
+		assert action.getConstructor().getArity() == 3;
+		Collection<String> annos = new LinkedList<>();
+		IStrategoList annoterm = (IStrategoList) action.getSubterm(2);
+		for (IStrategoTerm anno : annoterm) {
+			annos.add(((IStrategoAppl) anno).getName());
+		}
+		return annos;
 	}
 
 	public static String getProperty(IStrategoAppl document, String name) {

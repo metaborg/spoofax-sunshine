@@ -17,6 +17,8 @@ Basically:
 
 This will cause Sunshine to start and display a list of supported parameters.
 
+### Manual language parameterisation
+
 A basic example of command line parameters is given below, which causes Sunshine to analyse all files in the project directory incrementally and run the *webdsl-metrics* builder on *yellowgrass.app*.
 
     java -cp sunshine.jar Main
@@ -33,6 +35,26 @@ A basic example of command line parameters is given below, which causes Sunshine
     --builder webdsl-metrics
     --build-on yellowgrass.app
 
+### Automatic language discovery & configuration
+
+Sunshine also has a mechanism to automatically discover and configure languages. The example above becomes:
+
+    java -cp sunshine.jar Main
+    --auto-lang ../../webdsl2/include
+    --project ../../yellowgrass/
+    --builder "Compute Metrics"
+    --build-on yellowgrass.app
+
+The <code>--auto-lang</code> instructs Sunshine to recursively look for <code>LANG-packed.esv</code> files and load the corresponding languages.
+
+There are three pitfalls:
+
+1. Sunshine will assume that observer function (analysis strategy) to be used for CLI is called `analysis-default-cmd`.
+2. The builder invocation is done by the name defined in the `LANG-Menu.esv`. The argument to the `--builder` flag must match the name of the declared action:
+
+    action: "Compute Metrics" = webdsl-metrics ... 
+3. If the Spoofax project does not contain any menu declarations (e.g. it is old and still uses the `LANG-Builders.esv` file) then *no* builders will be discovered or registered.
+
 ### Hack for parsing
 If you want to also get parse errors you need to change all calls to `parse-file` to something else which calls the Sunshine `parse-file` primitive, for example:
 
@@ -47,3 +69,6 @@ The following are required in *lib* to compile and run Sunshine:
 * Google Guava: *guava-14.0.jar*
 * SDF2IMP: *sdf2imp.jar*
 * Stratego/XT: *strategoxt.jar*
+* Spoofax libs: *spoofax-libs.jar*
+* JCommander: *jcommander-1.30.jar*
+* Apache Log4j 2: *log4j-core-2.0-beta8.jar*, *log4j-api-2.0-beta8.jar*

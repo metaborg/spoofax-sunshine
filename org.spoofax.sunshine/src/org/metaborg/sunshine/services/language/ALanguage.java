@@ -3,10 +3,11 @@
  */
 package org.metaborg.sunshine.services.language;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
+import org.metaborg.sunshine.services.pipelined.builders.IBuilder;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -31,9 +32,14 @@ public abstract class ALanguage {
 
 	public abstract IParseTableProvider getParseTableProvider();
 
-	public abstract File[] getCompilerFiles();
+	public abstract Path[] getCompilerFiles();
 
 	public abstract String getAnalysisFunction();
+
+	public abstract IBuilder getBuilder(String name);
+
+	public abstract void registerBuilder(String name, String strategyName,
+			boolean onSource, boolean meta);
 
 	@Override
 	public boolean equals(Object obj) {
@@ -46,7 +52,7 @@ public abstract class ALanguage {
 
 	@Override
 	public int hashCode() {
-		return getName().hashCode() + 42;
+		return getName().hashCode() * 31;
 	}
 
 	@Override
@@ -56,9 +62,9 @@ public abstract class ALanguage {
 		s += "Extensions: " + getFileExtensions() + "\n";
 		s += "Parsetable: " + getParseTableProvider() + "\n";
 		s += "Code files: \n";
-		File[] codefiles = getCompilerFiles();
-		for (File file : codefiles) {
-			s += "\t " + file.getAbsolutePath() + "\n";
+		Path[] codefiles = getCompilerFiles();
+		for (Path p : codefiles) {
+			s += "\t " + p.toAbsolutePath() + "\n";
 		}
 		s += "Observer: " + getAnalysisFunction() + "\n";
 		return s;

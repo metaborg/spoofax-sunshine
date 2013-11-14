@@ -8,7 +8,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.metaborg.sunshine.drivers.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--lang Green-Marl&#10;--jar ../../../oracle/greenmarl/Green-Marl/include/green_marl.jar&#10;--jar ../../../oracle/greenmarl/Green-Marl/include/green_marl-java.jar&#10;--table ../../../oracle/greenmarl/Green-Marl/include/Green-Marl.tbl&#10;--ssymb Start&#10;--ext gm&#10;--observer analysis-default-cmd&#10;&#10;--project launches&#10;--builder generate-green-marl-core-pp&#10;--build-on pagerank.gm&#10;--non-incremental"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--auto-lang /Users/vladvergu/lang-repo&#10;--project ../../../oracle/greenmarl/Green-Marl/test/apps&#10;--non-incremental"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.metaborg.sunshine"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea:org.spoofax.sunshine…,org.metaborg.runtime... -server -Xss16m -Xms1G -Xmx2G"/>
 </launchConfiguration>
