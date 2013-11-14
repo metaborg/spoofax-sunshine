@@ -1,8 +1,10 @@
 package org.metaborg.sunshine.model.messages;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.metaborg.sunshine.CompilerException;
 import org.spoofax.jsglr.client.imploder.IToken;
 
 /**
@@ -30,9 +32,14 @@ public class CodeRegion {
 	public static CodeRegion fromTokens(IToken left, IToken right) {
 		boolean leftDone = false, rightDone = false;
 		int leftLine = 0, leftColumn = 0, rightLine = 0, rightColumn = 0;
-		String input = left.getTokenizer().getInput();
-		if (input == null) {
-			input = FileUtils.readFileToString(new File(left.getTokenizer().getFilename()));
+		String fileContents = left.getTokenizer().getInput();
+		if (fileContents == null) {
+			try {
+				fileContents = FileUtils.readFileToString(new File(left.getTokenizer()
+						.getFilename()));
+			} catch (IOException e) {
+				throw new CompilerException("Could not read file contents", e);
+			}
 		}
 		char[] input = left.getTokenizer().getInput().toCharArray();
 		int currentLine = 1;
