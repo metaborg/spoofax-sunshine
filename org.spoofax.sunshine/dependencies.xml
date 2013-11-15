@@ -9,10 +9,6 @@
 		<unzip src="${lib.dir}/tmp/commons-io-2.4-bin.zip" dest="${lib.dir}/tmp" />
 		<move file="${lib.dir}/tmp/commons-io-2.4/commons-io-2.4.jar" todir="${lib.dir}" />
 
-
-		<get src="http://search.maven.org/remotecontent?filepath=com/google/guava/guava/14.0.1/guava-14.0.1.jar"
-		     dest="${lib.dir}/guava-14.0.1.jar" />
-
 		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-beta8/apache-log4j-2.0-beta8-bin.zip"
 		     dest="${lib.dir}/tmp" />
 		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-beta8-bin.zip" dest="${lib.dir}/tmp" />
