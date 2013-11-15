@@ -4,7 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.metaborg.sunshine.CompilerException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spoofax.jsglr.client.imploder.IToken;
 
 /**
@@ -13,6 +14,8 @@ import org.spoofax.jsglr.client.imploder.IToken;
  * 
  */
 public class CodeRegion {
+	private static final Logger logger = LogManager.getLogger(CodeRegion.class.getName());
+
 	public static final String COMMA = ",";
 	public static final String COLON = ":";
 	public static final String EMPTY = "";
@@ -32,41 +35,52 @@ public class CodeRegion {
 	public static CodeRegion fromTokens(IToken left, IToken right) {
 		boolean leftDone = false, rightDone = false;
 		int leftLine = 0, leftColumn = 0, rightLine = 0, rightColumn = 0;
-		String fileContents = left.getTokenizer().getInput();
-		if (fileContents == null) {
-			try {
-				fileContents = FileUtils.readFileToString(new File(left.getTokenizer()
-						.getFilename()));
-			} catch (IOException e) {
-				throw new CompilerException("Could not read file contents", e);
-			}
-		}
-		char[] input = left.getTokenizer().getInput().toCharArray();
-		int currentLine = 1;
-		int currentColumn = 0;
-		for (int i = 0; i < input.length; i++) {
-			char c = input[i];
-			if (c == '\n' || c == '\r') {
-				currentLine++;
-				currentColumn = 0;
-			} else {
-				currentColumn++;
-			}
+		String fileContents = getAttachedInput(left, right);
+		if (fileContents.length() > 0) {
+			char[] input = fileContents.toCharArray();
+			int currentLine = 1;
+			int currentColumn = 0;
+			for (int i = 0; i < input.length; i++) {
+				char c = input[i];
+				if (c == '\n' || c == '\r') {
+					currentLine++;
+					currentColumn = 0;
+				} else {
+					currentColumn++;
+				}
 
-			if (!leftDone && i == left.getStartOffset()) {
-				leftLine = currentLine;
-				leftColumn = currentColumn;
+				if (!leftDone && i == left.getStartOffset()) {
+					leftLine = currentLine;
+					leftColumn = currentColumn;
+				}
+				if (!rightDone && i == right.getEndOffset()) {
+					rightLine = currentLine;
+					rightColumn = currentColumn;
+				}
+				if (rightDone && leftDone) {
+					break;
+				}
 			}
-			if (!rightDone && i == right.getEndOffset()) {
-				rightLine = currentLine;
-				rightColumn = currentColumn;
-			}
-			if (rightDone && leftDone) {
-				break;
-			}
+			return new CodeRegion(leftLine, leftColumn, rightLine, rightColumn, fileContents);
+		} else {
+			return new CodeRegion(left.getLine() + 1, left.getColumn() + 1, right.getEndLine() + 1,
+					right.getEndColumn() + 1, "");
 		}
-		return new CodeRegion(leftLine, leftColumn, rightLine, rightColumn, left.getTokenizer()
-				.getInput());
+	}
+
+	private static String getAttachedInput(IToken left, IToken right) {
+		String input = null;
+		input = left.getTokenizer().getInput();
+		if (input == null)
+			input = right.getTokenizer().getInput();
+		if (input == null)
+			try {
+				input = FileUtils.readFileToString(new File(left.getTokenizer().getFilename()));
+			} catch (IOException e) {
+				logger.warn("Cannot read file contents to determine affected code region", e);
+				input = "";
+			}
+		return input;
 	}
 
 	@Override
@@ -99,8 +113,8 @@ public class CodeRegion {
 	}
 
 	public String getDamagedRegion(String indentation) {
-		if (affectedLines == null)
-			return "" + CodeRegionHelper.NEWLINE;
+		if (affectedLines == null || affectedLines.length == 0)
+			return CodeRegionHelper.TAB + "(code region unavailable)" + CodeRegionHelper.NEWLINE;
 
 		String[] damagedLines = CodeRegionHelper.weaveDamageLines(affectedLines, column, endcolumn);
 		StringBuilder sb = new StringBuilder();

@@ -10,7 +10,10 @@ public class CodeRegionHelper {
 	public static final char NEWLINE = '\n';
 
 	public static String[] getAffectedLines(String input, int beginLine, int endLine) {
-		return Arrays.copyOfRange(input.split("\\r?\\n"), beginLine - 1, endLine);
+		if (input.length() > 0 && beginLine > 0 && endLine > 0)
+			return Arrays.copyOfRange(input.split("\\r?\\n"), beginLine - 1, endLine);
+		else
+			return new String[0];
 	}
 
 	public static String[] weaveDamageLines(String[] lines, int beginColumn, int endColumn) {
@@ -35,43 +38,5 @@ public class CodeRegionHelper {
 			damagedLines[i + 1] = new String(damageChars);
 		}
 		return damagedLines;
-		// for (int i = 0; i < damagedLines.length; i++) {
-		// if (i % 2 == 0) {
-		// damagedLines[i] = indentation + affectedLines[i / 2];
-		// } else {
-		// int io = (i - 1) / 2;
-		// if (row - 1 <= i && endrow - 1 >= i) {
-		// String affectedLine = affectedLines[(i - 1) / 2];
-		// int beginDamageOffset = 0;
-		// int endDamageOffset = affectedLine.length();
-		// if (row - 1 == i) {
-		// beginDamageOffset = column;
-		// }
-		// if (endrow - 1 == i) {
-		// endDamageOffset = endcolumn;
-		// }
-		// char[] damageChars = affectedLine.toCharArray();
-		// for (int j = 0; j < damageChars.length; j++) {
-		// if (j >= beginDamageOffset && j <= endDamageOffset) {
-		// damageChars[j] = DAMAGE;
-		// } else {
-		// char cc = damageChars[j];
-		// if (cc != TAB && cc != BLANK) {
-		// damageChars[j] = BLANK;
-		// }
-		// }
-		// }
-		// // in damage region
-		// damagedLines[i] = indentation + new String(damageChars) + "| foo";
-		// } else {
-		// damagedLines[i] = EMPTY + "| foo";
-		// }
-		// }
-		// }
-		// StringBuilder sb = new StringBuilder();
-		// for (String s : damagedLines) {
-		// sb.append(s + NEWLINE);
-		// }
-		// return sb.toString();
 	}
 }
