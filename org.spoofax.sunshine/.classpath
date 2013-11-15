@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="test-files/" kind="src" path="test"/>
-	<classpathentry exported="true" kind="lib" path="lib/spoofax-libs.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/strategoxt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sdf2imp.jar">
@@ -10,7 +9,6 @@
 			<accessrule kind="discouraged" pattern="**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/guava-14.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcommander-1.30.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta8-javadoc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta8.jar"/>
