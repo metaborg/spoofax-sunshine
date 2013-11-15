@@ -11,6 +11,7 @@
 		<pathelement path="${java.class.path}" />
 		<pathelement location="${build.dir}" />
 		<fileset dir="${lib.dir}">
+			<include name="spoofax-libs.jar" />
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -38,7 +39,6 @@
 			<zipgroupfileset dir="${lib.dir}" includes="log4j-core-2.0-beta8.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="log4j-api-2.0-beta8.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="jcommander-1.30.jar" />
-			<zipgroupfileset dir="${lib.dir}" includes="guava-14.0.1.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="sdf2imp.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="commons-io-2.4.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="strategoxt.jar" />
