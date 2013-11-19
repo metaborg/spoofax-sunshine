@@ -4,6 +4,7 @@
 package org.metaborg.sunshine.services.language;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,6 +109,13 @@ public class LanguageService {
 	 */
 	public ALanguage getLanguageByExten(File file) {
 		return getLanguageByExten(FilenameUtils.getExtension(file.getName()));
+	}
+
+	/**
+	 * @see #getLanguageByExten(Path)
+	 */
+	public ALanguage getLanguageByExten(Path filePath) {
+		return getLanguageByExten(filePath.toFile());
 	}
 
 	/**
