@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.parser.model.IParserConfig;
 import org.metaborg.sunshine.parser.model.ParserConfig;
@@ -22,7 +24,7 @@ public class ParserService {
 
 	public final static int PARSE_TIMEOUT = 5000;
 
-	// private static final Logger logger = LogManager.getLogger(ParseService.class.getName());
+	private static final Logger logger = LogManager.getLogger(ParserService.class.getName());
 
 	private static ParserService INSTANCE;
 
@@ -39,6 +41,7 @@ public class ParserService {
 	}
 
 	public AnalysisResult parseFile(File file) {
+		logger.trace("Parsing file {}", file);
 		ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(file);
 		if (lang == null) {
 			throw new CompilerException("No language registered for file " + file);
