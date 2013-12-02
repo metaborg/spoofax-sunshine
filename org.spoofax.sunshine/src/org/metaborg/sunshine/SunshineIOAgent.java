@@ -3,7 +3,6 @@
  */
 package org.metaborg.sunshine;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.metaborg.sunshine.services.language.ALanguage;
@@ -15,20 +14,16 @@ import org.spoofax.interpreter.library.LoggingIOAgent;
  */
 public class SunshineIOAgent extends LoggingIOAgent {
 
-	private ALanguage language;
+	private final ALanguage language;
 
-	public SunshineIOAgent() {
+	public SunshineIOAgent(ALanguage language) {
+		this.language = language;
 		try {
 			this.setWorkingDir(Environment.INSTANCE().projectDir.getAbsolutePath());
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+			this.setDefinitionDir(language.getDefinitionPath().toAbsolutePath().toString());
+		} catch (IOException ioex) {
+			throw new RuntimeException("Failed to create IOAgent", ioex);
 		}
-	}
-
-	public void setLanguage(ALanguage language) {
-		this.language = language;
 	}
 
 	public ALanguage getLanguage() {

@@ -41,6 +41,8 @@ public abstract class ALanguage {
 	public abstract void registerBuilder(String name, String strategyName,
 			boolean onSource, boolean meta);
 
+	public abstract Path getDefinitionPath();
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ALanguage) {
