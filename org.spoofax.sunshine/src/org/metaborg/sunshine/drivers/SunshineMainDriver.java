@@ -160,7 +160,7 @@ public class SunshineMainDriver {
 		return files;
 	}
 
-	public void run() {
+	public int run() {
 		Statistics.startTimer("RUN");
 		logger.debug("Beginning run");
 		init();
@@ -179,6 +179,7 @@ public class SunshineMainDriver {
 		emitter.emitSummary(System.out);
 		Statistics.stopTimer();
 		Statistics.toNext();
+		return !emitter.hasErrors() ? 0 : 1;
 	}
 
 }

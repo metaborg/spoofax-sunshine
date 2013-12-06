@@ -46,4 +46,25 @@ public class MessageEmitter {
 		}
 		os.println(")");
 	}
+
+	public boolean hasErrors() {
+		return hasMessage(MessageSeverity.ERROR);
+	}
+
+	public boolean hasWarnings() {
+		return hasMessage(MessageSeverity.WARNING);
+	}
+
+	public boolean hasNotes() {
+		return hasMessage(MessageSeverity.NOTE);
+	}
+
+	private boolean hasMessage(MessageSeverity severity) {
+		for (IMessage message : messager.getMessages()) {
+			if (message.severity() == severity) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
