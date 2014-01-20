@@ -51,7 +51,7 @@ public class Main {
 
 	private static JCommander jc = new JCommander();
 
-	private static void parseArguments(String[] args, SunshineMainArguments into) {
+	public static void parseArguments(String[] args, SunshineMainArguments into) {
 		logger.trace("Parsing arguments");
 		jc.setColumnSize(120);
 		jc.addObject(into);

@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="test-files/" kind="src" path="test"/>
+	<classpathentry exported="true" kind="lib" path="lib/spoofax-libs.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/strategoxt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sdf2imp.jar">
@@ -10,12 +11,12 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/jcommander-1.30.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta8-javadoc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta8.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta8-javadoc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta8.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="test/test-files"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="lib/log4j-api-2.0-beta9-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.0-beta9.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-core-2.0-beta9-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-core-2.0-beta9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
