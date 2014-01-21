@@ -13,7 +13,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageHelper;
 import org.spoofax.interpreter.terms.IStrategoConstructor;
@@ -46,7 +47,8 @@ public class JSGLRParseErrorHandler {
 
 	private static Context asyncAmbReportingContext;
 
-	private final IStrategoConstructor ambCons = Environment.INSTANCE().termFactory
+	private final IStrategoConstructor ambCons = ServiceRegistry.INSTANCE()
+			.getService(LaunchConfiguration.class).termFactory
 			.makeConstructor("amb", 1);
 
 	private final JSGLRI source;

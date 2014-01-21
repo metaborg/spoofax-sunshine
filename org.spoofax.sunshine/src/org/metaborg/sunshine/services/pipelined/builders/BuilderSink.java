@@ -6,6 +6,7 @@ package org.metaborg.sunshine.services.pipelined.builders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.services.language.LanguageService;
@@ -17,7 +18,8 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  */
 public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 
-	private static final Logger logger = LogManager.getLogger(BuilderSink.class.getName());
+	private static final Logger logger = LogManager.getLogger(BuilderSink.class
+			.getName());
 
 	private final String builderName;
 
@@ -27,7 +29,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	}
 
 	/**
-	 * Call a builder on the file's source or analyzed AST. The builder is expected to have the
+	 * Call a builder on the file's source or analyzed AST. The builder is
+	 * expected to have the
 	 * following format:
 	 * 
 	 * <code>
@@ -42,7 +45,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 * 	(node, position, ast, path, project-path) -> None()
 	 * </code>
 	 * 
-	 * In the latter option the assumption being that the builder code itself is taking care of
+	 * In the latter option the assumption being that the builder code itself is
+	 * taking care of
 	 * writing files to disk if necessary.
 	 * 
 	 * NB: The current implementation calls the builder on the following input:
@@ -51,7 +55,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 * 	(ast, [], ast, path, project-path)
 	 * </code>
 	 * 
-	 * NB: The current implementation assumes that the result is a StrategoString and will not work
+	 * NB: The current implementation assumes that the result is a
+	 * StrategoString and will not work
 	 * with a term.
 	 * 
 	 * @param product
@@ -61,13 +66,15 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 */
 	@Override
 	public void sink(Diff<BuilderInputTerm> product) {
-		IBuilder builder = LanguageService.INSTANCE()
-				.getLanguageByExten(product.getPayload().getFile()).getBuilder(builderName);
+		IBuilder builder = ServiceRegistry.INSTANCE()
+				.getService(LanguageService.class)
+				.getLanguageByExten(product.getPayload().getFile())
+				.getBuilder(builderName);
 		if (builder == null) {
 			logger.fatal("Builder {} could not be found", builderName);
 		}
-		logger.debug("Invoking builder {} on file {}", builder.getName(), product.getPayload()
-				.getFile());
+		logger.debug("Invoking builder {} on file {}", builder.getName(),
+				product.getPayload().getFile());
 		IStrategoTerm inputTuple = product.getPayload().toStratego();
 		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
 		builder.invoke(inputTuple);

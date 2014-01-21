@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.interpreter.terms.IStrategoList;
@@ -30,11 +31,14 @@ import org.strategoxt.lang.Context;
  */
 public class MessageHelper {
 
-	public static Collection<IMessage> makeMessages(File file, MessageSeverity severity,
-			IStrategoList msgs) {
-		final Collection<IMessage> result = new ArrayList<IMessage>(msgs.getSubtermCount());
+	public static Collection<IMessage> makeMessages(File file,
+			MessageSeverity severity, IStrategoList msgs) {
+		final Collection<IMessage> result = new ArrayList<IMessage>(
+				msgs.getSubtermCount());
 
-		final Context context = RuntimeService.INSTANCE().getRuntime(file).getCompiledContext();
+		final Context context = ServiceRegistry.INSTANCE()
+				.getService(RuntimeService.class).getRuntime(file)
+				.getCompiledContext();
 		sdf2imp.init(context);
 		final IStrategoList processedMsgs = (IStrategoList) postprocess_feedback_results_0_0.instance
 				.invoke(context, msgs);
@@ -56,17 +60,19 @@ public class MessageHelper {
 			if (node != null) {
 				final IToken left = getLeftToken(node);
 				final IToken right = getRightToken(node);
-				result.add(newAnalysisMessage(file.getPath(), left, right, message, severity));
+				result.add(newAnalysisMessage(file.getPath(), left, right,
+						message, severity));
 			} else {
-				result.add(newAnalysisMessageAtTop(file.getPath(), message, severity));
+				result.add(newAnalysisMessageAtTop(file.getPath(), message,
+						severity));
 			}
 		}
 
 		return result;
 	}
 
-	public static Message newMessage(String file, IToken left, IToken right, String msg,
-			MessageSeverity severity, MessageType type) {
+	public static Message newMessage(String file, IToken left, IToken right,
+			String msg, MessageSeverity severity, MessageType type) {
 		final Message message = new Message();
 		message.type = type;
 		message.severity = severity;
@@ -80,33 +86,41 @@ public class MessageHelper {
 		return message;
 	}
 
-	public static Message newParseMessage(String file, IToken left, IToken right, String msg,
-			MessageSeverity severity) {
-		return newMessage(file, left, right, msg, MessageSeverity.ERROR, MessageType.PARSER_MESSAGE);
+	public static Message newParseMessage(String file, IToken left,
+			IToken right, String msg, MessageSeverity severity) {
+		return newMessage(file, left, right, msg, MessageSeverity.ERROR,
+				MessageType.PARSER_MESSAGE);
 	}
 
-	public static Message newParseError(String file, IToken left, IToken right, String msg) {
+	public static Message newParseError(String file, IToken left, IToken right,
+			String msg) {
 		return newParseMessage(file, left, right, msg, MessageSeverity.ERROR);
 	}
 
-	public static Message newParseWarning(String file, IToken left, IToken right, String msg) {
+	public static Message newParseWarning(String file, IToken left,
+			IToken right, String msg) {
 		return newParseMessage(file, left, right, msg, MessageSeverity.WARNING);
 	}
 
-	public static Message newAnalysisMessage(String file, IToken left, IToken right, String msg,
-			MessageSeverity severity) {
-		return newMessage(file, left, right, msg, severity, MessageType.ANALYSIS_MESSAGE);
+	public static Message newAnalysisMessage(String file, IToken left,
+			IToken right, String msg, MessageSeverity severity) {
+		return newMessage(file, left, right, msg, severity,
+				MessageType.ANALYSIS_MESSAGE);
 	}
 
-	public static Message newAnalysisError(String file, IToken left, IToken right, String msg) {
+	public static Message newAnalysisError(String file, IToken left,
+			IToken right, String msg) {
 		return newAnalysisMessage(file, left, right, msg, MessageSeverity.ERROR);
 	}
 
-	public static Message newAnalysisWarning(String file, IToken left, IToken right, String msg) {
-		return newAnalysisMessage(file, left, right, msg, MessageSeverity.WARNING);
+	public static Message newAnalysisWarning(String file, IToken left,
+			IToken right, String msg) {
+		return newAnalysisMessage(file, left, right, msg,
+				MessageSeverity.WARNING);
 	}
 
-	public static Message newAnalysisNote(String file, IToken left, IToken right, String msg) {
+	public static Message newAnalysisNote(String file, IToken left,
+			IToken right, String msg) {
 		return newAnalysisMessage(file, left, right, msg, MessageSeverity.NOTE);
 	}
 
@@ -121,11 +135,13 @@ public class MessageHelper {
 		return message;
 	}
 
-	private static Message newErrorAtTop(String file, String msg, MessageType type) {
+	private static Message newErrorAtTop(String file, String msg,
+			MessageType type) {
 		return newAtTop(file, msg, type, MessageSeverity.ERROR);
 	}
 
-	private static Message newWarningAtTop(String file, String msg, MessageType type) {
+	private static Message newWarningAtTop(String file, String msg,
+			MessageType type) {
 		return newAtTop(file, msg, type, MessageSeverity.WARNING);
 	}
 
@@ -137,7 +153,8 @@ public class MessageHelper {
 		return newWarningAtTop(file, msg, MessageType.PARSER_MESSAGE);
 	}
 
-	public static Message newAnalysisMessageAtTop(String file, String msg, MessageSeverity severity) {
+	public static Message newAnalysisMessageAtTop(String file, String msg,
+			MessageSeverity severity) {
 		return newAtTop(file, msg, MessageType.ANALYSIS_MESSAGE, severity);
 	}
 
@@ -158,7 +175,8 @@ public class MessageHelper {
 	}
 
 	/**
-	 * Given an stratego term, give the first AST node associated with any of its subterms, doing a
+	 * Given an stratego term, give the first AST node associated with any of
+	 * its subterms, doing a
 	 * depth-first search.
 	 */
 	private static ISimpleTerm getClosestAstNode(IStrategoTerm term) {

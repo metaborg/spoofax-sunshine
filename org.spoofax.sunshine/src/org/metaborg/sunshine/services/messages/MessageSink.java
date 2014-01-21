@@ -9,7 +9,8 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.ISinkMany;
@@ -21,7 +22,8 @@ import org.metaborg.sunshine.pipeline.diff.MultiDiff;
  * 
  */
 public class MessageSink implements ISinkMany<IMessage> {
-	private static final Logger logger = LogManager.getLogger(MessageSink.class.getName());
+	private static final Logger logger = LogManager.getLogger(MessageSink.class
+			.getName());
 	private Set<IMessage> messages = new HashSet<IMessage>();
 
 	@Override
@@ -30,7 +32,8 @@ public class MessageSink implements ISinkMany<IMessage> {
 
 		for (Diff<IMessage> msgDiff : product) {
 			if (msgDiff.getPayload().severity() == MessageSeverity.ERROR
-					|| !Environment.INSTANCE().getMainArguments().suppresswarnings) {
+					|| !ServiceRegistry.INSTANCE().getService(
+							LaunchConfiguration.class).mainArguments.suppresswarnings) {
 				messages.add(msgDiff.getPayload());
 			}
 		}

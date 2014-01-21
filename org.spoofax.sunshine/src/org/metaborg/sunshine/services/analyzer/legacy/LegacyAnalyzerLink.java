@@ -10,7 +10,8 @@ import java.util.HashSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageHelper;
 import org.metaborg.sunshine.model.messages.MessageSeverity;
@@ -50,15 +51,20 @@ public class LegacyAnalyzerLink extends ALinkOneToOne<AnalysisResult, AnalysisRe
 					parseResult.file());
 			return null;
 		}
+		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
+		ALanguage lang = serviceRegistry.getService(LanguageService.class)
+				.getLanguageByExten(parseResult.file());
 
-		ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(parseResult.file());
+		LaunchConfiguration launch = serviceRegistry
+				.getService(LaunchConfiguration.class);
+		ITermFactory termFactory = launch.termFactory;
+		HybridInterpreter runtime = serviceRegistry.getService(
+				RuntimeService.class).getRuntime(lang);
 
-		ITermFactory termFactory = Environment.INSTANCE().termFactory;
-		HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(lang);
-
-		IStrategoString fileTerm = termFactory.makeString(Environment.INSTANCE().projectDir.toURI()
+		IStrategoString fileTerm = termFactory.makeString(launch.projectDir
+				.toURI()
 				.relativize(parseResult.file().toURI()).toString());
-		IStrategoString projectTerm = termFactory.makeString(Environment.INSTANCE().projectDir
+		IStrategoString projectTerm = termFactory.makeString(launch.projectDir
 				.getAbsolutePath());
 
 		IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.ast(), fileTerm, projectTerm);

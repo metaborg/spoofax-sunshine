@@ -31,19 +31,19 @@ public class LanguageService {
 
 	private static final Logger logger = LogManager.getLogger(LanguageService.class.getName());
 
-	private static LanguageService INSTANCE;
 	private final Map<String, ALanguage> exten2lang = new HashMap<String, ALanguage>();
 	private final Map<String, ALanguage> name2lang = new HashMap<String, ALanguage>();
 
-	private LanguageService() {
-	}
-
-	public static final LanguageService INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new LanguageService();
-		}
-		return INSTANCE;
-	}
+	// private static LanguageService INSTANCE;
+	// private LanguageService() {
+	// }
+	//
+	// public static final LanguageService INSTANCE() {
+	// if (INSTANCE == null) {
+	// INSTANCE = new LanguageService();
+	// }
+	// return INSTANCE;
+	// }
 
 	/**
 	 * Register a new {@link ALanguage} in this registry. Languages are registered by file extension

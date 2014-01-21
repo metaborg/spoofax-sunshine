@@ -12,7 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerCrashHandler;
 import org.metaborg.sunshine.CompilerException;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
+import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageEmitter;
 import org.metaborg.sunshine.pipeline.ILinkManyToMany;
@@ -37,19 +39,21 @@ import org.metaborg.sunshine.statistics.Statistics;
  * 
  */
 public class SunshineMainDriver {
-	private static final Logger logger = LogManager.getLogger(SunshineMainDriver.class.getName());
+	private static final Logger logger = LogManager
+			.getLogger(SunshineMainDriver.class.getName());
 
 	private MessageEmitter emitter;
 	private FileSource filesSource;
 
 	public SunshineMainDriver() {
 		logger.trace("Initializing & setting uncaught exception handler");
-		Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
+		Thread.currentThread().setUncaughtExceptionHandler(
+				new CompilerCrashHandler());
 	}
 
 	public void init() throws CompilerException {
 		logger.trace("Beginning init");
-		if (Environment.INSTANCE().getMainArguments().nonincremental) {
+		if (ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).mainArguments.nonincremental) {
 			ProjectUtils.cleanProject();
 			ProjectUtils.unloadTasks();
 			ProjectUtils.unloadIndex();
@@ -59,11 +63,12 @@ public class SunshineMainDriver {
 
 	private void initPipeline() {
 		logger.debug("Initializing pipeline");
-		Environment env = Environment.INSTANCE();
-		SunshineMainArguments args = env.getMainArguments();
+		ServiceRegistry env = ServiceRegistry.INSTANCE();
+		LaunchConfiguration launch = env.getService(LaunchConfiguration.class);
+		SunshineMainArguments args = launch.mainArguments;
 
 		Statistics.startTimer("PIPELINE_CONSTRUCT");
-		filesSource = new FileSource(env.projectDir);
+		filesSource = new FileSource(launch.projectDir);
 		logger.trace("Created file source {}", filesSource);
 		FileSourceFilter fsf = new FileSourceFilter(args.filefilter);
 		filesSource.addSink(fsf);
@@ -77,7 +82,8 @@ public class SunshineMainDriver {
 		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisResult, IMessage> messageSelector = new MessageExtractorLink();
 		parserMapper.addSink(messageSelector);
-		logger.trace("Message selector {} linked on parse mapper {}", messageSelector, parserMapper);
+		logger.trace("Message selector {} linked on parse mapper {}",
+				messageSelector, parserMapper);
 
 		messageSelector.addSink(messageSink);
 
@@ -92,10 +98,13 @@ public class SunshineMainDriver {
 
 				if (args.builder != null) {
 					for (File file : getFilesToBuild()) {
-						logger.trace("Creating builder links for builder {}", args.builder);
+						logger.trace("Creating builder links for builder {}",
+								args.builder);
 						BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-								file, args.noanalysis || args.buildonsource, args.buildwitherrors);
-						BuilderSink compileBuilder = new BuilderSink(args.builder);
+								file, args.noanalysis || args.buildonsource,
+								args.buildwitherrors);
+						BuilderSink compileBuilder = new BuilderSink(
+								args.builder);
 						logger.trace("Wiring builder up into pipeline");
 						if (!args.noanalysis)
 							analyzerLink.addSink(inputMakeLink);
@@ -116,10 +125,13 @@ public class SunshineMainDriver {
 				}
 				if (args.builder != null) {
 					for (File file : getFilesToBuild()) {
-						logger.trace("Creating builder links for builder {}", args.builder);
+						logger.trace("Creating builder links for builder {}",
+								args.builder);
 						BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
-								file, args.noanalysis || args.buildonsource, args.buildwitherrors);
-						BuilderSink compileBuilder = new BuilderSink(args.builder);
+								file, args.noanalysis || args.buildonsource,
+								args.buildwitherrors);
+						BuilderSink compileBuilder = new BuilderSink(
+								args.builder);
 						logger.trace("Wiring builder up into pipeline");
 
 						if (args.noanalysis) {
@@ -141,21 +153,21 @@ public class SunshineMainDriver {
 	}
 
 	private Collection<File> getFilesToBuild() {
-		Environment env = Environment.INSTANCE();
-		SunshineMainArguments args = env.getMainArguments();
+		ServiceRegistry env = ServiceRegistry.INSTANCE();
+		LaunchConfiguration launch = env.getService(LaunchConfiguration.class);
+		SunshineMainArguments args = launch.mainArguments;
 		Collection<File> files = new LinkedList<File>();
 		if (args.filetobuildon != null) {
-			files.add(new File(env.projectDir, args.filetobuildon));
+			files.add(new File(launch.projectDir, args.filetobuildon));
 		}
 		if (args.filestobuildon != null) {
+			LanguageService languageService = env
+					.getService(LanguageService.class);
 			files.addAll(FileUtils.listFiles(
-					new File(env.projectDir, args.filestobuildon),
-					LanguageService
-							.INSTANCE()
-							.getSupportedExtens()
-							.toArray(
-									new String[LanguageService.INSTANCE().getSupportedExtens()
-											.size()]), true));
+					new File(launch.projectDir, args.filestobuildon),
+					languageService.getSupportedExtens().toArray(
+							new String[languageService.getSupportedExtens()
+									.size()]), true));
 		}
 		return files;
 	}
@@ -168,7 +180,8 @@ public class SunshineMainDriver {
 		Statistics
 				.addDataPoint(
 						"INCREMENTAL",
-						Environment.INSTANCE().getMainArguments().nonincremental ? IValidatable.NEVER_VALIDATABLE
+						ServiceRegistry.INSTANCE().getService(
+								LaunchConfiguration.class).mainArguments.nonincremental ? IValidatable.NEVER_VALIDATABLE
 								: IValidatable.ALWAYS_VALIDATABLE);
 		logger.trace("Beginning pushing file changes");
 		Statistics.startTimer("POKE");

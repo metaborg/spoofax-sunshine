@@ -5,7 +5,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.metaborg.sunshine.CompilerException;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.parser.model.IFileParser;
 import org.metaborg.sunshine.parser.model.IParserConfig;
 import org.metaborg.sunshine.services.analyzer.AnalysisResult;
@@ -53,10 +54,11 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 	public JSGLRI(IParserConfig config, File file) {
 		assert config != null;
 		this.config = config;
-		final TermTreeFactory factory = new TermTreeFactory(new ParentTermFactory(
-				Environment.INSTANCE().termFactory));
-		this.parser = new SGLR(new TreeBuilder(factory), config.getParseTableProvider()
-				.getParseTable());
+		final TermTreeFactory factory = new TermTreeFactory(
+				new ParentTermFactory(ServiceRegistry.INSTANCE().getService(
+						LaunchConfiguration.class).termFactory));
+		this.parser = new SGLR(new TreeBuilder(factory), config
+				.getParseTableProvider().getParseTable());
 		this.errorHandler = new JSGLRParseErrorHandler(this);
 		assert file != null;
 		this.file = file;
@@ -84,12 +86,14 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 			disambiguator = parser.getDisambiguator();
 		setUseRecovery(useRecovery);
 		if (!implodeEnabled) {
-			parser.setTreeBuilder(new Asfix2TreeBuilder(Environment.INSTANCE().termFactory));
+			parser.setTreeBuilder(new Asfix2TreeBuilder(
+					ServiceRegistry.INSTANCE().getService(
+							LaunchConfiguration.class).termFactory));
 		} else {
 			assert parser.getTreeBuilder() instanceof TreeBuilder;
 			@SuppressWarnings("unchecked")
-			ITreeFactory<IStrategoTerm> treeFactory = ((TreeBuilder) parser.getTreeBuilder())
-					.getFactory();
+			ITreeFactory<IStrategoTerm> treeFactory = ((TreeBuilder) parser
+					.getTreeBuilder()).getFactory();
 			assert ((TermTreeFactory) treeFactory).getOriginalTermFactory() instanceof ParentTermFactory;
 		}
 	}
@@ -125,20 +129,23 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 		}
 
 		// result.setMessages(errorHandler.getCollectedMessages());
-		return new AnalysisResult(null, file, errorHandler.getCollectedMessages(), ast);
+		return new AnalysisResult(null, file,
+				errorHandler.getCollectedMessages(), ast);
 	}
 
-	private IStrategoTerm actuallyParse(String input, String filename) throws SGLRException,
-			InterruptedException {
+	private IStrategoTerm actuallyParse(String input, String filename)
+			throws SGLRException, InterruptedException {
 		IStrategoTerm result;
 		try {
-			result = (IStrategoTerm) parser.parse(input, filename, config.getStartSymbol(), true,
-					cursorLocation);
+			result = (IStrategoTerm) parser.parse(input, filename,
+					config.getStartSymbol(), true, cursorLocation);
 		} catch (FilterException fex) {
-			if (fex.getCause() == null && parser.getDisambiguator().getFilterPriorities()) {
+			if (fex.getCause() == null
+					&& parser.getDisambiguator().getFilterPriorities()) {
 				disambiguator.setFilterPriorities(false);
 				try {
-					result = (IStrategoTerm) parser.parse(input, filename, config.getStartSymbol());
+					result = (IStrategoTerm) parser.parse(input, filename,
+							config.getStartSymbol());
 				} finally {
 					disambiguator.setFilterPriorities(true);
 				}

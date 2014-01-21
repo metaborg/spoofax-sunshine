@@ -6,7 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import org.metaborg.sunshine.CompilerException;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
 import org.spoofax.jsglr.client.ParseTable;
 
@@ -40,7 +41,9 @@ public class PathBasedParseTableProvider implements IParseTableProvider {
 		ParseTable table;
 		try {
 			stream = Files.newInputStream(filePath, StandardOpenOption.READ);
-			table = Environment.INSTANCE().parseTableMgr.loadFromStream(stream);
+			table = ServiceRegistry.INSTANCE().getService(
+					LaunchConfiguration.class).parseTableManager
+					.loadFromStream(stream);
 		} catch (Exception e) {
 			throw new CompilerException("Could not load parse table", e);
 		}

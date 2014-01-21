@@ -10,7 +10,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageHelper;
 import org.metaborg.sunshine.model.messages.MessageSeverity;
@@ -34,18 +35,6 @@ public class AnalysisService {
 
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
 
-	private static AnalysisService INSTANCE;
-
-	protected AnalysisService() {
-	}
-
-	public static final AnalysisService INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new AnalysisService();
-		}
-		return INSTANCE;
-	}
-
 	/**
 	 * Run the analysis on the given files. The analysis is started on all files on a per-language
 	 * basis.
@@ -56,9 +45,11 @@ public class AnalysisService {
 	 */
 	public Collection<AnalysisResult> analyze(Collection<File> files) throws CompilerException {
 		logger.debug("Analyzing {} files", files.size());
-		final Map<ALanguage, Collection<File>> lang2files = new HashMap<ALanguage, Collection<File>>();
+		Map<ALanguage, Collection<File>> lang2files = new HashMap<ALanguage, Collection<File>>();
+		LanguageService languageService = ServiceRegistry.INSTANCE()
+				.getService(LanguageService.class);
 		for (File file : files) {
-			final ALanguage lang = LanguageService.INSTANCE().getLanguageByExten(file);
+			final ALanguage lang = languageService.getLanguageByExten(file);
 			if (lang2files.get(lang) == null) {
 				lang2files.put(lang, new LinkedList<File>());
 			}
@@ -75,13 +66,17 @@ public class AnalysisService {
 	private Collection<AnalysisResult> analyze(ALanguage lang, Collection<File> files)
 			throws CompilerException {
 		logger.debug("Analyzing {} files of the {} language", files.size(), lang.getName());
-		final ITermFactory termFactory = Environment.INSTANCE().termFactory;
-		final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(lang);
+		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
+		LaunchConfiguration launch = serviceRegistry
+				.getService(LaunchConfiguration.class);
+		ITermFactory termFactory = launch.termFactory;
+		HybridInterpreter runtime = serviceRegistry.getService(
+				RuntimeService.class).getRuntime(lang);
 		assert runtime != null;
 
 		final Collection<IStrategoString> fileNames = new LinkedList<IStrategoString>();
 		for (File file : files) {
-			fileNames.add(termFactory.makeString(Environment.INSTANCE().projectDir.toURI()
+			fileNames.add(termFactory.makeString(launch.projectDir.toURI()
 					.relativize(file.toURI()).toString()));
 		}
 		logger.trace("Converted file names to Stratego strings");
