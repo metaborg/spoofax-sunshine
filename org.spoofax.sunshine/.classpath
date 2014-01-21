@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="test-files/" kind="src" path="test"/>
-	<classpathentry exported="true" kind="lib" path="lib/spoofax-libs.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/strategoxt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sdf2imp.jar">
