@@ -7,6 +7,7 @@ import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.DiffKind;
@@ -27,7 +28,8 @@ public class JSGLRLink extends ALinkOneToOne<File, AnalysisResult> {
 					.getName());
 			return null;
 		}
-		AnalysisResult parseResult = ParserService.INSTANCE().parseFile(input.getPayload());
+		AnalysisResult parseResult = ServiceRegistry.INSTANCE()
+				.getService(ParserService.class).parseFile(input.getPayload());
 		logger.trace("Parsing of file {} produced AST {} and {} messages", input.getPayload(),
 				parseResult.ast(), parseResult.messages().size());
 		return new Diff<AnalysisResult>(parseResult, input.getDiffKind());

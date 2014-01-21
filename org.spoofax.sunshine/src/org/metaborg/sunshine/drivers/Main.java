@@ -8,9 +8,16 @@ import java.nio.file.FileSystems;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
+import org.metaborg.sunshine.environment.SunshineMainArguments;
+import org.metaborg.sunshine.services.RuntimeService;
+import org.metaborg.sunshine.services.StrategoCallService;
+import org.metaborg.sunshine.services.analyzer.AnalysisService;
 import org.metaborg.sunshine.services.language.LanguageDiscoveryService;
 import org.metaborg.sunshine.services.language.LanguageService;
+import org.metaborg.sunshine.services.parser.ParserService;
+import org.metaborg.sunshine.statistics.Statistics;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -21,7 +28,8 @@ import com.beust.jcommander.ParameterException;
  */
 public class Main {
 
-	private static final Logger logger = LogManager.getLogger(Main.class.getName());
+	private static final Logger logger = LogManager.getLogger(Main.class
+			.getName());
 
 	/**
 	 * @param args
@@ -66,16 +74,38 @@ public class Main {
 
 	public static void initEnvironment(SunshineMainArguments args) {
 		logger.trace("Initializing the environment");
-		Environment env = Environment.INSTANCE();
-		env.setMainArguments(args);
-		env.setProjectDir(new File(args.project));
+		ServiceRegistry env = ServiceRegistry.INSTANCE();
+		env.reset();
+
+		initServices(env, args);
+
+		LanguageDiscoveryService langDiscovery = env
+				.getService(LanguageDiscoveryService.class);
+		LanguageService langService = env.getService(LanguageService.class);
+		assert langDiscovery != null;
 		if (args.autolang != null) {
-			LanguageDiscoveryService.INSTANCE().discover(
-					FileSystems.getDefault().getPath(args.autolang));
+			langDiscovery.discover(FileSystems.getDefault().getPath(
+					args.autolang));
 		} else {
-			LanguageService.INSTANCE().registerLanguage(
-					LanguageDiscoveryService.INSTANCE().languageFromArguments(args.languageArgs));
+			langService.registerLanguage(langDiscovery
+					.languageFromArguments(args.getLanguageArgs()));
 		}
+	}
+
+	public static void initServices(ServiceRegistry env,
+			SunshineMainArguments args) {
+
+		env.registerService(LaunchConfiguration.class, new LaunchConfiguration(
+				args, new File(args.project)));
+		env.registerService(LanguageDiscoveryService.class,
+				new LanguageDiscoveryService());
+		env.registerService(LanguageService.class, new LanguageService());
+		env.registerService(RuntimeService.class, new RuntimeService());
+		env.registerService(StrategoCallService.class,
+				new StrategoCallService());
+		env.registerService(ParserService.class, new ParserService());
+		env.registerService(AnalysisService.class, new AnalysisService());
+		env.registerService(Statistics.class, new Statistics());
 	}
 
 	public static void usage(boolean exit) {

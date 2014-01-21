@@ -6,6 +6,7 @@ package org.metaborg.sunshine.services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.spoofax.interpreter.core.InterpreterErrorExit;
 import org.spoofax.interpreter.core.InterpreterException;
@@ -20,28 +21,18 @@ import org.strategoxt.HybridInterpreter;
  */
 public class StrategoCallService {
 
-	private static final Logger logger = LogManager.getLogger(StrategoCallService.class.getName());
+	private static final Logger logger = LogManager
+			.getLogger(StrategoCallService.class.getName());
 
-	private static StrategoCallService INSTANCE;
-
-	private StrategoCallService() {
-	}
-
-	public static StrategoCallService INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new StrategoCallService();
-		}
-		return INSTANCE;
-	}
-
-	public IStrategoTerm callStratego(ALanguage lang, String strategy, IStrategoTerm input)
-			throws CompilerException {
+	public IStrategoTerm callStratego(ALanguage lang, String strategy,
+			IStrategoTerm input) throws CompilerException {
 		assert lang != null;
 		assert strategy != null && strategy.length() > 0;
 		assert input != null;
 		logger.trace("Calling strategy {} with input {}", strategy, input);
 
-		final HybridInterpreter runtime = RuntimeService.INSTANCE().getRuntime(lang);
+		final HybridInterpreter runtime = ServiceRegistry.INSTANCE()
+				.getService(RuntimeService.class).getRuntime(lang);
 		runtime.setCurrent(input);
 		boolean success = false;
 		try {

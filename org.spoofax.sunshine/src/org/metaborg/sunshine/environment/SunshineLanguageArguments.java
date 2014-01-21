@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.drivers;
+package org.metaborg.sunshine.environment;
 
 import java.util.LinkedList;
 import java.util.List;

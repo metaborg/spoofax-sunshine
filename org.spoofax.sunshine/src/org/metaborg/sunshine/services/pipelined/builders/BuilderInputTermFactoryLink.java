@@ -10,7 +10,8 @@ import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.ILinkManyToOne;
@@ -27,8 +28,8 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 public class BuilderInputTermFactoryLink implements
 		ILinkManyToOne<AnalysisResult, BuilderInputTerm> {
 
-	private static final Logger logger = LogManager.getLogger(BuilderInputTermFactoryLink.class
-			.getName());
+	private static final Logger logger = LogManager
+			.getLogger(BuilderInputTermFactoryLink.class.getName());
 
 	private final Collection<ISinkOne<BuilderInputTerm>> sinks = new HashSet<ISinkOne<BuilderInputTerm>>();
 
@@ -38,7 +39,8 @@ public class BuilderInputTermFactoryLink implements
 
 	private boolean ignoreErrors;
 
-	public BuilderInputTermFactoryLink(File file, boolean onSource, boolean ignoreErrors) {
+	public BuilderInputTermFactoryLink(File file, boolean onSource,
+			boolean ignoreErrors) {
 		this.path = file;
 		this.onSource = onSource;
 		this.ignoreErrors = ignoreErrors;
@@ -57,12 +59,14 @@ public class BuilderInputTermFactoryLink implements
 		Diff<AnalysisResult> select = null;
 		for (Diff<AnalysisResult> diff : product) {
 			try {
-				if (diff.getPayload().file().getCanonicalFile().equals(path.getCanonicalFile())) {
+				if (diff.getPayload().file().getCanonicalFile()
+						.equals(path.getCanonicalFile())) {
 					select = diff;
 					break;
 				} else {
-					logger.trace("Input file {} does not match prebaked file {}, skipping.", diff
-							.getPayload().file(), path);
+					logger.trace(
+							"Input file {} does not match prebaked file {}, skipping.",
+							diff.getPayload().file(), path);
 				}
 			} catch (IOException ioex) {
 				logger.error("File operations failed", ioex);
@@ -77,18 +81,24 @@ public class BuilderInputTermFactoryLink implements
 				}
 			}
 			if (!errors_exist || ignoreErrors) {
-				logger.trace("Selected file {} for creating input", select.getPayload().file());
+				logger.trace("Selected file {} for creating input", select
+						.getPayload().file());
 
-				IStrategoTerm ast = onSource && select.getPayload().previousResult() != null ? select
+				IStrategoTerm ast = onSource
+						&& select.getPayload().previousResult() != null ? select
 						.getPayload().previousResult().ast()
 						: select.getPayload().ast();
-
-				BuilderInputTerm payload = new BuilderInputTerm(Environment.INSTANCE().termFactory,
-						ast, select.getPayload().file(), Environment.INSTANCE().projectDir);
-				Diff<BuilderInputTerm> result = new Diff<BuilderInputTerm>(payload,
-						select.getDiffKind());
+				LaunchConfiguration launch = ServiceRegistry.INSTANCE()
+						.getService(LaunchConfiguration.class);
+				BuilderInputTerm payload = new BuilderInputTerm(
+						launch.termFactory, ast, select.getPayload().file(),
+						launch.projectDir);
+				Diff<BuilderInputTerm> result = new Diff<BuilderInputTerm>(
+						payload, select.getDiffKind());
 				for (ISinkOne<BuilderInputTerm> sink : sinks) {
-					logger.trace("Sinking input term for file {} to builder {}", path, sink);
+					logger.trace(
+							"Sinking input term for file {} to builder {}",
+							path, sink);
 					sink.sink(result);
 				}
 			} else {

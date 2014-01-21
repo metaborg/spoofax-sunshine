@@ -7,7 +7,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.StrategoCallService;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.spoofax.interpreter.terms.IStrategoAppl;
@@ -15,8 +16,10 @@ import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
- * An implementation of the {@link IBuilder} interface. This implementation differentiates the
- * required post-processing steps (writing or not to file) based on the output of the strategy
+ * An implementation of the {@link IBuilder} interface. This implementation
+ * differentiates the
+ * required post-processing steps (writing or not to file) based on the output
+ * of the strategy
  * invocation.
  * 
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -24,7 +27,8 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  */
 public class Builder implements IBuilder {
 
-	private static final Logger logger = LogManager.getLogger(Builder.class.getName());
+	private static final Logger logger = LogManager.getLogger(Builder.class
+			.getName());
 
 	private final String name;
 	private final boolean onSource;
@@ -32,7 +36,8 @@ public class Builder implements IBuilder {
 	private final String strategy;
 	private final ALanguage language;
 
-	public Builder(String name, String strategy, ALanguage language, boolean onSource, boolean meta) {
+	public Builder(String name, String strategy, ALanguage language,
+			boolean onSource, boolean meta) {
 		this.name = name;
 		this.onSource = onSource;
 		this.meta = meta;
@@ -67,8 +72,9 @@ public class Builder implements IBuilder {
 
 	@Override
 	public IStrategoTerm invoke(IStrategoTerm input) {
-		IStrategoTerm result = StrategoCallService.INSTANCE().callStratego(getLanguage(),
-				getInvocationTarget(), input);
+		IStrategoTerm result = ServiceRegistry.INSTANCE()
+				.getService(StrategoCallService.class)
+				.callStratego(getLanguage(), getInvocationTarget(), input);
 		processResult(result);
 		return result;
 	}
@@ -76,14 +82,17 @@ public class Builder implements IBuilder {
 	private void processResult(IStrategoTerm result) {
 		if (isWriteFile(result)) {
 
-			final File resultFile = new File(Environment.INSTANCE().projectDir,
+			final File resultFile = new File(ServiceRegistry.INSTANCE()
+					.getService(LaunchConfiguration.class).projectDir,
 					((IStrategoString) result.getSubterm(0)).stringValue());
-			final String resultContents = ((IStrategoString) result.getSubterm(1)).stringValue();
+			final String resultContents = ((IStrategoString) result
+					.getSubterm(1)).stringValue();
 			// write the contents to the file
 			try {
 				FileUtils.writeStringToFile(resultFile, resultContents);
 			} catch (IOException e) {
-				throw new CompilerException("Builder " + getName() + "failed to write result", e);
+				throw new CompilerException("Builder " + getName()
+						+ "failed to write result", e);
 			}
 		}
 	}
@@ -93,15 +102,19 @@ public class Builder implements IBuilder {
 			if (((IStrategoAppl) result).getName().equals("None")) {
 				return false;
 			} else {
-				logger.fatal("Builder returned an unsupported result type {}", result);
-				throw new CompilerException("Unsupported return value from builder: " + result);
+				logger.fatal("Builder returned an unsupported result type {}",
+						result);
+				throw new CompilerException(
+						"Unsupported return value from builder: " + result);
 			}
 		} else {
 			if (result == null || result.getSubtermCount() != 2
 					|| !(result.getSubterm(0) instanceof IStrategoString)
 					|| !(result.getSubterm(1) instanceof IStrategoString)) {
-				logger.fatal("Builder returned an unsupported result type {}", result);
-				throw new CompilerException("Unsupported return value from builder: " + result);
+				logger.fatal("Builder returned an unsupported result type {}",
+						result);
+				throw new CompilerException(
+						"Unsupported return value from builder: " + result);
 			} else {
 				return true;
 			}
@@ -110,7 +123,7 @@ public class Builder implements IBuilder {
 
 	@Override
 	public String toString() {
-		return "Builder " + name + " invokes " + strategy + " on source " + onSource + " and meta "
-				+ meta;
+		return "Builder " + name + " invokes " + strategy + " on source "
+				+ onSource + " and meta " + meta;
 	}
 }
