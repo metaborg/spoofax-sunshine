@@ -39,13 +39,19 @@ public class Main {
 		initEnvironment(params);
 		SunshineMainDriver driver = new SunshineMainDriver();
 
-		driver.run();
-		logger.info("Now exiting");
+		int exit = driver.run();
+		if (exit == 0) {
+			logger.info("Exiting normally");
+			System.exit(0);
+		} else {
+			logger.info("Exiting with non-zero status {}", exit);
+			System.exit(1);
+		}
 	}
 
 	private static JCommander jc = new JCommander();
 
-	private static void parseArguments(String[] args, SunshineMainArguments into) {
+	public static void parseArguments(String[] args, SunshineMainArguments into) {
 		logger.trace("Parsing arguments");
 		jc.setColumnSize(120);
 		jc.addObject(into);

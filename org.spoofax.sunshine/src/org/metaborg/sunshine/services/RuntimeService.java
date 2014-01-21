@@ -102,8 +102,7 @@ public class RuntimeService {
 		interp.addOperatorRegistry(new SunshineLibrary());
 		assert interp.getContext().getOperatorRegistry(SunshineLibrary.REGISTRY_NAME) instanceof SunshineLibrary;
 
-		final SunshineIOAgent agent = new SunshineIOAgent();
-		agent.setLanguage(lang);
+		final SunshineIOAgent agent = new SunshineIOAgent(lang);
 		interp.setIOAgent(agent);
 		loadCompilerFiles(interp, lang);
 

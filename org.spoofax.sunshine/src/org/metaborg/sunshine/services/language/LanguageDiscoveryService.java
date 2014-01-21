@@ -36,6 +36,8 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.terms.TermFactory;
 import org.spoofax.terms.io.binary.TermReader;
 
+import com.google.common.io.Files;
+
 /**
  * 
  * Singleton service for automatic discovery and registration of {@link ALanguage}. Given a location
@@ -169,8 +171,7 @@ public class LanguageDiscoveryService {
 		}
 		SunshineMainArguments mainArgs = Environment.INSTANCE().getMainArguments();
 		ALanguage language = new Language(args.lang, extens, args.ssymb, FileSystems.getDefault()
-				.getPath(args.tbl),
-				args.observer, compilerFiles);
+				.getPath(args.tbl), args.observer, compilerFiles, Files.createTempDir().toPath());
 		language.registerBuilder(mainArgs.builder, mainArgs.builder, mainArgs.buildonsource, false);
 		return language;
 	}
@@ -196,7 +197,7 @@ public class LanguageDiscoveryService {
 		Collection<IStrategoAppl> builders = builders(document);
 
 		ALanguage language = new Language(name, extens, startsymb, parsetbl, observer,
-				codefiles.toArray(new Path[codefiles.size()]));
+				codefiles.toArray(new Path[codefiles.size()]), basepath);
 
 		for (IStrategoAppl action : builders) {
 			language.registerBuilder(builderName(action), builderTarget(action),

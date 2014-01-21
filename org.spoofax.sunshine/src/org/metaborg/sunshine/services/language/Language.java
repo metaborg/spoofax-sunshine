@@ -30,9 +30,10 @@ public class Language extends ALanguage {
 	private final String analysisFunction;
 	private final Path[] compilerFiles;
 	private final Map<String, IBuilder> builders = new HashMap<>();
+	private Path definitionDir;
 
 	public Language(String name, String[] extens, String startSymbol, Path parseTable,
-			String analysisFunction, Path[] compilerFiles) {
+			String analysisFunction, Path[] compilerFiles, Path definitionDir) {
 		super(name);
 
 		assert name != null && name.length() > 0;
@@ -42,12 +43,14 @@ public class Language extends ALanguage {
 		assert analysisFunction != null && analysisFunction.length() > 0;
 		assert compilerFiles != null && compilerFiles.length > 0;
 		assert builders != null;
+		assert definitionDir != null && definitionDir.toFile().exists();
 
 		this.extens = extens;
 		this.startSymbol = startSymbol;
 		this.parseTableProvider = new PathBasedParseTableProvider(parseTable);
 		this.analysisFunction = analysisFunction;
 		this.compilerFiles = compilerFiles;
+		this.definitionDir = definitionDir;
 	}
 
 	@Override
@@ -91,6 +94,11 @@ public class Language extends ALanguage {
 	}
 
 	@Override
+	public Path getDefinitionPath() {
+		return definitionDir;
+	}
+
+	@Override
 	public String toString() {
 		String s = super.toString();
 		s += "Builders: \n";
@@ -99,5 +107,6 @@ public class Language extends ALanguage {
 		}
 		return s;
 	}
+
 
 }
