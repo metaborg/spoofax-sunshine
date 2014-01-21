@@ -36,10 +36,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		logger.info("Starting");
-
+		jc = new JCommander();
 		SunshineMainArguments params = new SunshineMainArguments();
-		parseArguments(args, params);
-		if (params.help) {
+		boolean argsFine = parseArguments(args, params);
+		if (params.help || !argsFine) {
 			usage(true);
 		}
 		params.validate();
@@ -57,19 +57,22 @@ public class Main {
 		}
 	}
 
-	private static JCommander jc = new JCommander();
+	public static JCommander jc;
 
-	public static void parseArguments(String[] args, SunshineMainArguments into) {
+	public static boolean parseArguments(String[] args,
+			SunshineMainArguments into) {
 		logger.trace("Parsing arguments");
 		jc.setColumnSize(120);
 		jc.addObject(into);
 		try {
 			jc.parse(args);
+			logger.trace("Done parsing arguments");
+			return true;
 		} catch (ParameterException pex) {
 			System.err.println(pex.getMessage());
-			usage(true);
+			pex.printStackTrace();
+			return false;
 		}
-		logger.trace("Done parsing arguments");
 	}
 
 	public static void initEnvironment(SunshineMainArguments args) {
