@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.drivers;
+package org.metaborg.sunshine.environment;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
@@ -57,7 +57,7 @@ public class SunshineMainArguments {
 	public boolean help;
 
 	@ParametersDelegate
-	SunshineLanguageArguments languageArgs = new SunshineLanguageArguments();
+	private SunshineLanguageArguments languageArgs = new SunshineLanguageArguments();
 
 	public void validate() {
 		if (builder == null && (filetobuildon != null || filestobuildon != null)) {
@@ -90,6 +90,10 @@ public class SunshineMainArguments {
 		}
 		if (autolang == null)
 			languageArgs.validate();
+	}
+
+	public SunshineLanguageArguments getLanguageArgs() {
+		return languageArgs;
 	}
 
 	@Override

@@ -15,8 +15,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.runtime.task.primitives.TaskLibrary;
-import org.metaborg.sunshine.Environment;
 import org.metaborg.sunshine.SunshineIOAgent;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.prims.SunshineLibrary;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.metaborg.sunshine.services.language.LanguageService;
@@ -28,8 +29,10 @@ import org.strategoxt.IncompatibleJarException;
 import org.strategoxt.NoInteropRegistererJarException;
 
 /**
- * Singleton service for the production of language-specific Stratego Interpreters. Precisely one
- * interpreter per languge is cached; subsequent requests for new interpreters are based on the
+ * Singleton service for the production of language-specific Stratego
+ * Interpreters. Precisely one
+ * interpreter per languge is cached; subsequent requests for new interpreters
+ * are based on the
  * cached ones as prototypes.
  * 
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -39,41 +42,37 @@ public class RuntimeService {
 	private static final String EXTENSION_CTREE = "ctree";
 	private static final String EXTENSION_JAR = "jar";
 
-	private static final Logger logger = LogManager.getLogger(RuntimeService.class.getName());
-
-	private static RuntimeService INSTANCE;
+	private static final Logger logger = LogManager
+			.getLogger(RuntimeService.class.getName());
 
 	private final Map<ALanguage, HybridInterpreter> prototypes = new HashMap<ALanguage, HybridInterpreter>();
-
-	private RuntimeService() {
-	}
-
-	public static RuntimeService INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new RuntimeService();
-		}
-		return INSTANCE;
-	}
 
 	/**
 	 * @see #getRuntime(ALanguage)
 	 */
 	public HybridInterpreter getRuntime(File file) {
-		return getRuntime(LanguageService.INSTANCE().getLanguageByExten(file));
+		return getRuntime(ServiceRegistry.INSTANCE()
+				.getService(LanguageService.class).getLanguageByExten(file));
 	}
 
 	/**
-	 * Obtain a new {@link HybridInterpreter} for the given {@link ALanguage}. The produced
-	 * interpreter is based on an internally cached interpreter instance for the given language. If
-	 * such a cache does not exist, then this method first creates an internal cache for the
-	 * language and then returns a new interpreter based on that prototype. Note therefore that
-	 * multiple calls to this method will return a different interpreter every time.
+	 * Obtain a new {@link HybridInterpreter} for the given {@link ALanguage}.
+	 * The produced
+	 * interpreter is based on an internally cached interpreter instance for the
+	 * given language. If
+	 * such a cache does not exist, then this method first creates an internal
+	 * cache for the
+	 * language and then returns a new interpreter based on that prototype. Note
+	 * therefore that
+	 * multiple calls to this method will return a different interpreter every
+	 * time.
 	 * 
 	 * 
 	 * @param lang
 	 *            The language for which to create a new interpreter.
-	 * @return A new interpret for the given language. All of the language's files (
-	 *         {@link ALanguage#getCompilerFiles()} are loaded into the interpreter.
+	 * @return A new interpret for the given language. All of the language's
+	 *         files ( {@link ALanguage#getCompilerFiles()} are loaded into the
+	 *         interpreter.
 	 * 
 	 */
 	public HybridInterpreter getRuntime(ALanguage lang) {
@@ -83,24 +82,28 @@ public class RuntimeService {
 		}
 
 		// TODO load overrides and contexts
-		final HybridInterpreter interp = new HybridInterpreter(proto, new String[0]);
+		final HybridInterpreter interp = new HybridInterpreter(proto,
+				new String[0]);
 		interp.getCompiledContext().getExceptionHandler().setEnabled(false);
 		interp.init();
-		
+
 		return interp;
 	}
 
 	private HybridInterpreter createPrototypeRuntime(ALanguage lang) {
-		final HybridInterpreter interp = new HybridInterpreter(new ImploderOriginTermFactory(
-				Environment.INSTANCE().termFactory));
+		final HybridInterpreter interp = new HybridInterpreter(
+				new ImploderOriginTermFactory(ServiceRegistry.INSTANCE()
+						.getService(LaunchConfiguration.class).termFactory));
 
 		interp.getCompiledContext().registerComponent("stratego_lib");
 		interp.getCompiledContext().registerComponent("stratego_sglr");
 		interp.getCompiledContext().addOperatorRegistry(new TaskLibrary());
-		interp.getCompiledContext().addOperatorRegistry(new LegacyIndexLibrary());
+		interp.getCompiledContext().addOperatorRegistry(
+				new LegacyIndexLibrary());
 
 		interp.addOperatorRegistry(new SunshineLibrary());
-		assert interp.getContext().getOperatorRegistry(SunshineLibrary.REGISTRY_NAME) instanceof SunshineLibrary;
+		assert interp.getContext().getOperatorRegistry(
+				SunshineLibrary.REGISTRY_NAME) instanceof SunshineLibrary;
 
 		final SunshineIOAgent agent = new SunshineIOAgent(lang);
 		interp.setIOAgent(agent);
@@ -111,7 +114,8 @@ public class RuntimeService {
 		return interp;
 	}
 
-	private static void loadCompilerFiles(HybridInterpreter interp, ALanguage lang) {
+	private static void loadCompilerFiles(HybridInterpreter interp,
+			ALanguage lang) {
 		LinkedList<File> jars = new LinkedList<File>();
 		LinkedList<File> ctrees = new LinkedList<File>();
 		for (Path p : lang.getCompilerFiles()) {
@@ -119,18 +123,22 @@ public class RuntimeService {
 			if (FilenameUtils.getExtension(file.getAbsolutePath())
 					.equalsIgnoreCase(EXTENSION_CTREE)) {
 				ctrees.add(file);
-			} else if (FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase(
-					EXTENSION_JAR)) {
+			} else if (FilenameUtils.getExtension(file.getAbsolutePath())
+					.equalsIgnoreCase(EXTENSION_JAR)) {
 				jars.add(file);
 			} else {
-				throw new RuntimeException("Unsupported file extension for compiler file: " + file);
+				throw new RuntimeException(
+						"Unsupported file extension for compiler file: " + file);
 			}
 		}
-		// for some reason the order is important. We must always load the ctrees first (if any).
+		// for some reason the order is important. We must always load the
+		// ctrees first (if any).
 		if (ctrees.size() > 0)
-			loadCompilerCTree(interp, (File[]) ctrees.toArray(new File[ctrees.size()]));
+			loadCompilerCTree(interp,
+					(File[]) ctrees.toArray(new File[ctrees.size()]));
 		if (jars.size() > 0)
-			loadCompilerJar(interp, (File[]) jars.toArray(new File[jars.size()]));
+			loadCompilerJar(interp,
+					(File[]) jars.toArray(new File[jars.size()]));
 	}
 
 	private static void loadCompilerJar(HybridInterpreter interp, File[] jars) {
@@ -157,11 +165,13 @@ public class RuntimeService {
 		}
 	}
 
-	private static void loadCompilerCTree(HybridInterpreter interp, File[] ctrees) {
+	private static void loadCompilerCTree(HybridInterpreter interp,
+			File[] ctrees) {
 		try {
 			for (File file : ctrees) {
 				logger.trace("Loading ctree {}", file.getPath());
-				interp.load(new BufferedInputStream(new FileInputStream(file.getAbsolutePath())));
+				interp.load(new BufferedInputStream(new FileInputStream(file
+						.getAbsolutePath())));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to load ctree", e);

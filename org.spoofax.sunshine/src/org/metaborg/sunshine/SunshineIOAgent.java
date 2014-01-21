@@ -5,6 +5,8 @@ package org.metaborg.sunshine;
 
 import java.io.IOException;
 
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.spoofax.interpreter.library.LoggingIOAgent;
 
@@ -19,7 +21,8 @@ public class SunshineIOAgent extends LoggingIOAgent {
 	public SunshineIOAgent(ALanguage language) {
 		this.language = language;
 		try {
-			this.setWorkingDir(Environment.INSTANCE().projectDir.getAbsolutePath());
+			this.setWorkingDir(ServiceRegistry.INSTANCE().getService(
+					LaunchConfiguration.class).projectDir.getAbsolutePath());
 			this.setDefinitionDir(language.getDefinitionPath().toAbsolutePath().toString());
 		} catch (IOException ioex) {
 			throw new RuntimeException("Failed to create IOAgent", ioex);

@@ -19,7 +19,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -27,35 +28,41 @@ import org.metaborg.sunshine.Environment;
  */
 public class Statistics {
 
-	private static final Logger logger = LogManager.getLogger(Statistics.class.getName());
+	private static final Logger logger = LogManager.getLogger(Statistics.class
+			.getName());
 
 	private final Stack<DataRecording> recordingStack = new Stack<DataRecording>();
 	private final File targetFile;
 
-	private static Statistics INSTANCE;
-
-	private Statistics() {
-		File f = new File(Environment.INSTANCE().getMainArguments().statstarget);
-		targetFile = new File(f.getParent(), FilenameUtils.getBaseName(f.getName()) + "_"
-				+ System.currentTimeMillis() + "." + FilenameUtils.getExtension(f.getName()));
-		if (targetFile.exists()) {
-			logger.fatal("Stats file {} already exists. Refusing to overwrite", targetFile);
-			throw new RuntimeException("Stats file already exists");
+	public Statistics() {
+		if (isStatEnabled()) {
+			File f = new File(ServiceRegistry.INSTANCE().getService(
+					LaunchConfiguration.class).mainArguments.statstarget);
+			targetFile = new File(f.getParent(), FilenameUtils.getBaseName(f
+					.getName())
+					+ "_"
+					+ System.currentTimeMillis()
+					+ "."
+					+ FilenameUtils.getExtension(f.getName()));
+			if (targetFile.exists()) {
+				logger.fatal(
+						"Stats file {} already exists. Refusing to overwrite",
+						targetFile);
+				throw new RuntimeException("Stats file already exists");
+			}
+			targetFile.getParentFile().mkdir();
+			try {
+				targetFile.createNewFile();
+			} catch (IOException ioex) {
+				logger.fatal(
+						"Failed to create stats file {} because of exception {}",
+						targetFile, ioex);
+				throw new RuntimeException(
+						"Failed to create statistics target file");
+			}
+		} else {
+			targetFile = null;
 		}
-		targetFile.getParentFile().mkdir();
-		try {
-			targetFile.createNewFile();
-		} catch (IOException ioex) {
-			logger.fatal("Failed to create stats file {} because of exception {}", targetFile, ioex);
-			throw new RuntimeException("Failed to create statistics target file");
-		}
-	}
-
-	public static Statistics INSTANCE() {
-		if (INSTANCE == null) {
-			INSTANCE = new Statistics();
-		}
-		return INSTANCE;
 	}
 
 	private DataRecording next() {
@@ -79,7 +86,8 @@ public class Statistics {
 	private static final String DEFAULT_VALUE = "-1";
 
 	private List<String> getAllKeys() {
-		final Enumeration<DataRecording> recordingsEnum = recordingStack.elements();
+		final Enumeration<DataRecording> recordingsEnum = recordingStack
+				.elements();
 		final Set<String> keySet = new HashSet<String>(recordingStack.size());
 		while (recordingsEnum.hasMoreElements()) {
 			keySet.addAll(recordingsEnum.nextElement().getKeys());
@@ -96,7 +104,8 @@ public class Statistics {
 		for (int idx = alreadyWritten; recordingStack.size() > 0; idx++) {
 			final List<String> values = new ArrayList<String>(keys.size() + 1);
 			values.add("" + idx);
-			values.addAll(recordingStack.pop().toOrderedStrings(keys, DEFAULT_VALUE));
+			values.addAll(recordingStack.pop().toOrderedStrings(keys,
+					DEFAULT_VALUE));
 			rowFormatter.format(rowFormat, (Object[]) values.toArray());
 		}
 		rowFormatter.close();
@@ -111,7 +120,8 @@ public class Statistics {
 		final List<String> headerKeys = new ArrayList<String>(keys.size() + 1);
 		headerKeys.add(SEQNUM_HEAD);
 		headerKeys.addAll(keys);
-		headerFormatter.format(headerFormat, (Object[]) headerKeys.toArray(new String[0]));
+		headerFormatter.format(headerFormat,
+				(Object[]) headerKeys.toArray(new String[0]));
 		headerFormatter.close();
 		return header.toString();
 	}
@@ -137,43 +147,52 @@ public class Statistics {
 		final String rows = toStringRows(keys);
 		recordingStack.clear();
 
-		FileUtils.writeStringToFile(targetFile, header + rows, alreadyWritten > 0);
+		FileUtils.writeStringToFile(targetFile, header + rows,
+				alreadyWritten > 0);
 
 		alreadyWritten += additionalRowCount;
 	}
 
 	public static void toNext() {
-		if (Environment.INSTANCE().isStatEnabled()) {
+		if (isStatEnabled()) {
 			try {
-				INSTANCE().incrementalWriteToFile();
+				instance().incrementalWriteToFile();
 			} catch (IOException ioex) {
 				logger.error("Failed to save statistics to file", ioex);
 			}
-			INSTANCE().next();
+			instance().next();
 		}
 	}
 
 	public static void startTimer(String name) {
-		if (Environment.INSTANCE().isStatEnabled()) {
-			INSTANCE().current().startTimer(name);
+		if (isStatEnabled()) {
+			instance().current().startTimer(name);
 		}
 	}
 
 	public static void stopTimer() {
-		if (Environment.INSTANCE().isStatEnabled()) {
-			INSTANCE().current().stopTimer();
+		if (isStatEnabled()) {
+			instance().current().stopTimer();
 		}
 	}
 
 	public static void addDataPoint(String name, long time) {
-		if (Environment.INSTANCE().isStatEnabled()) {
-			INSTANCE().current().addDataPoint(name, time);
+		if (isStatEnabled()) {
+			instance().current().addDataPoint(name, time);
 		}
 	}
 
 	public static void addDataPoint(String name, IValidatable<?> value) {
-		if (Environment.INSTANCE().isStatEnabled()) {
-			INSTANCE().current().addDataPoint(name, value);
+		if (isStatEnabled()) {
+			instance().current().addDataPoint(name, value);
 		}
+	}
+
+	private static Statistics instance() {
+		return ServiceRegistry.INSTANCE().getService(Statistics.class);
+	}
+
+	private static boolean isStatEnabled() {
+		return ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).mainArguments.statstarget != null;
 	}
 }

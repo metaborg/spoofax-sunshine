@@ -9,7 +9,8 @@ import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.sunshine.Environment;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkMany;
 import org.metaborg.sunshine.pipeline.ISourceMany;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
@@ -22,15 +23,19 @@ import org.metaborg.sunshine.statistics.Statistics;
  * 
  */
 public class FileSource implements ISourceMany<File> {
-	private static final Logger logger = LogManager.getLogger(FileSource.class.getName());
+	private static final Logger logger = LogManager.getLogger(FileSource.class
+			.getName());
 
 	private final Collection<ISinkMany<File>> sinks;
 	private final DirMonitor monitor;
 
 	public FileSource(File directory) {
 		this.sinks = new HashSet<ISinkMany<File>>();
-		this.monitor = new DirMonitor(LanguageService.INSTANCE().getSupportedExtens(), directory,
-				Environment.INSTANCE().getCacheDir());
+		ServiceRegistry services = ServiceRegistry.INSTANCE();
+		this.monitor = new DirMonitor(services
+				.getService(LanguageService.class).getSupportedExtens(),
+				directory, services.getService(LaunchConfiguration.class)
+						.getCacheDir());
 	}
 
 	@Override
@@ -40,14 +45,16 @@ public class FileSource implements ISourceMany<File> {
 
 	public void poke() {
 		logger.trace("Poked for changes");
-		if (Environment.INSTANCE().getMainArguments().nonincremental) {
+		if (ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).mainArguments.nonincremental) {
 			logger.warn("Resetting the directory monitor for full analysis");
 			monitor.reset();
 		}
 		logger.debug("Getting directory changes");
 		MultiDiff<File> diff = monitor.getChanges();
-		logger.debug("Notifying {} sinks of {} file changes", sinks.size(), diff.size());
-		Statistics.addDataPoint("DELTAFILES", new BoxValidatable<Integer>(diff.size()));
+		logger.debug("Notifying {} sinks of {} file changes", sinks.size(),
+				diff.size());
+		Statistics.addDataPoint("DELTAFILES",
+				new BoxValidatable<Integer>(diff.size()));
 		for (ISinkMany<File> sink : sinks) {
 			sink.sink(diff);
 		}
