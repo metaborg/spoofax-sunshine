@@ -5,7 +5,6 @@ Sunshine is a runtime library which runs Spoofax-based languages  outside of Ecl
 ## Limitations
 Many. This is most likely an incomplete list:
 
-* No support for concrete object syntax embedding
 * Completely single-threaded
 * Not all Spoofax primitives are implemented
 * Only supports multi-file analysis. Classic `editor-analyse` is not supported.
@@ -37,7 +36,7 @@ A basic example of command line parameters is given below, which causes Sunshine
 
 ### Automatic language discovery & configuration
 
-Sunshine also has a mechanism to automatically discover and configure languages. The example above becomes:
+Sunshine has a mechanism to automatically discover and configure languages. The example above becomes:
 
     java -cp sunshine.jar Main
     --auto-lang ../../webdsl2/include
@@ -66,9 +65,8 @@ This primitive can parse files in any language that is registered. If parsing pr
 The following are required in *lib* to compile and run Sunshine:
 
 * Apache Commons IO: *commons-io-2.4.jar*
-* Google Guava: *guava-14.0.jar*
 * SDF2IMP: *sdf2imp.jar*
 * Stratego/XT: *strategoxt.jar*
 * Spoofax libs: *spoofax-libs.jar*
 * JCommander: *jcommander-1.30.jar*
-* Apache Log4j 2: *log4j-core-2.0-beta8.jar*, *log4j-api-2.0-beta8.jar*
+* Apache Log4j 2: *log4j-core-2.0-beta9.jar*, *log4j-api-2.0-beta9.jar*
