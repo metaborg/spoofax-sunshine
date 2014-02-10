@@ -47,7 +47,7 @@ public class ServiceRegistry {
 	@SuppressWarnings("unchecked")
 	public <T> T getService(Class<T> clazz) {
 		T service = (T) services.get(clazz);
-		logger.debug("Retrieved provider {} for service {}", clazz, service);
+		logger.trace("Retrieved provider {} for service {}", clazz, service);
 		return service;
 	}
 

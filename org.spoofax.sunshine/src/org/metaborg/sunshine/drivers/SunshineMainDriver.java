@@ -158,7 +158,13 @@ public class SunshineMainDriver {
 		SunshineMainArguments args = launch.mainArguments;
 		Collection<File> files = new LinkedList<File>();
 		if (args.filetobuildon != null) {
-			files.add(new File(launch.projectDir, args.filetobuildon));
+			File buildTargetFile = new File(launch.projectDir,
+					args.filetobuildon);
+			if (!buildTargetFile.exists()) {
+				throw new CompilerException("File not found: "
+						+ args.filetobuildon);
+			}
+			files.add(buildTargetFile);
 		}
 		if (args.filestobuildon != null) {
 			LanguageService languageService = env
@@ -168,6 +174,10 @@ public class SunshineMainDriver {
 					languageService.getSupportedExtens().toArray(
 							new String[languageService.getSupportedExtens()
 									.size()]), true));
+		}
+		if (files.size() == 0 && args.filestobuildon != null) {
+			throw new CompilerException("No files found matching: "
+					+ args.filestobuildon);
 		}
 		return files;
 	}
