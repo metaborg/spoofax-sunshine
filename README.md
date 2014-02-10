@@ -70,3 +70,6 @@ The following are required in *lib* to compile and run Sunshine:
 * Spoofax libs: *spoofax-libs.jar*
 * JCommander: *jcommander-1.30.jar*
 * Apache Log4j 2: *log4j-core-2.0-beta9.jar*, *log4j-api-2.0-beta9.jar*
+* JUnit 4: *junit-4.11.jar*
+* Hamcrest Core: *hamcrest-core-1.3.jar*
+
