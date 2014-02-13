@@ -16,6 +16,7 @@ import org.metaborg.sunshine.services.StrategoCallService;
 import org.metaborg.sunshine.services.analyzer.AnalysisService;
 import org.metaborg.sunshine.services.language.LanguageDiscoveryService;
 import org.metaborg.sunshine.services.language.LanguageService;
+import org.metaborg.sunshine.services.messages.MessageService;
 import org.metaborg.sunshine.services.parser.ParserService;
 import org.metaborg.sunshine.statistics.Statistics;
 
@@ -100,6 +101,7 @@ public class Main {
 
 		env.registerService(LaunchConfiguration.class, new LaunchConfiguration(
 				args, new File(args.project)));
+		env.registerService(MessageService.class, new MessageService());
 		env.registerService(LanguageDiscoveryService.class,
 				new LanguageDiscoveryService());
 		env.registerService(LanguageService.class, new LanguageService());

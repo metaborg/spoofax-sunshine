@@ -15,8 +15,6 @@ import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageEmitter;
 import org.metaborg.sunshine.pipeline.ILinkManyToMany;
 import org.metaborg.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.metaborg.sunshine.prims.ProjectUtils;
@@ -28,7 +26,9 @@ import org.metaborg.sunshine.services.builders.BuilderSink;
 import org.metaborg.sunshine.services.filesource.FileSource;
 import org.metaborg.sunshine.services.filesource.FileSourceFilter;
 import org.metaborg.sunshine.services.language.LanguageService;
+import org.metaborg.sunshine.services.messages.IMessage;
 import org.metaborg.sunshine.services.messages.MessageExtractorLink;
+import org.metaborg.sunshine.services.messages.MessageService;
 import org.metaborg.sunshine.services.messages.MessageSink;
 import org.metaborg.sunshine.services.parser.JSGLRLink;
 import org.metaborg.sunshine.statistics.IValidatable;
@@ -42,7 +42,6 @@ public class SunshineMainDriver {
 	private static final Logger logger = LogManager
 			.getLogger(SunshineMainDriver.class.getName());
 
-	private MessageEmitter emitter;
 	private FileSource filesSource;
 
 	public SunshineMainDriver() {
@@ -78,7 +77,6 @@ public class SunshineMainDriver {
 		logger.trace("Created mapper {} for parser", parserMapper);
 
 		MessageSink messageSink = new MessageSink();
-		emitter = new MessageEmitter(messageSink);
 		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisResult, IMessage> messageSelector = new MessageExtractorLink();
 		parserMapper.addSink(messageSelector);
@@ -198,11 +196,13 @@ public class SunshineMainDriver {
 		filesSource.poke();
 		Statistics.stopTimer();
 		logger.trace("Emitting messages");
-		emitter.emitMessages(System.out);
-		emitter.emitSummary(System.out);
+		MessageService msgService = ServiceRegistry.INSTANCE().getService(
+				MessageService.class);
+		msgService.emitMessages(System.out);
+		msgService.emitSummary(System.out);
 		Statistics.stopTimer();
 		Statistics.toNext();
-		return !emitter.hasErrors() ? 0 : 1;
+		return !msgService.hasErrors() ? 0 : 1;
 	}
 
 }

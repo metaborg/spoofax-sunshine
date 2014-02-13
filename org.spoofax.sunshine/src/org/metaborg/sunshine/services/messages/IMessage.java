@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.model.messages;
+package org.metaborg.sunshine.services.messages;
 
 /**
  * 

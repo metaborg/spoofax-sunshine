@@ -30,13 +30,33 @@ public class ParserService {
 
 	private final Map<ALanguage, IParserConfig> parserConfigs = new WeakHashMap<ALanguage, IParserConfig>();
 
+	/**
+	 * Parse a file and auto-detect the language (using the file extension).
+	 * 
+	 * @param file
+	 * @return an {@link AnalysisResult}
+	 */
 	public AnalysisResult parseFile(File file) {
 		logger.trace("Parsing file {}", file);
 		ALanguage lang = ServiceRegistry.INSTANCE()
 				.getService(LanguageService.class).getLanguageByExten(file);
 		if (lang == null) {
-			throw new CompilerException("No language registered for file "
-					+ file);
+			throw new CompilerException(
+					"No language could be detected for file " + file);
+		}
+		return parseFile(file, lang);
+	}
+
+	/**
+	 * Parse a file using the parser for the given language.
+	 * 
+	 * @param file
+	 * @param lang
+	 * @return an {@link AnalysisResult}
+	 */
+	public AnalysisResult parseFile(File file, ALanguage lang) {
+		if (lang == null) {
+			throw new CompilerException("Cannot parse file in NULL language");
 		}
 		IParserConfig parserConfig = parserConfigs.get(lang);
 		if (parserConfig == null) {
@@ -44,7 +64,6 @@ public class ParserService {
 					lang.getParseTableProvider(), PARSE_TIMEOUT);
 			parserConfigs.put(lang, parserConfig);
 		}
-		assert parserConfig != null;
 		JSGLRI parser = new JSGLRI(parserConfig, file);
 
 		return parser.parse();

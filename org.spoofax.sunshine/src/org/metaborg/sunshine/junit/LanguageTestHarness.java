@@ -11,11 +11,11 @@ import java.util.Collection;
 import org.junit.Before;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.services.analyzer.AnalysisResult;
 import org.metaborg.sunshine.services.analyzer.AnalysisService;
 import org.metaborg.sunshine.services.language.LanguageDiscoveryService;
+import org.metaborg.sunshine.services.messages.IMessage;
+import org.metaborg.sunshine.services.messages.MessageSeverity;
 import org.metaborg.sunshine.services.parser.ParserService;
 
 /**

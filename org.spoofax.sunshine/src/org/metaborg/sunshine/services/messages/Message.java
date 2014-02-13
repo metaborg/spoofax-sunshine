@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.model.messages;
+package org.metaborg.sunshine.services.messages;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

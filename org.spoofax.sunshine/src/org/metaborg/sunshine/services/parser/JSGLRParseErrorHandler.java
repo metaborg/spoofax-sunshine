@@ -15,8 +15,8 @@ import java.util.List;
 
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageHelper;
+import org.metaborg.sunshine.services.messages.IMessage;
+import org.metaborg.sunshine.services.messages.MessageHelper;
 import org.spoofax.interpreter.terms.IStrategoConstructor;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.client.MultiBadTokenException;

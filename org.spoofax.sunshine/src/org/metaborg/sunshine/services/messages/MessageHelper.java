@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.model.messages;
+package org.metaborg.sunshine.services.messages;
 
 import static org.spoofax.interpreter.core.Tools.isTermTuple;
 import static org.spoofax.interpreter.core.Tools.termAt;

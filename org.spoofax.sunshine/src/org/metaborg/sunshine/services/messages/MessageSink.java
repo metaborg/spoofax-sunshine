@@ -3,7 +3,6 @@
  */
 package org.metaborg.sunshine.services.messages;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,8 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.ISinkMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
@@ -24,23 +21,23 @@ import org.metaborg.sunshine.pipeline.diff.MultiDiff;
 public class MessageSink implements ISinkMany<IMessage> {
 	private static final Logger logger = LogManager.getLogger(MessageSink.class
 			.getName());
-	private Set<IMessage> messages = new HashSet<IMessage>();
 
 	@Override
 	public void sink(MultiDiff<IMessage> product) {
 		logger.info("Sinking {} messages", product.size());
 
+		Set<IMessage> messages = new HashSet<IMessage>();
+
+		ServiceRegistry services = ServiceRegistry.INSTANCE();
+		boolean supresswarnings = services
+				.getService(LaunchConfiguration.class).mainArguments.suppresswarnings;
 		for (Diff<IMessage> msgDiff : product) {
 			if (msgDiff.getPayload().severity() == MessageSeverity.ERROR
-					|| !ServiceRegistry.INSTANCE().getService(
-							LaunchConfiguration.class).mainArguments.suppresswarnings) {
+					|| !supresswarnings) {
 				messages.add(msgDiff.getPayload());
 			}
 		}
-	}
-
-	public Collection<IMessage> getMessages() {
-		return new HashSet<IMessage>(messages);
+		services.getService(MessageService.class).addMessages(messages);
 	}
 
 }

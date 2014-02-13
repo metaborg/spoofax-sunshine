@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.metaborg.sunshine.model.messages.IMessage;
+import org.metaborg.sunshine.services.messages.IMessage;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
@@ -21,8 +21,8 @@ public class AnalysisResult {
 	private AnalysisResult previous;
 	private IStrategoTerm ast;
 
-	public AnalysisResult(AnalysisResult previous, File f, Collection<IMessage> messages,
-			IStrategoTerm ast) {
+	public AnalysisResult(AnalysisResult previous, File f,
+			Collection<IMessage> messages, IStrategoTerm ast) {
 		this.previous = previous;
 		this.file = f;
 		this.ast = ast;
@@ -44,4 +44,5 @@ public class AnalysisResult {
 	public AnalysisResult previousResult() {
 		return previous;
 	}
+
 }
