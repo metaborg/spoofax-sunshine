@@ -10,6 +10,7 @@ import static org.metaborg.sunshine.esvutil.ESVReader.builderName;
 import static org.metaborg.sunshine.esvutil.ESVReader.builderTarget;
 import static org.metaborg.sunshine.esvutil.ESVReader.builders;
 import static org.metaborg.sunshine.esvutil.ESVReader.extensions;
+import static org.metaborg.sunshine.esvutil.ESVReader.findTerm;
 import static org.metaborg.sunshine.esvutil.ESVReader.languageName;
 import static org.metaborg.sunshine.esvutil.ESVReader.parseTableName;
 import static org.metaborg.sunshine.esvutil.ESVReader.startSymbol;
@@ -33,6 +34,7 @@ import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineLanguageArguments;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.spoofax.interpreter.terms.IStrategoAppl;
+import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.terms.TermFactory;
 import org.spoofax.terms.io.binary.TermReader;
@@ -214,9 +216,24 @@ public class LanguageDiscoveryService {
 				basepath);
 
 		for (IStrategoAppl action : builders) {
+			logger.debug("Registering builder {} for language {}",
+					builderName(action), language.getName());
 			language.registerBuilder(builderName(action),
 					builderTarget(action), builderIsOnSource(action),
 					builderIsMeta(action));
+		}
+
+		/* on save handler */
+		IStrategoAppl onsave = findTerm(document, "OnSave");
+		onsave = onsave == null ? findTerm(document, "OnSaveDeprecated")
+				: onsave;
+		if (onsave != null) {
+			String function = ((IStrategoString) onsave.getSubterm(0)
+					.getSubterm(0))
+					.stringValue();
+			logger.debug("Registering on save handler {} for language {}",
+					function, language.getName());
+			language.registerBuilder("OnSave", function, false, false);
 		}
 
 		return language;
