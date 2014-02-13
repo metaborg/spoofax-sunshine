@@ -23,14 +23,14 @@ import org.metaborg.sunshine.prims.ProjectUtils;
 import org.metaborg.sunshine.services.analyzer.AnalysisResult;
 import org.metaborg.sunshine.services.analyzer.AnalyzerLink;
 import org.metaborg.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
+import org.metaborg.sunshine.services.builders.BuilderInputTermFactoryLink;
+import org.metaborg.sunshine.services.builders.BuilderSink;
 import org.metaborg.sunshine.services.filesource.FileSource;
 import org.metaborg.sunshine.services.filesource.FileSourceFilter;
 import org.metaborg.sunshine.services.language.LanguageService;
 import org.metaborg.sunshine.services.messages.MessageExtractorLink;
 import org.metaborg.sunshine.services.messages.MessageSink;
 import org.metaborg.sunshine.services.parser.JSGLRLink;
-import org.metaborg.sunshine.services.pipelined.builders.BuilderInputTermFactoryLink;
-import org.metaborg.sunshine.services.pipelined.builders.BuilderSink;
 import org.metaborg.sunshine.statistics.IValidatable;
 import org.metaborg.sunshine.statistics.Statistics;
 

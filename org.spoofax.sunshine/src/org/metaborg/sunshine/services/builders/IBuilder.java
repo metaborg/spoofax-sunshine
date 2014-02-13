@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.services.pipelined.builders;
+package org.metaborg.sunshine.services.builders;
 
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.spoofax.interpreter.terms.IStrategoTerm;

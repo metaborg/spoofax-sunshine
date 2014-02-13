@@ -12,9 +12,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
+import org.metaborg.sunshine.services.builders.Builder;
+import org.metaborg.sunshine.services.builders.IBuilder;
 import org.metaborg.sunshine.services.parser.PathBasedParseTableProvider;
-import org.metaborg.sunshine.services.pipelined.builders.Builder;
-import org.metaborg.sunshine.services.pipelined.builders.IBuilder;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>

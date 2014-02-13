@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.services.pipelined.builders;
+package org.metaborg.sunshine.services.builders;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.services.pipelined.builders;
+package org.metaborg.sunshine.services.builders;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 import org.metaborg.sunshine.parser.model.IParseTableProvider;
-import org.metaborg.sunshine.services.pipelined.builders.IBuilder;
+import org.metaborg.sunshine.services.builders.IBuilder;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
