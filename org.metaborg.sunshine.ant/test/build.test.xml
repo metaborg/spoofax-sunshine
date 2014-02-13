@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="test">
+
+	<property name="language.repository" location="/Users/vladvergu/version_control/spoofax/nabl/org.metaborg.meta.lang.nabl" />
+
+	<taskdef name="sunshine" classname="org.metaborg.sunshine.ant.SunshineAntTask" />
+	<typedef name="dependency" classname="org.metaborg.sunshine.ant.DependencyAntType" />
+	<typedef name="witharg" classname="org.metaborg.sunshine.ant.WithArgAntType" />
+
+	<target name="test">
+		<sunshine languagerepository="${language.repository}">
+			<dependency of="syntax/*.sdf" on="syntax/*.sdf3" enterat="syntax/foo.sdf3" vialanguage="SDF3" viabuilder="generate-sdf">
+				<witharg arg="-m" value="org.spoofax.terms" />
+			</dependency>
+			<dependency of="syntax/*.sdf" on="syntax/*.sdf3" vialanguage="SDF3" viabuilder="generate-sdf">
+			</dependency>
+		</sunshine>
+	</target>
+
+</project>

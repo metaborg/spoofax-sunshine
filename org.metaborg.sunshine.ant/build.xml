@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.metaborg.sunshine.ant" default="install">
+
+	<property name="src.dir" value="src" />
+	<property name="bin.dir" value="bin" />
+	<property name="jar.file" value="sunshine-ant.jar" />
+	<property name="install.location" value="dist" />
+
+	<path id="build.classpath">
+		<pathelement path="${java.class.path}" />
+		<pathelement location="${bin.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="build">
+		<mkdir dir="${bin.dir}" />
+		<javac destdir="${bin.dir}" classpathref="build.classpath" debug="true" debuglevel="lines,vars,source">
+			<src path="${src.dir}" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="build">
+		<jar destfile="${bin.dir}/${jar.file}" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${bin.dir}" includes="**/*.class" />
+		</jar>
+	</target>
+
+	<target name="install" depends="jar">
+		<mkdir dir="${install.location}" />
+		<copy file="${bin.dir}/${jar.file}" todir="${install.location}" />
+	</target>
+
+</project>
