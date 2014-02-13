@@ -9,11 +9,7 @@
 
 	<target name="test">
 		<sunshine languagerepository="${language.repository}">
-			<dependency of="syntax/*.sdf" on="syntax/*.sdf3" enterat="syntax/foo.sdf3" vialanguage="SDF3" viabuilder="generate-sdf">
-				<witharg arg="-m" value="org.spoofax.terms" />
-			</dependency>
-			<dependency of="syntax/*.sdf" on="syntax/*.sdf3" vialanguage="SDF3" viabuilder="generate-sdf">
-			</dependency>
+			<dependency of="names.str" on="names.nab" vialanguage="NaBL" viabuilder="OnSave"/>
 		</sunshine>
 	</target>
 

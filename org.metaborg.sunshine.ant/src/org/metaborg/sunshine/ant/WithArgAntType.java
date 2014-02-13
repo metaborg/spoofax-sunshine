@@ -11,6 +11,10 @@ public class WithArgAntType {
 
 	String arg, value;
 
+	public WithArgAntType() {
+		throw new RuntimeException("Witharguments are currently not supported");
+	}
+
 	public String getArg() {
 		return arg;
 	}
