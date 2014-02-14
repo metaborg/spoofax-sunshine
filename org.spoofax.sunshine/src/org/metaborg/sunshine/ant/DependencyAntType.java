@@ -13,11 +13,11 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.resources.FileResource;
-import org.metaborg.sunshine.ant.control.AggregatedResource;
-import org.metaborg.sunshine.ant.control.IActionableDependency;
-import org.metaborg.sunshine.ant.control.IResource;
-import org.metaborg.sunshine.ant.control.PathPatternResource;
-import org.metaborg.sunshine.ant.control.PathToPathDependency;
+import org.metaborg.sunshine.dependdriver.AggregatedResource;
+import org.metaborg.sunshine.dependdriver.IActionableDependency;
+import org.metaborg.sunshine.dependdriver.IResource;
+import org.metaborg.sunshine.dependdriver.PathPatternResource;
+import org.metaborg.sunshine.dependdriver.PathToPathDependency;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.language.LanguageService;
 

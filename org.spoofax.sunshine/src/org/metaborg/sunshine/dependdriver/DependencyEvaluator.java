@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.metaborg.sunshine.ant.control;
+package org.metaborg.sunshine.dependdriver;
 
 import java.util.ArrayList;
 import java.util.List;
