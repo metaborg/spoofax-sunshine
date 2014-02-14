@@ -42,7 +42,8 @@ public class SunshineAntTask extends Task {
 
 	@Override
 	public void execute() throws BuildException {
-		logger.trace("Initializing Sunshine");
+		logger.trace("Initializing Sunshine using {} as language repository",
+				languageRepository.getAbsolutePath());
 		SunshineMainArguments params = new SunshineMainArguments();
 		params.autolang = languageRepository.getAbsolutePath();
 		params.project = getProject().getBaseDir().getAbsolutePath();
@@ -56,9 +57,9 @@ public class SunshineAntTask extends Task {
 
 		logger.trace("Sunshine initialized");
 		DependencyEvaluator evaluator = new DependencyEvaluator();
-
-		// TODO register the dependencies to be evaluated
-
+		for (DependencyAntType dependency : dependencies) {
+			evaluator.addDependency(dependency.toActionableDependency());
+		}
 		boolean evaluationResult = evaluator.evaluateDependencies();
 
 		logger.trace("Evaluation finished. Emitting messages");

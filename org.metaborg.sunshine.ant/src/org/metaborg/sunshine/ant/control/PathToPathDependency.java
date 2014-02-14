@@ -4,8 +4,12 @@
 package org.metaborg.sunshine.ant.control;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,15 +34,19 @@ public class PathToPathDependency implements IActionableDependency {
 	private static final Logger logger = LogManager
 			.getLogger(PathToPathDependency.class.getName());
 
-	private final IDependencyResource input;
-	private final IDependencyResource output;
+	private final IResource input;
+	private final IResource output;
 	private final ALanguage language;
 	private final String builderName;
-	private final IDependencyResource applyTo;
+	private final IResource applyTo;
 
-	public PathToPathDependency(IDependencyResource input,
-			IDependencyResource output, IDependencyResource applyTo,
-			ALanguage language, String builderName) {
+	public PathToPathDependency(IResource input, IResource output,
+			IResource applyTo, ALanguage language, String builderName) {
+		Objects.requireNonNull(input, "Null input resource");
+		Objects.requireNonNull(output, "Null output resource");
+		Objects.requireNonNull(applyTo, "Null applyto resource");
+		Objects.requireNonNull(language, "Null language");
+		Objects.requireNonNull(builderName, "Null builder name");
 		this.input = input;
 		this.output = output;
 		this.applyTo = applyTo;
@@ -48,10 +56,16 @@ public class PathToPathDependency implements IActionableDependency {
 
 	@Override
 	public boolean execute() {
-		File[] entryPoints = applyTo.getFileset();
-		logger.trace("Executing {} of language {} on {} files", builderName,
-				language.getName(), entryPoints.length);
-		for (File file : entryPoints) {
+		Set<Path> entryPoints;
+		try {
+			entryPoints = applyTo.getFileset();
+		} catch (IOException e) {
+			logger.fatal("Failed to obtain entry points", e);
+			return false;
+		}
+		logger.debug("Executing {} of language {} on {} files", builderName,
+				language.getName(), entryPoints.size());
+		for (Path file : entryPoints) {
 			if (!executeSingle(file)) {
 				return false;
 			}
@@ -59,7 +73,8 @@ public class PathToPathDependency implements IActionableDependency {
 		return true;
 	}
 
-	private boolean executeSingle(File file) {
+	private boolean executeSingle(Path filepath) {
+		File file = filepath.toFile();
 		logger.trace("Executing {} of language {} on {}", builderName,
 				language.getName(), file.getAbsolutePath());
 		ServiceRegistry services = ServiceRegistry.INSTANCE();
@@ -120,12 +135,26 @@ public class PathToPathDependency implements IActionableDependency {
 
 	@Override
 	public boolean isUpdateRequired() {
-		return input.getLastModification() > output.getLastModification();
+		try {
+			return input.getLastModification() > output.getLastModification();
+		} catch (IOException e) {
+			logger.warn(
+					"Failed to determine whether update is required due to exception",
+					e);
+		}
+		return false;
 	}
 
 	@Override
 	public boolean isReadyToRun() {
-		return input.getFileset().length > 0;
+		try {
+			return !applyTo.isEmpty();
+		} catch (IOException e) {
+			logger.warn(
+					"Failed to determine whether ready to run due to exception",
+					e);
+		}
+		return false;
 	}
 
 }

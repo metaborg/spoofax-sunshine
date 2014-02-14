@@ -9,7 +9,7 @@
 
 	<target name="test">
 		<sunshine languagerepository="${language.repository}">
-			<dependency of="names.str" on="names.nab" vialanguage="NaBL" viabuilder="OnSave"/>
+			<dependency of="bla/names1.str" on="bla/names1.nab; build.test.xml" enterat="bla/names1.nab" vialanguage="NameBindingLanguage" viabuilder="OnSave" />
 		</sunshine>
 	</target>
 

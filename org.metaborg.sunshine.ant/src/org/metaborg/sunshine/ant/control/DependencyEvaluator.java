@@ -4,8 +4,8 @@
 package org.metaborg.sunshine.ant.control;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +29,7 @@ public class DependencyEvaluator {
 	}
 
 	public void addDependency(IActionableDependency dependency) {
+		Objects.requireNonNull(dependency, "Invalid null dependency");
 		if (evaluationStarted) {
 			logger.fatal("Cannot add dependency after evaluation has been started");
 			throw new CompilerException(
@@ -37,18 +38,10 @@ public class DependencyEvaluator {
 		dependencies.add(dependency);
 	}
 
-	public void addDependency(Collection<IActionableDependency> dependencies) {
-		if (evaluationStarted) {
-			logger.fatal("Cannot add dependency after evaluation has been started");
-			throw new CompilerException(
-					"Cannot add dependency after evaluation has been started");
-		}
-		this.dependencies.addAll(dependencies);
-	}
-
 	public boolean evaluateDependencies() {
 		evaluationStarted = true;
-		int currentExecutionIndex = dependencies.size() > 0 ? 0 : -1;
+		// int currentExecutionIndex = dependencies.size() > 0 ? 0 : -1;
+		int currentExecutionIndex = getNextExecutionIndex(-1);
 		while (currentExecutionIndex >= 0) {
 			logger.debug("Evaluating dependency {} of {}",
 					currentExecutionIndex + 1, dependencies.size());
