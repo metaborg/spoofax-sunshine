@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="jar" name="org.spoofax.sunshine">
+<project name="org.spoofax.sunshine" default="install">
 
 	<property name="src.dir" value="src" />
 	<property name="bin.dir" value="bin" />
 	<property name="lib.dir" value="lib" />
-	<property name="dist.dir" value="dist" />
 	<property name="jar.file" value="spoofax-sunshine.jar" />
+
+
+	<!-- For CI builds -->
+	<property name="install-prefix-out" location="dist" />
+	<property name="install-prefix" location="${install-prefix-out}" />
+	<property name="install-location" location="${install-prefix}/org/metaborg/sunshine" />
 
 	<path id="build.classpath">
 		<pathelement path="${java.class.path}" />
 		<pathelement location="${build.dir}" />
 		<fileset dir="${lib.dir}">
-			<include name="spoofax-libs.jar" />
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -23,9 +27,9 @@
 		</javac>
 	</target>
 
-	<target name="jar" depends="build">
-		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${jar.file}" filesetmanifest="mergewithoutmain">
+	<target name="install" depends="build">
+		<mkdir dir="${install-location}" />
+		<jar destfile="${install-location}/${jar.file}" filesetmanifest="mergewithoutmain">
 
 			<manifest>
 				<attribute name="Main-Class" value="org.metaborg.sunshine.drivers.Main" />
@@ -48,7 +52,7 @@
 
 	<target name="clean">
 		<delete dir="${bin.dir}" />
-		<delete dir="${dist.dir}" />
+		<delete dir="${install-location}" />
 	</target>
 
 </project>
