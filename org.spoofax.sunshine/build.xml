@@ -42,7 +42,7 @@
 
 			<zipgroupfileset dir="${lib.dir}" includes="log4j-core-2.0-beta9.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="log4j-api-2.0-beta9.jar" />
-			<zipgroupfileset dir="${lib.dir}" includes="jcommander-1.30.jar" />
+			<zipgroupfileset dir="${lib.dir}" includes="jcommander-1.32.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="sdf2imp.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="commons-io-2.4.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="strategoxt.jar" />
