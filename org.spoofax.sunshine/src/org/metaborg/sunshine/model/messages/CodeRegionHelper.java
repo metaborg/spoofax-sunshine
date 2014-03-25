@@ -10,8 +10,12 @@ public class CodeRegionHelper {
 	public static final char NEWLINE = '\n';
 
 	public static String[] getAffectedLines(String input, int beginLine, int endLine) {
-		if (input.length() > 0 && beginLine > 0 && endLine > 0)
-			return Arrays.copyOfRange(input.split("\\r?\\n"), beginLine - 1, endLine);
+		if (input.length() > 0 && beginLine > 0 && endLine > 0) {
+			final String[] lines = input.split("\\r?\\n");
+			if (beginLine - 1 > lines.length)
+				return new String[0];
+			return Arrays.copyOfRange(lines, beginLine - 1, endLine);
+		}
 		else
 			return new String[0];
 	}
