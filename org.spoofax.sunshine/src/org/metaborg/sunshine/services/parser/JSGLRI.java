@@ -2,6 +2,8 @@ package org.metaborg.sunshine.services.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 import org.metaborg.sunshine.CompilerException;
@@ -47,11 +49,23 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 
 	private File file;
 
+	private InputStream is;
+
 	public void setCursorLocation(int cursorLocation) {
 		this.cursorLocation = cursorLocation;
 	}
 
 	public JSGLRI(IParserConfig config, File file) {
+		this(config);
+		this.file = file;
+	}
+
+	public JSGLRI(IParserConfig config, InputStream is) {
+		this(config);
+		this.is = is;
+	}
+
+	private JSGLRI(IParserConfig config) {
 		assert config != null;
 		this.config = config;
 		final TermTreeFactory factory = new TermTreeFactory(
@@ -61,7 +75,6 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 				.getParseTableProvider().getParseTable());
 		this.errorHandler = new JSGLRParseErrorHandler(this);
 		assert file != null;
-		this.file = file;
 		resetState();
 	}
 
@@ -100,12 +113,22 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 
 	@Override
 	public AnalysisResult parse() {
-		assert file != null;
+		assert file != null || is != null;
+		String fileName;
 		String input;
-		try {
-			input = FileUtils.readFileToString(file);
-		} catch (IOException e) {
-			throw new CompilerException("Could not read file", e);
+		if (file != null) {
+			fileName = file.getName();
+			try {
+				input = FileUtils.readFileToString(file);
+			} catch (IOException e) {
+				throw new CompilerException("Could not read file", e);
+			}
+		} else {
+			fileName = "From input stream";
+			Scanner s = new Scanner(is);
+			s.useDelimiter("\\A");
+			input = s.hasNext() ? s.next() : "";
+			s.close();
 		}
 
 		assert input != null;
@@ -113,10 +136,12 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 		IStrategoTerm ast = null;
 
 		errorHandler.reset();
-		currentTokenizer = new NullTokenizer(input, file.getName());
+		currentTokenizer = new NullTokenizer(input, fileName);
 		try {
-			ast = actuallyParse(input, file.getName());
-			SourceAttachment.putSource(ast, file, config);
+			ast = actuallyParse(input, fileName);
+			if (file != null) {
+				SourceAttachment.putSource(ast, file, config);
+			}
 		} catch (Exception e) {
 			errorHandler.setRecoveryFailed(true);
 			errorHandler.gatherException(currentTokenizer, e);

@@ -4,6 +4,7 @@
 package org.metaborg.sunshine.services.parser;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -38,16 +39,30 @@ public class ParserService {
 			throw new CompilerException("No language registered for file "
 					+ file);
 		}
+		IParserConfig parserConfig = getParserConfig(lang);
+		assert parserConfig != null;
+
+		JSGLRI parser = new JSGLRI(parserConfig, file);
+		return parser.parse();
+	}
+
+	public AnalysisResult parse(InputStream is, ALanguage lang) {
+		logger.trace("Parsing input stream of language {}", lang.getName());
+		IParserConfig parserConfig = getParserConfig(lang);
+		assert parserConfig != null;
+
+		JSGLRI parser = new JSGLRI(parserConfig, is);
+		return parser.parse();
+	}
+
+	private IParserConfig getParserConfig(ALanguage lang) {
 		IParserConfig parserConfig = parserConfigs.get(lang);
 		if (parserConfig == null) {
 			parserConfig = new ParserConfig(lang.getStartSymbol(),
 					lang.getParseTableProvider(), PARSE_TIMEOUT);
 			parserConfigs.put(lang, parserConfig);
 		}
-		assert parserConfig != null;
-		JSGLRI parser = new JSGLRI(parserConfig, file);
-
-		return parser.parse();
+		return parserConfig;
 	}
 
 }
