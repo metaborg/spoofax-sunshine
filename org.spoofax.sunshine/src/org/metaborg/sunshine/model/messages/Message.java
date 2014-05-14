@@ -49,7 +49,7 @@ public class Message implements IMessage {
 		if (obj instanceof IMessage) {
 			IMessage o = (IMessage) obj;
 			boolean equal = true;
-			equal &= file.equals(o.file());
+			equal &= (file == null || file.equals(o.file()));
 			equal &= type == o.type();
 			equal &= severity == o.severity();
 			equal &= msg.equals(o.message());
@@ -64,7 +64,9 @@ public class Message implements IMessage {
 		final StringBuilder hashBuilder = new StringBuilder();
 		hashBuilder.append(type.hashCode());
 		hashBuilder.append(severity.hashCode());
-		hashBuilder.append(file);
+		if (file != null) {
+			hashBuilder.append(file);
+		}
 		hashBuilder.append(msg);
 		hashBuilder.append(region.hashCode());
 		return hashBuilder.toString().hashCode();
@@ -79,9 +81,13 @@ public class Message implements IMessage {
 	public String toString() {
 		final StringBuilder str = new StringBuilder();
 		str.append(severity);
-		str.append(" in ");
-		str.append(file);
-		str.append(" (at line " + region.getRow() + ")\n");
+		if (file != null) {
+			str.append(" in ");
+			str.append(file);
+			str.append(" (at line " + region.getRow() + ")\n");
+		} else {
+			str.append(" at line " + region.getRow() + "\n");
+		}
 		str.append(region.getDamagedRegion("\t"));
 		str.append(msg);
 		str.append("\n");
