@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.metaborg.sunshine/src/org/metaborg/sunshine/drivers/Main.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.metaborg.sunshine.drivers.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--auto-lang /Users/vladvergu/version_control/spoofax/nabl/org.metaborg.meta.lang.nabl&#10;&#10;--project /Users/vladvergu/version_control/spoofax/nabl/org.metaborg.meta.lang.nabl/test&#10;--builder &quot;OnSave&quot;&#10;--build-on names.nab&#10;--non-incremental"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.metaborg.sunshine"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea:org.spoofax.sunshine…,org.metaborg.runtime... -server -Xss16m -Xms1G -Xmx2G"/>
+</launchConfiguration>

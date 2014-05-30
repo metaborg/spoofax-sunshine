@@ -276,7 +276,8 @@ public class JSGLRParseErrorHandler {
 	}
 
 	private void reportErrorAtTokens(final IToken left, final IToken right, String message) {
-		final String filename = source.getFile().getPath();
+		final String filename = source.getFile() != null ? source.getFile()
+				.getPath() : null;
 		if (left.getStartOffset() > right.getEndOffset()) {
 			if (left != right) {
 				reportErrorNearOffset(left.getTokenizer(), left.getStartOffset(), message);
@@ -291,12 +292,14 @@ public class JSGLRParseErrorHandler {
 	}
 
 	private void reportWarningAtTokens(final IToken left, final IToken right, final String message) {
-		final String filename = source.getFile().getPath();
+		final String filename = source.getFile() != null ? source.getFile()
+				.getPath() : null;
 		messages.add(MessageHelper.newParseWarning(filename, left, right, message));
 	}
 
 	private void reportErrorAtFirstLine(String message) {
-		final String filename = source.getFile().getPath();
+		final String filename = source.getFile() != null ? source.getFile()
+				.getPath() : null;
 		final String message2 = message + getErrorExplanation();
 		messages.add(MessageHelper.newParseErrorAtTop(filename, message2));
 	}

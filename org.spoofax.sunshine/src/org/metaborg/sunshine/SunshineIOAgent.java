@@ -20,9 +20,12 @@ public class SunshineIOAgent extends LoggingIOAgent {
 
 	public SunshineIOAgent(ALanguage language) {
 		this.language = language;
+		LaunchConfiguration launch = ServiceRegistry.INSTANCE().getService(
+				LaunchConfiguration.class);
 		try {
-			this.setWorkingDir(ServiceRegistry.INSTANCE().getService(
-					LaunchConfiguration.class).projectDir.getAbsolutePath());
+			if (launch.projectDir != null) {
+				this.setWorkingDir(launch.projectDir.getAbsolutePath());
+			}
 			this.setDefinitionDir(language.getDefinitionPath().toAbsolutePath().toString());
 		} catch (IOException ioex) {
 			throw new RuntimeException("Failed to create IOAgent", ioex);
