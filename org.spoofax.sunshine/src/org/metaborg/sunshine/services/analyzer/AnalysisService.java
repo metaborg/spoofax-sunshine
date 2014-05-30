@@ -1,6 +1,7 @@
 package org.metaborg.sunshine.services.analyzer;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,19 +32,22 @@ import org.strategoxt.HybridInterpreter;
  * 
  */
 public class AnalysisService {
-	private static final Logger logger = LogManager.getLogger(AnalysisService.class.getName());
+	private static final Logger logger = LogManager
+			.getLogger(AnalysisService.class.getName());
 
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
 
 	/**
-	 * Run the analysis on the given files. The analysis is started on all files on a per-language
+	 * Run the analysis on the given files. The analysis is started on all files
+	 * on a per-language
 	 * basis.
 	 * 
 	 * @see #analyze(File)
 	 * @param files
 	 * @throws CompilerException
 	 */
-	public Collection<AnalysisResult> analyze(Collection<File> files) throws CompilerException {
+	public Collection<AnalysisResult> analyze(Collection<File> files)
+			throws CompilerException {
 		logger.debug("Analyzing {} files", files.size());
 		Map<ALanguage, Collection<File>> lang2files = new HashMap<ALanguage, Collection<File>>();
 		LanguageService languageService = ServiceRegistry.INSTANCE()
@@ -63,9 +67,10 @@ public class AnalysisService {
 		return results;
 	}
 
-	private Collection<AnalysisResult> analyze(ALanguage lang, Collection<File> files)
-			throws CompilerException {
-		logger.debug("Analyzing {} files of the {} language", files.size(), lang.getName());
+	private Collection<AnalysisResult> analyze(ALanguage lang,
+			Collection<File> files) throws CompilerException {
+		logger.debug("Analyzing {} files of the {} language", files.size(),
+				lang.getName());
 		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
 		LaunchConfiguration launch = serviceRegistry
 				.getService(LaunchConfiguration.class);
@@ -94,15 +99,21 @@ public class AnalysisService {
 				throw new CompilerException(ANALYSIS_CRASHED_MSG);
 			} else {
 				if (!(runtime.current() instanceof IStrategoTuple)) {
-					logger.fatal("Unexpected results from analysis {}", runtime.current());
-					throw new CompilerException("Unexpected results from analysis: "
-							+ runtime.current());
+					logger.fatal("Unexpected results from analysis {}",
+							runtime.current());
+					throw new CompilerException(
+							"Unexpected results from analysis: "
+									+ runtime.current());
 				}
-				final IStrategoTuple resultTup = (IStrategoTuple) runtime.current();
-				logger.trace("Analysis resulted in a {} tuple", resultTup.getSubtermCount());
-				final IStrategoList resultList = (IStrategoList) resultTup.getSubterm(0);
+				final IStrategoTuple resultTup = (IStrategoTuple) runtime
+						.current();
+				logger.trace("Analysis resulted in a {} tuple",
+						resultTup.getSubtermCount());
+				final IStrategoList resultList = (IStrategoList) resultTup
+						.getSubterm(0);
 				final int numItems = resultList.getSubtermCount();
-				logger.trace("Analysis contains {} results. Marshalling to analysis results.",
+				logger.trace(
+						"Analysis contains {} results. Marshalling to analysis results.",
 						numItems);
 				for (int idx = 0; idx < numItems; idx++) {
 					results.add(makeAnalysisResult(resultList.getSubterm(idx)));
@@ -118,17 +129,21 @@ public class AnalysisService {
 	private AnalysisResult makeAnalysisResult(IStrategoTerm res) {
 		assert res != null;
 		assert res.getSubtermCount() == 7;
-		File file = new File(((IStrategoString) res.getSubterm(0)).stringValue());
-		IStrategoTerm ast = res.getSubterm(2);
+		File file = new File(
+				((IStrategoString) res.getSubterm(0)).stringValue());
 		Collection<IMessage> messages = new HashSet<IMessage>();
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.ERROR,
 				(IStrategoList) res.getSubterm(4)));
-		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.WARNING,
-				(IStrategoList) res.getSubterm(5)));
+		messages.addAll(MessageHelper.makeMessages(file,
+				MessageSeverity.WARNING, (IStrategoList) res.getSubterm(5)));
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.NOTE,
 				(IStrategoList) res.getSubterm(6)));
+		IStrategoTerm ast = res.getSubterm(2);
+		IStrategoTerm previousAst = res.getSubterm(1);
 
-		return new AnalysisResult(null, file, messages, ast);
+		return new AnalysisResult(new AnalysisResult(null, file,
+				Arrays.asList(new IMessage[] {}), previousAst), file, messages,
+				ast);
 	}
 
 }
