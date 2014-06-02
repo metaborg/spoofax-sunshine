@@ -105,11 +105,11 @@ public class AnalysisService {
 							"Unexpected results from analysis: "
 									+ runtime.current());
 				}
-				final IStrategoTuple resultTup = (IStrategoTuple) runtime
+				final IStrategoTerm resultTerm = runtime
 						.current();
-				logger.trace("Analysis resulted in a {} tuple",
-						resultTup.getSubtermCount());
-				final IStrategoList resultList = (IStrategoList) resultTup
+				logger.trace("Analysis resulted in a {} term",
+						resultTerm.getSubtermCount());
+				final IStrategoList resultList = (IStrategoList) resultTerm
 						.getSubterm(0);
 				final int numItems = resultList.getSubtermCount();
 				logger.trace(
@@ -128,18 +128,18 @@ public class AnalysisService {
 
 	private AnalysisResult makeAnalysisResult(IStrategoTerm res) {
 		assert res != null;
-		assert res.getSubtermCount() == 7;
+		assert res.getSubtermCount() == 8;
 		File file = new File(
-				((IStrategoString) res.getSubterm(0)).stringValue());
+				((IStrategoString) res.getSubterm(2)).stringValue());
 		Collection<IMessage> messages = new HashSet<IMessage>();
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.ERROR,
-				(IStrategoList) res.getSubterm(4)));
+				(IStrategoList) res.getSubterm(5)));
 		messages.addAll(MessageHelper.makeMessages(file,
-				MessageSeverity.WARNING, (IStrategoList) res.getSubterm(5)));
+				MessageSeverity.WARNING, (IStrategoList) res.getSubterm(6)));
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.NOTE,
-				(IStrategoList) res.getSubterm(6)));
-		IStrategoTerm ast = res.getSubterm(2);
-		IStrategoTerm previousAst = res.getSubterm(1);
+				(IStrategoList) res.getSubterm(7)));
+		IStrategoTerm ast = res.getSubterm(4);
+		IStrategoTerm previousAst = res.getSubterm(3);
 
 		return new AnalysisResult(new AnalysisResult(null, file,
 				Arrays.asList(new IMessage[] {}), previousAst), file, messages,
