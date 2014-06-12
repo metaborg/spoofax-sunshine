@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -19,15 +19,6 @@ import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.metaborg.sunshine.services.language.LanguageService;
-import org.spoofax.interpreter.core.InterpreterException;
-import org.spoofax.interpreter.terms.IStrategoAppl;
-import org.spoofax.interpreter.terms.IStrategoConstructor;
-import org.spoofax.interpreter.terms.IStrategoList;
-import org.spoofax.interpreter.terms.IStrategoString;
-import org.spoofax.interpreter.terms.IStrategoTerm;
-import org.spoofax.interpreter.terms.IStrategoTuple;
-import org.spoofax.interpreter.terms.ITermFactory;
-import org.strategoxt.HybridInterpreter;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -83,15 +74,15 @@ public class AnalysisService {
 		assert runtime != null;
 
 		logger.trace("Creating input terms for analysis (File/2 terms)");
-		IStrategoConstructor file_2_constr = termFactory.makeConstructor(
-				"File", 2);
+		IStrategoConstructor file_3_constr = termFactory.makeConstructor(
+				"File", 3);
 		Collection<IStrategoAppl> analysisInput = new LinkedList<IStrategoAppl>();
 		for (AnalysisResult input : inputs) {
 			IStrategoString filename = termFactory.makeString(launch.projectDir
 					.toURI().relativize(input.file().toURI()).toString());
 
-			analysisInput.add(termFactory.makeAppl(file_2_constr, filename,
-					input.ast()));
+			analysisInput.add(termFactory.makeAppl(file_3_constr, filename,
+					input.ast(), termFactory.makeReal(-1.0)));
 		}
 
 		final IStrategoList inputTerm = termFactory.makeList(analysisInput);
@@ -108,7 +99,7 @@ public class AnalysisService {
 			if (!success) {
 				throw new CompilerException(ANALYSIS_CRASHED_MSG);
 			} else {
-				if (!(runtime.current() instanceof IStrategoTuple)) {
+				if (!(runtime.current() instanceof IStrategoAppl)) {
 					logger.fatal("Unexpected results from analysis {}",
 							runtime.current());
 					throw new CompilerException(
