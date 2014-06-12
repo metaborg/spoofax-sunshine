@@ -89,10 +89,11 @@ public class SunshineMainDriver {
 
 		if (!args.parseonly) {
 			if (!args.legacyobserver) {
-				ILinkManyToMany<File, AnalysisResult> analyzerLink = null;
+				ILinkManyToMany<AnalysisResult, AnalysisResult> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
-					fsf.addSink(analyzerLink);
+					// fsf.addSink(analyzerLink);
+					parserMapper.addSink(analyzerLink);
 					analyzerLink.addSink(messageSelector);
 				}
 

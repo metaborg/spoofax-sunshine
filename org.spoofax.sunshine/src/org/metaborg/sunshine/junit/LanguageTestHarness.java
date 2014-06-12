@@ -60,9 +60,11 @@ public abstract class LanguageTestHarness {
 	}
 
 	public void assertAnalysisSucceeds(File inputFile) {
+		AnalysisResult parseResult = ServiceRegistry.INSTANCE()
+				.getService(ParserService.class).parseFile(inputFile);
 		Collection<AnalysisResult> analysisResult = ServiceRegistry.INSTANCE()
 				.getService(AnalysisService.class)
-				.analyze(Arrays.asList(new File[] { inputFile }));
+				.analyze(Arrays.asList(new AnalysisResult[] { parseResult }));
 		assertNotEquals("No analysis results", analysisResult.size(), 0);
 		assertNoMessage(analysisResult, MessageSeverity.ERROR);
 	}
