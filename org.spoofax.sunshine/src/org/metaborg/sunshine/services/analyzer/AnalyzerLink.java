@@ -18,23 +18,27 @@ import org.metaborg.sunshine.pipeline.diff.MultiDiff;
  * 
  */
 public class AnalyzerLink extends
-		ALinkManyToMany<AnalysisResult, AnalysisResult> {
+		ALinkManyToMany<AnalysisFileResult, AnalysisFileResult> {
 
 	private static final Logger logger = LogManager
 			.getLogger(AnalyzerLink.class.getName());
 
 	@Override
-	public MultiDiff<AnalysisResult> sinkWork(MultiDiff<AnalysisResult> input) {
+	public MultiDiff<AnalysisFileResult> sinkWork(
+			MultiDiff<AnalysisFileResult> input) {
 		logger.debug("Analyzing {} changed files", input.size());
 
 		final Collection<AnalysisResult> aResults = ServiceRegistry.INSTANCE()
 				.getService(AnalysisService.class).analyze(input.values());
 
 		logger.trace("Analysis completed with {} results", aResults.size());
-		final MultiDiff<AnalysisResult> results = new MultiDiff<AnalysisResult>();
+		final MultiDiff<AnalysisFileResult> results = new MultiDiff<AnalysisFileResult>();
 		for (AnalysisResult res : aResults) {
-			// TODO this may be wrong because not everything is an ADDITION
-			results.add(new Diff<AnalysisResult>(res, DiffKind.ADDITION));
+			for (AnalysisFileResult fileResult : res.fileResults) {
+				// TODO this may be wrong because not everything is an ADDITION
+				results.add(new Diff<AnalysisFileResult>(fileResult,
+						DiffKind.ADDITION));
+			}
 		}
 		return results;
 	}

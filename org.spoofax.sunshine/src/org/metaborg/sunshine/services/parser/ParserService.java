@@ -14,7 +14,7 @@ import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.parser.model.IParserConfig;
 import org.metaborg.sunshine.parser.model.ParserConfig;
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.metaborg.sunshine.services.language.LanguageService;
 
@@ -31,7 +31,7 @@ public class ParserService {
 
 	private final Map<ALanguage, IParserConfig> parserConfigs = new WeakHashMap<ALanguage, IParserConfig>();
 
-	public AnalysisResult parseFile(File file) {
+	public AnalysisFileResult parseFile(File file) {
 		logger.trace("Parsing file {}", file);
 		ALanguage lang = ServiceRegistry.INSTANCE()
 				.getService(LanguageService.class).getLanguageByExten(file);
@@ -46,7 +46,7 @@ public class ParserService {
 		return parser.parse();
 	}
 
-	public AnalysisResult parse(InputStream is, ALanguage lang) {
+	public AnalysisFileResult parse(InputStream is, ALanguage lang) {
 		logger.trace("Parsing input stream of language {}", lang.getName());
 		IParserConfig parserConfig = getParserConfig(lang);
 		assert parserConfig != null;
