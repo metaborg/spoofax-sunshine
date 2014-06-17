@@ -1,6 +1,10 @@
 package org.metaborg.sunshine.services.analyzer;
 
-public class AnalysisTimeResult {
+import java.io.Serializable;
+
+public class AnalysisTimeResult implements Serializable {
+	private static final long serialVersionUID = 79478894383818113L;
+
 	public final long parse;
 	public final long preTrans;
 	public final long collect;

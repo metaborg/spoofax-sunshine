@@ -1,8 +1,12 @@
 package org.metaborg.sunshine.services.analyzer;
 
+import java.io.Serializable;
+
 import org.spoofax.interpreter.terms.IStrategoList;
 
-public class AnalysisDebugResult {
+public class AnalysisDebugResult implements Serializable {
+	private static final long serialVersionUID = -8820206597109672469L;
+
 	public final int indexEntriesRemoved;
 	public final int indexEntriesAdded;
 	public final int tasksRemoved;
