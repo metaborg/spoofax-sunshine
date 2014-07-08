@@ -18,7 +18,9 @@
 
 	<target name="build">
 		<mkdir dir="${bin.dir}" />
-		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="build.classpath" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="build.classpath"
+			source="1.7" target="1.7"
+			debug="true" debuglevel="lines,vars,source">
 			<include name="**/*.java" />
 		</javac>
 	</target>
