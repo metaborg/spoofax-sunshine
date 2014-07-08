@@ -3,7 +3,6 @@
  */
 package org.metaborg.sunshine.services.analyzer;
 
-import java.io.File;
 import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,13 +17,14 @@ import org.metaborg.sunshine.pipeline.diff.MultiDiff;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class AnalyzerLink extends ALinkManyToMany<File, AnalysisResult> {
+public class AnalyzerLink extends
+		ALinkManyToMany<AnalysisResult, AnalysisResult> {
 
 	private static final Logger logger = LogManager
 			.getLogger(AnalyzerLink.class.getName());
 
 	@Override
-	public MultiDiff<AnalysisResult> sinkWork(MultiDiff<File> input) {
+	public MultiDiff<AnalysisResult> sinkWork(MultiDiff<AnalysisResult> input) {
 		logger.debug("Analyzing {} changed files", input.size());
 
 		final Collection<AnalysisResult> aResults = ServiceRegistry.INSTANCE()

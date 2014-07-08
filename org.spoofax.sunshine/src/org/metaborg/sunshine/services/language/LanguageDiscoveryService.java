@@ -206,8 +206,8 @@ public class LanguageDiscoveryService {
 		String startsymb = startSymbol(document);
 		Path parsetbl = basepath.resolve(parseTableName(document));
 		// String observer = observerFunction(document);
-		logger.warn("Using default cli observer {}", "analysis-default-cmd");
-		String observer = "analysis-default-cmd";
+		logger.warn("Using default cli observer {}", "analysis-cmd");
+		String observer = "analysis-cmd";
 
 		Collection<IStrategoAppl> builders = builders(document);
 
