@@ -4,3 +4,5 @@
 /.cache
 /tests
 /test-lit
+dependency-reduced-pom.xml
+
