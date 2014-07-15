@@ -9,14 +9,14 @@
 		<unzip src="${lib.dir}/tmp/commons-io-2.4-bin.zip" dest="${lib.dir}/tmp" />
 		<move file="${lib.dir}/tmp/commons-io-2.4/commons-io-2.4.jar" todir="${lib.dir}" />
 
-		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-rc1/apache-log4j-2.0-rc1-bin.zip" dest="${lib.dir}/tmp" />
-		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-rc1-bin.zip" dest="${lib.dir}/tmp" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc1-bin/log4j-api-2.0-rc1.jar" todir="${lib.dir}" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc1-bin/log4j-api-2.0-rc1-javadoc.jar" todir="${lib.dir}" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc1-bin/log4j-core-2.0-rc1.jar" todir="${lib.dir}" />
-		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc1-bin/log4j-core-2.0-rc1-javadoc.jar" todir="${lib.dir}" />
+		<get src="http://ftp.nluug.nl/internet/apache/logging/log4j/2.0-rc2/apache-log4j-2.0-rc2-bin.zip" dest="${lib.dir}/tmp" />
+		<unzip src="${lib.dir}/tmp/apache-log4j-2.0-rc2-bin.zip" dest="${lib.dir}/tmp" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc2-bin/log4j-api-2.0-rc2.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc2-bin/log4j-api-2.0-rc2-javadoc.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc2-bin/log4j-core-2.0-rc2.jar" todir="${lib.dir}" />
+		<move file="${lib.dir}/tmp/apache-log4j-2.0-rc2-bin/log4j-core-2.0-rc2-javadoc.jar" todir="${lib.dir}" />
 
-		<get src="http://repo1.maven.org/maven2/com/beust/jcommander/1.30/jcommander-1.30.jar" dest="${lib.dir}/jcommander-1.30.jar" />
+		<get src="http://repo1.maven.org/maven2/com/beust/jcommander/1.35/jcommander-1.35.jar" dest="${lib.dir}/jcommander-1.35.jar" />
 
 		<get src="http://hydra.nixos.org/job/strategoxt-java/strategoxt-java-bootstrap/bootstrap3/latest/download/1" dest="${lib.dir}/strategoxt.jar" />
 
