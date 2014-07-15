@@ -18,7 +18,7 @@
 
 	<target name="build">
 		<mkdir dir="${bin.dir}" />
-		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="build.classpath" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="build.classpath" debug="true" debuglevel="lines,vars,source" source="1.7" target="1.7">
 			<include name="**/*.java" />
 		</javac>
 	</target>
@@ -36,8 +36,8 @@
 			<fileset dir="${bin.dir}" includes="**/*.class" />
 			<fileset dir="${src.dir}" includes="**/*.xml" />
 
-			<zipgroupfileset dir="${lib.dir}" includes="log4j-core-2.0-beta8.jar" />
-			<zipgroupfileset dir="${lib.dir}" includes="log4j-api-2.0-beta8.jar" />
+			<zipgroupfileset dir="${lib.dir}" includes="log4j-core-2.0-beta9.jar" />
+			<zipgroupfileset dir="${lib.dir}" includes="log4j-api-2.0-beta9.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="jcommander-1.30.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="sdf2imp.jar" />
 			<zipgroupfileset dir="${lib.dir}" includes="commons-io-2.4.jar" />
