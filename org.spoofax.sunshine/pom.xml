@@ -3,6 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.metaborg.sunshine</artifactId>
 	<packaging>jar</packaging>
+	<description>Command-line parsing, analysis, and transformations for Spoofax languages</description>
+	<url>https://github.com/metaborg/sunshine</url>
 
 	<parent>
 		<groupId>org.metaborg</groupId>
@@ -122,4 +124,19 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<developers>
+		<developer>
+			<name>Vlad Vergu</name>
+			<email>v.a.vergu@tudelft.nl</email>
+			<organization>Delft University of Technology</organization>
+			<organizationUrl>http://www.ewi.tudelft.nl/en</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:metaborg/spoofax-sunshine.git</connection>
+		<developerConnection>scm:git:git@github.com:metaborg/spoofax-sunshine.git</developerConnection>
+		<url>https://github.com/metaborg/spoofax-sunshine</url>
+	</scm>
 </project>
