@@ -1,7 +1,6 @@
 package org.metaborg.sunshine.services.analyzer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import org.metaborg.sunshine.services.RuntimeService;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.metaborg.sunshine.services.language.LanguageService;
 import org.spoofax.interpreter.core.InterpreterException;
-import org.spoofax.interpreter.core.Tools;
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoConstructor;
 import org.spoofax.interpreter.terms.IStrategoList;
@@ -49,30 +47,30 @@ public class AnalysisService {
 	 * @param inputs
 	 * @throws CompilerException
 	 */
-	public Collection<AnalysisResult> analyze(
-			Collection<AnalysisFileResult> inputs) throws CompilerException {
+	public Collection<AnalysisResult> analyze(Collection<AnalysisResult> inputs)
+			throws CompilerException {
 		logger.debug("Analyzing {} files", inputs.size());
-		Map<ALanguage, Collection<AnalysisFileResult>> lang2files = new HashMap<ALanguage, Collection<AnalysisFileResult>>();
+		Map<ALanguage, Collection<AnalysisResult>> lang2files = new HashMap<ALanguage, Collection<AnalysisResult>>();
 		LanguageService languageService = ServiceRegistry.INSTANCE()
 				.getService(LanguageService.class);
-		for (AnalysisFileResult input : inputs) {
+		for (AnalysisResult input : inputs) {
 			final ALanguage lang = languageService.getLanguageByExten(input
 					.file());
 			if (lang2files.get(lang) == null) {
-				lang2files.put(lang, new LinkedList<AnalysisFileResult>());
+				lang2files.put(lang, new LinkedList<AnalysisResult>());
 			}
 			lang2files.get(lang).add(input);
 		}
 		logger.trace("Files grouped in {} languages", lang2files.size());
 		final Collection<AnalysisResult> results = new HashSet<AnalysisResult>();
 		for (ALanguage lang : lang2files.keySet()) {
-			results.add(analyze(lang, lang2files.get(lang)));
+			results.addAll(analyze(lang, lang2files.get(lang)));
 		}
 		return results;
 	}
 
-	private AnalysisResult analyze(ALanguage lang,
-			Collection<AnalysisFileResult> inputs) throws CompilerException {
+	private Collection<AnalysisResult> analyze(ALanguage lang,
+			Collection<AnalysisResult> inputs) throws CompilerException {
 		logger.debug("Analyzing {} files of the {} language", inputs.size(),
 				lang.getName());
 		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
@@ -87,9 +85,9 @@ public class AnalysisService {
 		IStrategoConstructor file_3_constr = termFactory.makeConstructor(
 				"File", 3);
 		Collection<IStrategoAppl> analysisInput = new LinkedList<IStrategoAppl>();
-		for (AnalysisFileResult input : inputs) {
-			IStrategoString filename = termFactory.makeString(launch.projectDir
-					.toURI().relativize(input.file().toURI()).toString());
+		for (AnalysisResult input : inputs) {
+			IStrategoString filename = termFactory.makeString(input.file()
+					.getAbsolutePath());
 
 			analysisInput.add(termFactory.makeAppl(file_3_constr, filename,
 					input.ast(), termFactory.makeReal(-1.0)));
@@ -100,6 +98,7 @@ public class AnalysisService {
 
 		logger.trace("Input term set to {}", inputTerm);
 
+		final Collection<AnalysisResult> results = new HashSet<AnalysisResult>();
 		try {
 			final String function = lang.getAnalysisFunction();
 			logger.debug("Invoking analysis strategy {}", function);
@@ -118,37 +117,24 @@ public class AnalysisService {
 				final IStrategoTerm resultTerm = runtime.current();
 				logger.trace("Analysis resulted in a {} term",
 						resultTerm.getSubtermCount());
-
-				final IStrategoTerm fileResultsTerm = resultTerm.getSubterm(0);
-				final IStrategoTerm affectedPartitionsTerm = resultTerm
-						.getSubterm(1);
-				final IStrategoTerm debugResultTerm = resultTerm.getSubterm(2);
-				final IStrategoTerm timeResultTerm = resultTerm.getSubterm(3);
-
-				final int numItems = fileResultsTerm.getSubtermCount();
+				final IStrategoList resultList = (IStrategoList) resultTerm
+						.getSubterm(0);
+				final int numItems = resultList.getSubtermCount();
 				logger.trace(
 						"Analysis contains {} results. Marshalling to analysis results.",
 						numItems);
-				final Collection<AnalysisFileResult> fileResults = new HashSet<AnalysisFileResult>();
-				for (IStrategoTerm result : fileResultsTerm) {
-					fileResults.add(makeAnalysisFileResult(result));
+				for (int idx = 0; idx < numItems; idx++) {
+					results.add(makeAnalysisResult(resultList.getSubterm(idx)));
 				}
-
-				final Collection<String> affectedPartitions = makeAffectedPartitions(affectedPartitionsTerm);
-				final AnalysisDebugResult debugResult = makeAnalysisDebugResult(debugResultTerm);
-				final AnalysisTimeResult timeResult = makeAnalysisTimeResult(timeResultTerm);
-
-				logger.debug("Analysis done");
-
-				return new AnalysisResult(lang, fileResults,
-						affectedPartitions, debugResult, timeResult);
 			}
 		} catch (InterpreterException interpex) {
 			throw new CompilerException(ANALYSIS_CRASHED_MSG, interpex);
 		}
+		logger.debug("Analysis done");
+		return results;
 	}
 
-	private AnalysisFileResult makeAnalysisFileResult(IStrategoTerm res) {
+	private AnalysisResult makeAnalysisResult(IStrategoTerm res) {
 		assert res != null;
 		assert res.getSubtermCount() == 8;
 		File file = new File(
@@ -163,40 +149,9 @@ public class AnalysisService {
 		IStrategoTerm ast = res.getSubterm(4);
 		IStrategoTerm previousAst = res.getSubterm(3);
 
-		return new AnalysisFileResult(new AnalysisFileResult(null, file,
+		return new AnalysisResult(new AnalysisResult(null, file,
 				Arrays.asList(new IMessage[] {}), previousAst), file, messages,
 				ast);
 	}
 
-	private Collection<String> makeAffectedPartitions(IStrategoTerm affectedTerm) {
-		final Collection<String> affected = new ArrayList<String>(
-				affectedTerm.getSubtermCount());
-		for (IStrategoTerm partition : affectedTerm) {
-			affected.add(Tools.asJavaString(partition));
-		}
-		return affected;
-	}
-
-	private AnalysisDebugResult makeAnalysisDebugResult(IStrategoTerm debug) {
-		final IStrategoTerm collectionDebug = debug.getSubterm(0);
-		return new AnalysisDebugResult(Tools.asJavaInt(collectionDebug
-				.getSubterm(0)),
-				Tools.asJavaInt(collectionDebug.getSubterm(1)),
-				Tools.asJavaInt(collectionDebug.getSubterm(2)),
-				Tools.asJavaInt(collectionDebug.getSubterm(3)),
-				Tools.asJavaInt(collectionDebug.getSubterm(4)),
-				(IStrategoList) debug.getSubterm(1),
-				(IStrategoList) debug.getSubterm(2),
-				(IStrategoList) debug.getSubterm(3));
-	}
-
-	private AnalysisTimeResult makeAnalysisTimeResult(IStrategoTerm time) {
-		return new AnalysisTimeResult((long) Tools.asJavaDouble(time
-				.getSubterm(0)), (long) Tools.asJavaDouble(time.getSubterm(1)),
-				(long) Tools.asJavaDouble(time.getSubterm(2)),
-				(long) Tools.asJavaDouble(time.getSubterm(3)),
-				(long) Tools.asJavaDouble(time.getSubterm(4)),
-				(long) Tools.asJavaDouble(time.getSubterm(5)),
-				(long) Tools.asJavaDouble(time.getSubterm(6)));
-	}
 }

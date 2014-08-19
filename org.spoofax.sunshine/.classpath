@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry excluding="test-files/" kind="src" path="test"/>
-	<classpathentry exported="true" kind="lib" path="lib/spoofax-libs.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/strategoxt.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-io-2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/sdf2imp.jar">
-		<accessrules>
-			<accessrule kind="discouraged" pattern="**"/>
-		</accessrules>
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src">
+		<attributes>
+			<attribute name="optional" value="true" />
+			<attribute name="maven.pomderived" value="true" />
+		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="test/test-files"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-api-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-api-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-core-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-core-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="lib/jcommander-1.32.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry including="**/*.java" kind="src" output="target/test-classes" path="test">
+		<attributes>
+			<attribute name="optional" value="true" />
+			<attribute name="maven.pomderived" value="true" />
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="test/test-files" />
+	<classpathentry kind="con"
+		path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="maven.pomderived" value="true" />
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true" />
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes" />
 </classpath>
