@@ -86,8 +86,8 @@ public class AnalysisService {
 				"File", 3);
 		Collection<IStrategoAppl> analysisInput = new LinkedList<IStrategoAppl>();
 		for (AnalysisResult input : inputs) {
-			IStrategoString filename = termFactory.makeString(launch.projectDir
-					.toURI().relativize(input.file().toURI()).toString());
+			IStrategoString filename = termFactory.makeString(input.file()
+					.getAbsolutePath());
 
 			analysisInput.add(termFactory.makeAppl(file_3_constr, filename,
 					input.ast(), termFactory.makeReal(-1.0)));
