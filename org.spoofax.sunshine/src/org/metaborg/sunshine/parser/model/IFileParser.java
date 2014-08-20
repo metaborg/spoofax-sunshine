@@ -5,7 +5,7 @@ package org.metaborg.sunshine.parser.model;
 
 import java.io.File;
 
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -13,7 +13,7 @@ import org.metaborg.sunshine.services.analyzer.AnalysisResult;
  */
 public interface IFileParser<T> {
 
-	AnalysisResult parse();
+	AnalysisFileResult parse();
 
 	IParserConfig getConfig();
 

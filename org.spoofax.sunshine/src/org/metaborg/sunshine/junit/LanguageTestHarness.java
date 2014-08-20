@@ -13,6 +13,7 @@ import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageSeverity;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.metaborg.sunshine.services.analyzer.AnalysisResult;
 import org.metaborg.sunshine.services.analyzer.AnalysisService;
 import org.metaborg.sunshine.services.language.LanguageDiscoveryService;
@@ -45,7 +46,7 @@ public abstract class LanguageTestHarness {
 	}
 
 	public void assertParseSucceeds(File inputFile) {
-		AnalysisResult parseResult = ServiceRegistry.INSTANCE()
+		AnalysisFileResult parseResult = ServiceRegistry.INSTANCE()
 				.getService(ParserService.class).parseFile(inputFile);
 		assertNoMessage(parseResult, MessageSeverity.ERROR);
 	}
@@ -60,13 +61,17 @@ public abstract class LanguageTestHarness {
 	}
 
 	public void assertAnalysisSucceeds(File inputFile) {
-		AnalysisResult parseResult = ServiceRegistry.INSTANCE()
+		AnalysisFileResult parseResult = ServiceRegistry.INSTANCE()
 				.getService(ParserService.class).parseFile(inputFile);
-		Collection<AnalysisResult> analysisResult = ServiceRegistry.INSTANCE()
+		Collection<AnalysisResult> analysisResults = ServiceRegistry
+				.INSTANCE()
 				.getService(AnalysisService.class)
-				.analyze(Arrays.asList(new AnalysisResult[] { parseResult }));
-		assertNotEquals("No analysis results", analysisResult.size(), 0);
-		assertNoMessage(analysisResult, MessageSeverity.ERROR);
+				.analyze(
+						Arrays.asList(new AnalysisFileResult[] { parseResult }));
+		for (AnalysisResult result : analysisResults) {
+			assertNotEquals("No analysis results", result.fileResults.size(), 0);
+			assertNoMessage(result.fileResults, MessageSeverity.ERROR);
+		}
 	}
 
 	public void assertAnalysisFails(File inputFile) {
@@ -78,9 +83,9 @@ public abstract class LanguageTestHarness {
 		fail("Analysis succeeded, failure expected");
 	}
 
-	public static void assertNoMessage(Collection<AnalysisResult> results,
+	public static void assertNoMessage(Collection<AnalysisFileResult> results,
 			MessageSeverity severity) {
-		for (AnalysisResult result : results) {
+		for (AnalysisFileResult result : results) {
 			for (IMessage msg : result.messages()) {
 				assertNotEquals(severity + msg.toString() + "\n",
 						msg.severity(), severity);
@@ -88,7 +93,7 @@ public abstract class LanguageTestHarness {
 		}
 	}
 
-	public static void assertNoMessage(AnalysisResult result,
+	public static void assertNoMessage(AnalysisFileResult result,
 			MessageSeverity severity) {
 		for (IMessage msg : result.messages()) {
 			assertNotEquals(msg.severity(), severity);

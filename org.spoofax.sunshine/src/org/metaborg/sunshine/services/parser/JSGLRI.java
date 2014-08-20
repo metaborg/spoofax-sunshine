@@ -11,7 +11,7 @@ import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.parser.model.IFileParser;
 import org.metaborg.sunshine.parser.model.IParserConfig;
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.jsglr.client.Asfix2TreeBuilder;
 import org.spoofax.jsglr.client.Disambiguator;
@@ -112,7 +112,7 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 	}
 
 	@Override
-	public AnalysisResult parse() {
+	public AnalysisFileResult parse() {
 		assert file != null || is != null;
 		String fileName;
 		String input;
@@ -154,7 +154,7 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 		}
 
 		// result.setMessages(errorHandler.getCollectedMessages());
-		return new AnalysisResult(null, file,
+		return new AnalysisFileResult(null, file,
 				errorHandler.getCollectedMessages(), ast);
 	}
 

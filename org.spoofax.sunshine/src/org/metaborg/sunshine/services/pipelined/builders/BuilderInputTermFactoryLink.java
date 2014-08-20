@@ -18,7 +18,7 @@ import org.metaborg.sunshine.pipeline.ILinkManyToOne;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
@@ -26,7 +26,7 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  * 
  */
 public class BuilderInputTermFactoryLink implements
-		ILinkManyToOne<AnalysisResult, BuilderInputTerm> {
+		ILinkManyToOne<AnalysisFileResult, BuilderInputTerm> {
 
 	private static final Logger logger = LogManager
 			.getLogger(BuilderInputTermFactoryLink.class.getName());
@@ -53,11 +53,11 @@ public class BuilderInputTermFactoryLink implements
 	}
 
 	@Override
-	public void sink(MultiDiff<AnalysisResult> product) {
+	public void sink(MultiDiff<AnalysisFileResult> product) {
 		assert product != null;
 		logger.trace("Creating builder input term for product");
-		Diff<AnalysisResult> select = null;
-		for (Diff<AnalysisResult> diff : product) {
+		Diff<AnalysisFileResult> select = null;
+		for (Diff<AnalysisFileResult> diff : product) {
 			try {
 				if (diff.getPayload().file().getCanonicalFile()
 						.equals(path.getCanonicalFile())) {

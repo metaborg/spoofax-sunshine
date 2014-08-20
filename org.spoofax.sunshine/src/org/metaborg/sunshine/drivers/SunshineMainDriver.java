@@ -20,7 +20,7 @@ import org.metaborg.sunshine.model.messages.MessageEmitter;
 import org.metaborg.sunshine.pipeline.ILinkManyToMany;
 import org.metaborg.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.metaborg.sunshine.prims.ProjectUtils;
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.metaborg.sunshine.services.analyzer.AnalyzerLink;
 import org.metaborg.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
 import org.metaborg.sunshine.services.filesource.FileSource;
@@ -73,14 +73,14 @@ public class SunshineMainDriver {
 		FileSourceFilter fsf = new FileSourceFilter(args.filefilter);
 		filesSource.addSink(fsf);
 		logger.trace("Created file source filter {}", fsf);
-		LinkMapperOneToOne<File, AnalysisResult> parserMapper = new LinkMapperOneToOne<File, AnalysisResult>(
+		LinkMapperOneToOne<File, AnalysisFileResult> parserMapper = new LinkMapperOneToOne<File, AnalysisFileResult>(
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
 
 		MessageSink messageSink = new MessageSink();
 		emitter = new MessageEmitter(messageSink);
 		fsf.addSink(parserMapper);
-		ILinkManyToMany<AnalysisResult, IMessage> messageSelector = new MessageExtractorLink();
+		ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector = new MessageExtractorLink();
 		parserMapper.addSink(messageSelector);
 		logger.trace("Message selector {} linked on parse mapper {}",
 				messageSelector, parserMapper);
@@ -89,7 +89,7 @@ public class SunshineMainDriver {
 
 		if (!args.parseonly) {
 			if (!args.legacyobserver) {
-				ILinkManyToMany<AnalysisResult, AnalysisResult> analyzerLink = null;
+				ILinkManyToMany<AnalysisFileResult, AnalysisFileResult> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
 					// fsf.addSink(analyzerLink);
@@ -115,12 +115,12 @@ public class SunshineMainDriver {
 					}
 				}
 			} else {
-				LinkMapperOneToOne<AnalysisResult, AnalysisResult> analyzerMapper = null;
+				LinkMapperOneToOne<AnalysisFileResult, AnalysisFileResult> analyzerMapper = null;
 				if (!args.noanalysis) {
-					analyzerMapper = new LinkMapperOneToOne<AnalysisResult, AnalysisResult>(
+					analyzerMapper = new LinkMapperOneToOne<AnalysisFileResult, AnalysisFileResult>(
 							new LegacyAnalyzerLink());
 					parserMapper.addSink(analyzerMapper);
-					ILinkManyToMany<AnalysisResult, IMessage> messageSelector2 = new MessageExtractorLink();
+					ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector2 = new MessageExtractorLink();
 					analyzerMapper.addSink(messageSelector2);
 					messageSelector2.addSink(messageSink);
 				}

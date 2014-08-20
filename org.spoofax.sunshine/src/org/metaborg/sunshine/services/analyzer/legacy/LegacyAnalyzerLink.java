@@ -18,7 +18,7 @@ import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.services.RuntimeService;
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
+import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.metaborg.sunshine.services.language.ALanguage;
 import org.metaborg.sunshine.services.language.LanguageService;
 import org.spoofax.interpreter.core.InterpreterException;
@@ -33,18 +33,18 @@ import org.strategoxt.HybridInterpreter;
  * @author vladvergu
  * 
  */
-public class LegacyAnalyzerLink extends ALinkOneToOne<AnalysisResult, AnalysisResult> {
+public class LegacyAnalyzerLink extends ALinkOneToOne<AnalysisFileResult, AnalysisFileResult> {
 
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
 
 	private static final Logger logger = LogManager.getLogger(LegacyAnalyzerLink.class.getName());
 
 	@Override
-	public Diff<AnalysisResult> sinkWork(Diff<AnalysisResult> input) {
-		return new Diff<AnalysisResult>(analyze(input.getPayload()), input.getDiffKind());
+	public Diff<AnalysisFileResult> sinkWork(Diff<AnalysisFileResult> input) {
+		return new Diff<AnalysisFileResult>(analyze(input.getPayload()), input.getDiffKind());
 	}
 
-	private AnalysisResult analyze(AnalysisResult parseResult) {
+	private AnalysisFileResult analyze(AnalysisFileResult parseResult) {
 		logger.debug("Analyzing AST of file {}", parseResult.file());
 		if (parseResult.ast() == null) {
 			logger.info("Analysis cannot continue because there is no AST for file {}",
@@ -86,7 +86,7 @@ public class LegacyAnalyzerLink extends ALinkOneToOne<AnalysisResult, AnalysisRe
 		}
 	}
 
-	private AnalysisResult makeAnalysisResult(AnalysisResult parseResult, IStrategoTuple resultTuple) {
+	private AnalysisFileResult makeAnalysisResult(AnalysisFileResult parseResult, IStrategoTuple resultTuple) {
 		assert resultTuple != null;
 		assert resultTuple.getSubtermCount() == 5;
 		IStrategoTerm ast = resultTuple.getSubterm(0);
@@ -100,6 +100,6 @@ public class LegacyAnalyzerLink extends ALinkOneToOne<AnalysisResult, AnalysisRe
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.NOTE,
 				(IStrategoList) resultTuple.getSubterm(3)));
 
-		return new AnalysisResult(parseResult, file, messages, ast);
+		return new AnalysisFileResult(parseResult, file, messages, ast);
 	}
 }
