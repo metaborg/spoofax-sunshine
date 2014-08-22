@@ -72,7 +72,7 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 				new ParentTermFactory(ServiceRegistry.INSTANCE().getService(
 						LaunchConfiguration.class).termFactory));
 		this.parser = new SGLR(new TreeBuilder(factory), config
-				.getParseTableProvider().getParseTable());
+				.getParseTableProvider().parseTable());
 		this.errorHandler = new JSGLRParseErrorHandler(this);
 		assert file != null;
 		resetState();

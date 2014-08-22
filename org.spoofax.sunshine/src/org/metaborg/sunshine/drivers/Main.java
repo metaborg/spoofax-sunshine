@@ -4,32 +4,37 @@
 package org.metaborg.sunshine.drivers;
 
 import java.io.File;
-import java.nio.file.FileSystems;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxModule;
+import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
+import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.language.LanguageVersion;
+import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.service.actions.Action;
+import org.metaborg.sunshine.SunshineModule;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
+import org.metaborg.sunshine.environment.SunshineLanguageArguments;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
-import org.metaborg.sunshine.services.RuntimeService;
-import org.metaborg.sunshine.services.StrategoCallService;
-import org.metaborg.sunshine.services.analyzer.AnalysisService;
-import org.metaborg.sunshine.services.language.LanguageDiscoveryService;
-import org.metaborg.sunshine.services.language.LanguageService;
-import org.metaborg.sunshine.services.parser.ParserService;
-import org.metaborg.sunshine.statistics.Statistics;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
 public class Main {
-
 	private static final Logger logger = LogManager.getLogger(Main.class
 			.getName());
+	private static final ServiceRegistry env = ServiceRegistry.INSTANCE();
 
 	/**
 	 * @param args
@@ -45,7 +50,9 @@ public class Main {
 		params.validate();
 		logger.info("Execution arguments are \n{}", params);
 		initEnvironment(params);
-		SunshineMainDriver driver = new SunshineMainDriver();
+		discoverLanguages(params);
+		final SunshineMainDriver driver = env
+				.getService(SunshineMainDriver.class);
 
 		int exit = driver.run();
 		if (exit == 0) {
@@ -77,38 +84,43 @@ public class Main {
 
 	public static void initEnvironment(SunshineMainArguments args) {
 		logger.trace("Initializing the environment");
-		ServiceRegistry env = ServiceRegistry.INSTANCE();
-		env.reset();
-
-		initServices(env, args);
-
-		LanguageDiscoveryService langDiscovery = env
-				.getService(LanguageDiscoveryService.class);
-		LanguageService langService = env.getService(LanguageService.class);
-		assert langDiscovery != null;
-		if (args.autolang != null) {
-			langDiscovery.discover(FileSystems.getDefault().getPath(
-					args.autolang));
-		} else {
-			langService.registerLanguage(langDiscovery
-					.languageFromArguments(args.getLanguageArgs()));
-		}
+		final Injector injector = Guice.createInjector(new SpoofaxModule(),
+				new SunshineModule(new LaunchConfiguration(args, new File(
+						args.project))));
+		env.setInjector(injector);
 	}
 
-	public static void initServices(ServiceRegistry env,
-			SunshineMainArguments args) {
+	public static void discoverLanguages(SunshineMainArguments args) {
+		final ILanguageDiscoveryService langDiscovery = env
+				.getService(ILanguageDiscoveryService.class);
+		final ILanguageService langService = env
+				.getService(ILanguageService.class);
+		final IResourceService resourceService = env
+				.getService(IResourceService.class);
 
-		env.registerService(LaunchConfiguration.class, new LaunchConfiguration(
-				args, new File(args.project)));
-		env.registerService(LanguageDiscoveryService.class,
-				new LanguageDiscoveryService());
-		env.registerService(LanguageService.class, new LanguageService());
-		env.registerService(RuntimeService.class, new RuntimeService());
-		env.registerService(StrategoCallService.class,
-				new StrategoCallService());
-		env.registerService(ParserService.class, new ParserService());
-		env.registerService(AnalysisService.class, new AnalysisService());
-		env.registerService(Statistics.class, new Statistics());
+		try {
+			if (args.autolang != null) {
+				langDiscovery.discover(resourceService.resolve(args.autolang));
+			} else {
+				final SunshineLanguageArguments langArgs = args
+						.getLanguageArgs();
+				final FileObject tempDirectory = resourceService
+						.resolve("tmp:///");
+				tempDirectory.createFolder();
+				langService.create(langArgs.lang, new LanguageVersion(1, 0, 0,
+						0), tempDirectory,
+						ImmutableSet.copyOf(langArgs.extens), resourceService
+								.resolve(langArgs.tbl), langArgs.ssymb,
+						ImmutableSet.copyOf(resourceService
+								.resolveAll(langArgs.ctrees)), ImmutableSet
+								.copyOf(resourceService
+										.resolveAll(langArgs.jars)),
+						langArgs.observer, null, ImmutableMap
+								.<String, Action> of());
+			}
+		} catch (Exception e) {
+			logger.throwing(e);
+		}
 	}
 
 	public static void usage(boolean exit) {
@@ -116,5 +128,4 @@ public class Main {
 		if (exit)
 			System.exit(1);
 	}
-
 }

@@ -3,13 +3,26 @@
  */
 package org.metaborg.sunshine.services.pipelined.builders;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.ILanguage;
+import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.service.actions.Action;
+import org.metaborg.spoofax.core.service.actions.ActionsFacet;
 import org.metaborg.sunshine.CompilerException;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
-import org.metaborg.sunshine.services.language.LanguageService;
+import org.metaborg.sunshine.services.StrategoCallService;
+import org.spoofax.interpreter.terms.IStrategoAppl;
+import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
@@ -17,14 +30,18 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  * 
  */
 public class BuilderSink implements ISinkOne<BuilderInputTerm> {
-
 	private static final Logger logger = LogManager.getLogger(BuilderSink.class
 			.getName());
 
 	private final String builderName;
+	private final ILanguageService languageService;
+	private final IResourceService resourceService;
 
-	public BuilderSink(String builderName) {
+	public BuilderSink(String builderName, ILanguageService languageService,
+			IResourceService resourceService) {
 		this.builderName = builderName;
+		this.languageService = languageService;
+		this.resourceService = resourceService;
 		logger.trace("Created new builder for {}", builderName);
 	}
 
@@ -66,18 +83,71 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 */
 	@Override
 	public void sink(Diff<BuilderInputTerm> product) {
-		IBuilder builder = ServiceRegistry.INSTANCE()
-				.getService(LanguageService.class)
-				.getLanguageByExten(product.getPayload().getFile())
-				.getBuilder(builderName);
-		if (builder == null) {
+		final FileObject file = resourceService.resolve(product.getPayload()
+				.getFile());
+		final ILanguage language = languageService.getByExt(file.getName()
+				.getExtension());
+		final Action action = language.facet(ActionsFacet.class).get(
+				builderName);
+
+		if (action == null) {
 			logger.fatal("Builder {} could not be found", builderName);
 		}
-		logger.debug("Invoking builder {} on file {}", builder.getName(),
-				product.getPayload().getFile());
+		logger.debug("Invoking builder {} on file {}", action.name, file);
 		IStrategoTerm inputTuple = product.getPayload().toStratego();
 		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
-		builder.invoke(inputTuple);
+		invoke(action, inputTuple);
+	}
 
+	private IStrategoTerm invoke(Action action, IStrategoTerm input) {
+		IStrategoTerm result = ServiceRegistry
+				.INSTANCE()
+				.getService(StrategoCallService.class)
+				.callStratego(action.inputLangauge, action.strategoStrategy,
+						input);
+		processResult(action, result);
+		return result;
+	}
+
+	private void processResult(Action action, IStrategoTerm result) {
+		if (isWriteFile(result)) {
+
+			final File resultFile = new File(ServiceRegistry.INSTANCE()
+					.getService(LaunchConfiguration.class).projectDir,
+					((IStrategoString) result.getSubterm(0)).stringValue());
+			final String resultContents = ((IStrategoString) result
+					.getSubterm(1)).stringValue();
+			// write the contents to the file
+			try {
+				FileUtils.writeStringToFile(resultFile, resultContents);
+			} catch (IOException e) {
+				throw new CompilerException("Builder " + action.name
+						+ "failed to write result", e);
+			}
+		}
+	}
+
+	private boolean isWriteFile(final IStrategoTerm result) {
+		if (result instanceof IStrategoAppl) {
+			if (((IStrategoAppl) result).getName().equals("None")) {
+				return false;
+			} else {
+				logger.fatal("Builder returned an unsupported result type {}",
+						result);
+				throw new CompilerException(
+						"Unsupported return value from builder: " + result);
+			}
+		} else {
+			if (result == null || result.getSubtermCount() != 2
+					|| !(result.getSubterm(0) instanceof IStrategoString)
+					|| !(result.getSubterm(1) instanceof IStrategoString)) {
+				logger.fatal("Builder returned an unsupported result type {}",
+						result);
+				throw new CompilerException(
+						"Unsupported return value from builder: " + result);
+			} else {
+				return true;
+			}
+		}
 	}
 }

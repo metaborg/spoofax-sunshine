@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,23 +22,30 @@ import org.metaborg.sunshine.pipeline.diff.DiffKind;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
 import org.metaborg.sunshine.util.DiffingHashMap;
 
+import com.google.common.collect.Iterables;
+
 /**
- * This class "monitors" a project directory for changes. Everytime it is poked for changes it
- * returns the ADDITIONS, REMOVALS and MODIFICATIONS since the last time it has been poked. The
- * first time it has been poked it returns all files in the directory as ADDITION.
+ * This class "monitors" a project directory for changes. Everytime it is poked
+ * for changes it
+ * returns the ADDITIONS, REMOVALS and MODIFICATIONS since the last time it has
+ * been poked. The
+ * first time it has been poked it returns all files in the directory as
+ * ADDITION.
  * 
- * It survives past restarts of the JVM by persisting changes in the cache folder of the project is
+ * It survives past restarts of the JVM by persisting changes in the cache
+ * folder of the project is
  * so enabled.
  * 
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
 public class DirMonitor {
-	private static final Logger logger = LogManager.getLogger(DirMonitor.class.getName());
+	private static final Logger logger = LogManager.getLogger(DirMonitor.class
+			.getName());
 
 	private final File cacheFile;
 	private final File dir;
-	private final Collection<String> extensions;
+	private final Iterable<String> extensions;
 	private final DiffingHashMap<String, FileModifiedPair> store;
 
 	public void reset() {
@@ -51,11 +57,11 @@ public class DirMonitor {
 		}
 	}
 
-	public DirMonitor(Collection<String> extensions, File dir, File cacheDir) {
+	public DirMonitor(Iterable<String> extensions, File dir, File cacheDir) {
 		assert dir != null;
 		if (dir == null || !dir.exists()) {
-			throw new IllegalArgumentException("Cannot monitor a directory (" + dir
-					+ ") which does not exist");
+			throw new IllegalArgumentException("Cannot monitor a directory ("
+					+ dir + ") which does not exist");
 		}
 		assert cacheDir != null;
 		if (cacheDir == null) {
@@ -67,8 +73,10 @@ public class DirMonitor {
 		this.cacheFile = new File(cacheDir, "fsmonitor.bin");
 		this.dir = dir;
 		this.extensions = extensions;
-		this.store = new DiffingHashMap<String, FileModifiedPair>(new FileModifiedPairMerger());
-		logger.trace("Monitor initialized for directory {} with extensions {}", dir, extensions);
+		this.store = new DiffingHashMap<String, FileModifiedPair>(
+				new FileModifiedPairMerger());
+		logger.trace("Monitor initialized for directory {} with extensions {}",
+				dir, extensions);
 		try {
 			logger.trace("Reading store from cache");
 			int read = loadFromPersist();
@@ -82,7 +90,7 @@ public class DirMonitor {
 		logger.trace("Beginning store diff");
 		store.beginDiff();
 		Iterator<File> fileIter = FileUtils.iterateFiles(dir,
-				extensions.toArray(new String[extensions.size()]), true);
+				Iterables.toArray(extensions, String.class), true);
 		while (fileIter.hasNext()) {
 			File f = fileIter.next();
 			store.put(f.getPath(), new FileModifiedPair(f));
@@ -111,15 +119,18 @@ public class DirMonitor {
 			switch (ch.getValue()) {
 			case ADDITION:
 				logger.trace("ADDITION of {}", ch.getKey());
-				diff.add(new Diff<File>(new File(ch.getKey()), DiffKind.ADDITION));
+				diff.add(new Diff<File>(new File(ch.getKey()),
+						DiffKind.ADDITION));
 				break;
 			case MODIFICATION:
 				logger.trace("MODIFICATION of {}", ch.getKey());
-				diff.add(new Diff<File>(new File(ch.getKey()), DiffKind.MODIFICATION));
+				diff.add(new Diff<File>(new File(ch.getKey()),
+						DiffKind.MODIFICATION));
 				break;
 			case DELETION:
 				logger.trace("DELETION of {}", ch.getKey());
-				diff.add(new Diff<File>(new File(ch.getKey()), DiffKind.DELETION));
+				diff.add(new Diff<File>(new File(ch.getKey()),
+						DiffKind.DELETION));
 				break;
 			}
 		}
@@ -130,7 +141,8 @@ public class DirMonitor {
 	private int writeToPersist() throws IOException {
 		if (!cacheFile.exists())
 			cacheFile.createNewFile();
-		DataOutputStream dos = new DataOutputStream(new FileOutputStream(cacheFile, false));
+		DataOutputStream dos = new DataOutputStream(new FileOutputStream(
+				cacheFile, false));
 		Set<Entry<String, FileModifiedPair>> entries = store.entrySet();
 		try {
 			for (Entry<String, FileModifiedPair> entry : entries) {
@@ -148,7 +160,8 @@ public class DirMonitor {
 	private int loadFromPersist() throws IOException {
 		if (!cacheFile.exists())
 			return 0;
-		DataInputStream dis = new DataInputStream(new FileInputStream(cacheFile));
+		DataInputStream dis = new DataInputStream(
+				new FileInputStream(cacheFile));
 		int read = 0;
 		try {
 			while (dis.available() > 0) {

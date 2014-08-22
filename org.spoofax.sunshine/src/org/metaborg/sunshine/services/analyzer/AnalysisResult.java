@@ -2,16 +2,16 @@ package org.metaborg.sunshine.services.analyzer;
 
 import java.util.Collection;
 
-import org.metaborg.sunshine.services.language.ALanguage;
+import org.metaborg.spoofax.core.language.ILanguage;
 
 public class AnalysisResult {
-	public final ALanguage language;
+	public final ILanguage language;
 	public final Collection<AnalysisFileResult> fileResults;
 	public final Collection<String> affectedPartitions;
 	public final AnalysisDebugResult debugResult;
 	public final AnalysisTimeResult timeResult;
 
-	public AnalysisResult(ALanguage language,
+	public AnalysisResult(ILanguage language,
 			Collection<AnalysisFileResult> fileResults,
 			Collection<String> affectedPartitions,
 			AnalysisDebugResult debugResult, AnalysisTimeResult timeResult) {

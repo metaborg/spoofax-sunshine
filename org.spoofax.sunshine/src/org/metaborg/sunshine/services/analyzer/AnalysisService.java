@@ -9,17 +9,19 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.ILanguage;
+import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
-import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageHelper;
 import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.services.RuntimeService;
-import org.metaborg.sunshine.services.language.ALanguage;
-import org.metaborg.sunshine.services.language.LanguageService;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.core.Tools;
 import org.spoofax.interpreter.terms.IStrategoAppl;
@@ -30,6 +32,8 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.strategoxt.HybridInterpreter;
 
+import com.google.inject.Inject;
+
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
@@ -39,6 +43,21 @@ public class AnalysisService {
 			.getLogger(AnalysisService.class.getName());
 
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
+
+	private final LaunchConfiguration launchConfig;
+	private final RuntimeService runtimeService;
+	private final ILanguageService languageService;
+	private final IResourceService resourceService;
+
+	@Inject
+	public AnalysisService(LaunchConfiguration launchConfig,
+			RuntimeService runtimeService, ILanguageService languageService,
+			IResourceService resourceService) {
+		this.launchConfig = launchConfig;
+		this.runtimeService = runtimeService;
+		this.languageService = languageService;
+		this.resourceService = resourceService;
+	}
 
 	/**
 	 * Run the analysis on the given files. The analysis is started on all files
@@ -52,12 +71,11 @@ public class AnalysisService {
 	public Collection<AnalysisResult> analyze(
 			Collection<AnalysisFileResult> inputs) throws CompilerException {
 		logger.debug("Analyzing {} files", inputs.size());
-		Map<ALanguage, Collection<AnalysisFileResult>> lang2files = new HashMap<ALanguage, Collection<AnalysisFileResult>>();
-		LanguageService languageService = ServiceRegistry.INSTANCE()
-				.getService(LanguageService.class);
+		Map<ILanguage, Collection<AnalysisFileResult>> lang2files = new HashMap<ILanguage, Collection<AnalysisFileResult>>();
 		for (AnalysisFileResult input : inputs) {
-			final ALanguage lang = languageService.getLanguageByExten(input
-					.file());
+			final FileObject file = resourceService.resolve(input.file());
+			final ILanguage lang = languageService.getByExt(file.getName()
+					.getExtension());
 			if (lang2files.get(lang) == null) {
 				lang2files.put(lang, new LinkedList<AnalysisFileResult>());
 			}
@@ -65,22 +83,18 @@ public class AnalysisService {
 		}
 		logger.trace("Files grouped in {} languages", lang2files.size());
 		final Collection<AnalysisResult> results = new HashSet<AnalysisResult>();
-		for (ALanguage lang : lang2files.keySet()) {
+		for (ILanguage lang : lang2files.keySet()) {
 			results.add(analyze(lang, lang2files.get(lang)));
 		}
 		return results;
 	}
 
-	private AnalysisResult analyze(ALanguage lang,
+	private AnalysisResult analyze(ILanguage lang,
 			Collection<AnalysisFileResult> inputs) throws CompilerException {
 		logger.debug("Analyzing {} files of the {} language", inputs.size(),
-				lang.getName());
-		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
-		LaunchConfiguration launch = serviceRegistry
-				.getService(LaunchConfiguration.class);
-		ITermFactory termFactory = launch.termFactory;
-		HybridInterpreter runtime = serviceRegistry.getService(
-				RuntimeService.class).getRuntime(lang);
+				lang.name());
+		ITermFactory termFactory = launchConfig.termFactory;
+		HybridInterpreter runtime = runtimeService.getRuntime(lang);
 		assert runtime != null;
 
 		logger.trace("Creating input terms for analysis (File/2 terms)");
@@ -101,7 +115,8 @@ public class AnalysisService {
 		logger.trace("Input term set to {}", inputTerm);
 
 		try {
-			final String function = lang.getAnalysisFunction();
+			final String function = lang.facet(StrategoFacet.class)
+					.analysisStrategy();
 			logger.debug("Invoking analysis strategy {}", function);
 			boolean success = runtime.invoke(function);
 			logger.debug("Analysis completed with success: {}", success);

@@ -9,12 +9,12 @@ import java.util.HashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkMany;
 import org.metaborg.sunshine.pipeline.ISourceMany;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
-import org.metaborg.sunshine.services.language.LanguageService;
 import org.metaborg.sunshine.statistics.BoxValidatable;
 import org.metaborg.sunshine.statistics.Statistics;
 
@@ -29,11 +29,10 @@ public class FileSource implements ISourceMany<File> {
 	private final Collection<ISinkMany<File>> sinks;
 	private final DirMonitor monitor;
 
-	public FileSource(File directory) {
+	public FileSource(File directory, ILanguageService languageService) {
 		this.sinks = new HashSet<ISinkMany<File>>();
 		ServiceRegistry services = ServiceRegistry.INSTANCE();
-		this.monitor = new DirMonitor(services
-				.getService(LanguageService.class).getSupportedExtens(),
+		this.monitor = new DirMonitor(languageService.getSupportedExt(),
 				directory, services.getService(LaunchConfiguration.class)
 						.getCacheDir());
 	}

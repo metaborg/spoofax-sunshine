@@ -9,12 +9,12 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.metaborg.sunshine.services.StrategoCallService;
-import org.metaborg.sunshine.services.language.LanguageService;
 import org.spoofax.interpreter.library.AbstractPrimitive;
 import org.spoofax.interpreter.library.IOperatorRegistry;
 import org.spoofax.interpreter.stratego.Strategy;
@@ -39,8 +39,7 @@ public class ProjectUtils {
 
 		HybridInterpreter runtime = serviceRegistry.getService(
 				RuntimeService.class).getRuntime(
-				serviceRegistry.getService(LanguageService.class)
-						.getAnyLanguage());
+				serviceRegistry.getService(ILanguageService.class).getAny());
 		IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry(
 				"INDEX");
 		AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
@@ -64,12 +63,13 @@ public class ProjectUtils {
 		logger.trace("Unloading task engine for project {}",
 				launch.projectDir.getAbsolutePath());
 		try {
-			serviceRegistry.getService(StrategoCallService.class).callStratego(
-					serviceRegistry.getService(LanguageService.class)
-							.getAnyLanguage(),
-					"task-unload",
-					launch.termFactory.makeString(launch.projectDir
-							.getAbsolutePath()));
+			serviceRegistry.getService(StrategoCallService.class)
+					.callStratego(
+							serviceRegistry.getService(ILanguageService.class)
+									.getAny(),
+							"task-unload",
+							launch.termFactory.makeString(launch.projectDir
+									.getAbsolutePath()));
 		} catch (Exception ex) {
 			logger.warn("Task engine unload failed", ex);
 		}

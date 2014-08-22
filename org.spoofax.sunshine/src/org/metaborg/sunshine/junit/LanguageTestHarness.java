@@ -1,14 +1,16 @@
 package org.metaborg.sunshine.junit;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
+import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
+import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.model.messages.IMessage;
@@ -16,7 +18,6 @@ import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.metaborg.sunshine.services.analyzer.AnalysisResult;
 import org.metaborg.sunshine.services.analyzer.AnalysisService;
-import org.metaborg.sunshine.services.language.LanguageDiscoveryService;
 import org.metaborg.sunshine.services.parser.ParserService;
 
 /**
@@ -38,11 +39,14 @@ public abstract class LanguageTestHarness {
 		args.nonincremental = true;
 		args.project = getPathToInputFile().getParent().toAbsolutePath()
 				.toString();
-		ServiceRegistry services = ServiceRegistry.INSTANCE();
-		org.metaborg.sunshine.drivers.Main.initServices(services, args);
+		org.metaborg.sunshine.drivers.Main.initEnvironment(args);
+		final ServiceRegistry services = ServiceRegistry.INSTANCE();
 
-		services.getService(LanguageDiscoveryService.class).discover(
-				getPathToLanguageRepository());
+		final FileObject path = services.getService(IResourceService.class)
+				.resolve(
+						getPathToLanguageRepository().toAbsolutePath()
+								.toString());
+		services.getService(ILanguageDiscoveryService.class).discover(path);
 	}
 
 	public void assertParseSucceeds(File inputFile) {

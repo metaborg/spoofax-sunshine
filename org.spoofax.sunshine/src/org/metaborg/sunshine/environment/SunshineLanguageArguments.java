@@ -33,7 +33,7 @@ public class SunshineLanguageArguments {
 	public String ssymb;
 
 	@Parameter(names = "--observer", description = "[OBS] The name of the strategy to use as an observer")
-	public String observer = "editor-analyze";
+	public String observer = "analysis-cmd";
 
 	public void validate() {
 		if (jars.size() == 0 && ctrees.size() == 0) {

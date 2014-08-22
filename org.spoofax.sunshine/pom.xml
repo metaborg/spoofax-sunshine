@@ -49,6 +49,11 @@
 			<artifactId>org.strategoxt.imp.generator</artifactId>
 			<version>${metaborg-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.metaborg</groupId>
+			<artifactId>org.metaborg.spoofax.core</artifactId>
+			<version>${metaborg-version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.beust</groupId>
@@ -67,6 +72,19 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-multibindings</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
