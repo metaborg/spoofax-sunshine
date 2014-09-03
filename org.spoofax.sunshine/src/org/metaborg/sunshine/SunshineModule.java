@@ -31,5 +31,8 @@ public class SunshineModule extends AbstractModule {
 		bind(String.class).annotatedWith(
 				Names.named("LanguageDiscoveryAnalysisOverride")).toInstance(
 				"analysis-cmd");
+		bind(ClassLoader.class).annotatedWith(
+				Names.named("ResourceClassLoader")).toInstance(
+				this.getClass().getClassLoader());
 	}
 }
