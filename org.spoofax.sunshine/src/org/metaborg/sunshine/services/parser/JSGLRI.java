@@ -158,7 +158,7 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 				errorHandler.getCollectedMessages(), ast);
 	}
 
-	private IStrategoTerm actuallyParse(String input, String filename)
+	public IStrategoTerm actuallyParse(String input, String filename)
 			throws SGLRException, InterruptedException {
 		IStrategoTerm result;
 		try {
