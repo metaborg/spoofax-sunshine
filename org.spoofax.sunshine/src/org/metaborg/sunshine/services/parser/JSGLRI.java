@@ -13,6 +13,7 @@ import org.metaborg.sunshine.parser.model.IFileParser;
 import org.metaborg.sunshine.parser.model.IParserConfig;
 import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.client.Asfix2TreeBuilder;
 import org.spoofax.jsglr.client.Disambiguator;
 import org.spoofax.jsglr.client.FilterException;
@@ -24,6 +25,7 @@ import org.spoofax.jsglr.client.imploder.TermTreeFactory;
 import org.spoofax.jsglr.client.imploder.TreeBuilder;
 import org.spoofax.jsglr.io.SGLR;
 import org.spoofax.jsglr.shared.SGLRException;
+import org.spoofax.terms.TermFactory;
 import org.spoofax.terms.attachments.ParentTermFactory;
 
 /**
@@ -68,9 +70,13 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 	private JSGLRI(IParserConfig config) {
 		assert config != null;
 		this.config = config;
+
+		LaunchConfiguration lc = ServiceRegistry.INSTANCE().getService(
+				LaunchConfiguration.class);
+		ITermFactory tf = lc != null ? lc.termFactory : new TermFactory()
+				.getFactoryWithStorageType(IStrategoTerm.MUTABLE);
 		final TermTreeFactory factory = new TermTreeFactory(
-				new ParentTermFactory(ServiceRegistry.INSTANCE().getService(
-						LaunchConfiguration.class).termFactory));
+				new ParentTermFactory(tf));
 		this.parser = new SGLR(new TreeBuilder(factory), config
 				.getParseTableProvider().getParseTable());
 		this.errorHandler = new JSGLRParseErrorHandler(this);
