@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.SpoofaxModule;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
-import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.spoofax.core.language.LanguageVersion;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.service.actions.Action;
@@ -93,8 +92,6 @@ public class Main {
 	public static void discoverLanguages(SunshineMainArguments args) {
 		final ILanguageDiscoveryService langDiscovery = env
 				.getService(ILanguageDiscoveryService.class);
-		final ILanguageService langService = env
-				.getService(ILanguageService.class);
 		final IResourceService resourceService = env
 				.getService(IResourceService.class);
 
@@ -107,16 +104,14 @@ public class Main {
 				final FileObject tempDirectory = resourceService
 						.resolve("tmp:///");
 				tempDirectory.createFolder();
-				langService.create(langArgs.lang, new LanguageVersion(1, 0, 0,
-						0), tempDirectory,
-						ImmutableSet.copyOf(langArgs.extens), resourceService
-								.resolve(langArgs.tbl), langArgs.ssymb,
+				langDiscovery.create(langArgs.lang, new LanguageVersion(1, 0,
+						0, 0), tempDirectory, ImmutableSet
+						.copyOf(langArgs.extens), resourceService
+						.resolve(langArgs.tbl), langArgs.ssymb, ImmutableSet
+						.copyOf(resourceService.resolveAll(langArgs.ctrees)),
 						ImmutableSet.copyOf(resourceService
-								.resolveAll(langArgs.ctrees)), ImmutableSet
-								.copyOf(resourceService
-										.resolveAll(langArgs.jars)),
-						langArgs.observer, null, ImmutableMap
-								.<String, Action> of());
+								.resolveAll(langArgs.jars)), langArgs.observer,
+						null, ImmutableMap.<String, Action> of());
 			}
 		} catch (Exception e) {
 			logger.throwing(e);
