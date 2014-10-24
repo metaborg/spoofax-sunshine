@@ -24,11 +24,10 @@ public class SunshineIOAgent extends LoggingIOAgent {
 				LaunchConfiguration.class);
 		try {
 			if (launch.projectDir != null) {
-				this.setWorkingDir(launch.projectDir.getAbsolutePath());
+				this.setWorkingDir(launch.projectDir.getName().getPath());
 			}
-			// GTODO: does this produce a path string that the IOAgent accepts?
 			this.setDefinitionDir(language.location().getName()
-					.getPathDecoded());
+					.getPath());
 		} catch (IOException ioex) {
 			throw new RuntimeException("Failed to create IOAgent", ioex);
 		}

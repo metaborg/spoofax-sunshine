@@ -3,16 +3,15 @@
  */
 package org.metaborg.sunshine.services.pipelined.builders;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.language.ILanguage;
-import org.metaborg.spoofax.core.language.ILanguageService;
-import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.service.actions.Action;
 import org.metaborg.spoofax.core.service.actions.ActionsFacet;
 import org.metaborg.sunshine.CompilerException;
@@ -34,14 +33,14 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 			.getName());
 
 	private final String builderName;
-	private final ILanguageService languageService;
-	private final IResourceService resourceService;
+	private final LaunchConfiguration lauchConfig;
+	private final ILanguageIdentifierService languageIdentifierService;
 
-	public BuilderSink(String builderName, ILanguageService languageService,
-			IResourceService resourceService) {
+	public BuilderSink(String builderName, LaunchConfiguration launchConfig,
+			ILanguageIdentifierService languageIdentifierService) {
 		this.builderName = builderName;
-		this.languageService = languageService;
-		this.resourceService = resourceService;
+		this.lauchConfig = launchConfig;
+		this.languageIdentifierService = languageIdentifierService;
 		logger.trace("Created new builder for {}", builderName);
 	}
 
@@ -83,10 +82,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 */
 	@Override
 	public void sink(Diff<BuilderInputTerm> product) {
-		final FileObject file = resourceService.resolve(product.getPayload()
-				.getFile());
-		final ILanguage language = languageService.getByExt(file.getName()
-				.getExtension());
+		final FileObject file = product.getPayload().getFile();
+		final ILanguage language = languageIdentifierService.identify(file);
 		final Action action = language.facet(ActionsFacet.class).get(
 				builderName);
 
@@ -94,9 +91,15 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 			logger.fatal("Builder {} could not be found", builderName);
 		}
 		logger.debug("Invoking builder {} on file {}", action.name, file);
-		IStrategoTerm inputTuple = product.getPayload().toStratego();
-		assert inputTuple != null && inputTuple.getSubtermCount() == 5;
-		invoke(action, inputTuple);
+		try {
+			IStrategoTerm inputTuple = product.getPayload().toStratego();
+			assert inputTuple != null && inputTuple.getSubtermCount() == 5;
+			invoke(action, inputTuple);
+		} catch (FileSystemException e) {
+			final String msg = "Cannot construct input tuple for builder";
+			logger.fatal(msg, e);
+			throw new CompilerException(msg, e);
+		}
 	}
 
 	private IStrategoTerm invoke(Action action, IStrategoTerm input) {
@@ -111,15 +114,14 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 
 	private void processResult(Action action, IStrategoTerm result) {
 		if (isWriteFile(result)) {
-
-			final File resultFile = new File(ServiceRegistry.INSTANCE()
-					.getService(LaunchConfiguration.class).projectDir,
-					((IStrategoString) result.getSubterm(0)).stringValue());
-			final String resultContents = ((IStrategoString) result
-					.getSubterm(1)).stringValue();
-			// write the contents to the file
 			try {
-				FileUtils.writeStringToFile(resultFile, resultContents);
+				final FileObject resultFile = lauchConfig.projectDir
+						.resolveFile(((IStrategoString) result.getSubterm(0))
+								.stringValue());
+				final String resultContents = ((IStrategoString) result
+						.getSubterm(1)).stringValue();
+				IOUtils.write(resultContents, resultFile.getContent()
+						.getOutputStream());
 			} catch (IOException e) {
 				throw new CompilerException("Builder " + action.name
 						+ "failed to write result", e);

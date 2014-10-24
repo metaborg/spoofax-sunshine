@@ -2,8 +2,6 @@ package org.metaborg.sunshine.junit;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -28,34 +26,33 @@ import org.metaborg.sunshine.services.parser.ParserService;
  * 
  */
 public abstract class LanguageTestHarness {
+	protected IResourceService resourceService;
 
-	public abstract Path getPathToLanguageRepository();
+	public abstract FileObject getPathToLanguageRepository();
 
-	public abstract Path getPathToInputFile();
+	public abstract FileObject getPathToInputFile();
 
 	@Before
 	public void setUp() throws Exception {
 		SunshineMainArguments args = new SunshineMainArguments();
 		args.nonincremental = true;
-		args.project = getPathToInputFile().getParent().toAbsolutePath()
-				.toString();
+		args.project = getPathToInputFile().getParent().getName().getPath();
 		org.metaborg.sunshine.drivers.Main.initEnvironment(args);
 		final ServiceRegistry services = ServiceRegistry.INSTANCE();
+		resourceService = services.getService(IResourceService.class);
 
-		final FileObject path = services.getService(IResourceService.class)
-				.resolve(
-						getPathToLanguageRepository().toAbsolutePath()
-								.toString());
+		final FileObject path = resourceService
+				.resolve(getPathToLanguageRepository().getName().getPath());
 		services.getService(ILanguageDiscoveryService.class).discover(path);
 	}
 
-	public void assertParseSucceeds(File inputFile) {
+	public void assertParseSucceeds(FileObject inputFile) {
 		AnalysisFileResult parseResult = ServiceRegistry.INSTANCE()
 				.getService(ParserService.class).parseFile(inputFile);
 		assertNoMessage(parseResult, MessageSeverity.ERROR);
 	}
 
-	public void assertParseFails(File inputFile) {
+	public void assertParseFails(FileObject inputFile) {
 		try {
 			assertParseSucceeds(inputFile);
 		} catch (AssertionError ae) {
@@ -64,7 +61,7 @@ public abstract class LanguageTestHarness {
 		fail("Parse succeeded, failure expected");
 	}
 
-	public void assertAnalysisSucceeds(File inputFile) {
+	public void assertAnalysisSucceeds(FileObject inputFile) {
 		AnalysisFileResult parseResult = ServiceRegistry.INSTANCE()
 				.getService(ParserService.class).parseFile(inputFile);
 		Collection<AnalysisResult> analysisResults = ServiceRegistry
@@ -78,7 +75,7 @@ public abstract class LanguageTestHarness {
 		}
 	}
 
-	public void assertAnalysisFails(File inputFile) {
+	public void assertAnalysisFails(FileObject inputFile) {
 		try {
 			assertAnalysisSucceeds(inputFile);
 		} catch (AssertionError ae) {

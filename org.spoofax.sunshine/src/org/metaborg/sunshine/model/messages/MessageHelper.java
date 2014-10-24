@@ -3,17 +3,14 @@
  */
 package org.metaborg.sunshine.model.messages;
 
-import static org.spoofax.interpreter.core.Tools.isTermTuple;
-import static org.spoofax.interpreter.core.Tools.termAt;
-import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getLeftToken;
-import static org.spoofax.jsglr.client.imploder.ImploderAttachment.getRightToken;
-import static org.spoofax.jsglr.client.imploder.ImploderAttachment.hasImploderOrigin;
+import static org.spoofax.interpreter.core.Tools.*;
+import static org.spoofax.jsglr.client.imploder.ImploderAttachment.*;
 import static org.spoofax.terms.attachments.OriginAttachment.tryGetOrigin;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.vfs2.FileObject;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.spoofax.interpreter.terms.ISimpleTerm;
@@ -31,7 +28,7 @@ import org.strategoxt.lang.Context;
  */
 public class MessageHelper {
 
-	public static Collection<IMessage> makeMessages(File file,
+	public static Collection<IMessage> makeMessages(FileObject file,
 			MessageSeverity severity, IStrategoList msgs) {
 		final Collection<IMessage> result = new ArrayList<IMessage>(
 				msgs.getSubtermCount());
@@ -60,11 +57,11 @@ public class MessageHelper {
 			if (node != null) {
 				final IToken left = getLeftToken(node);
 				final IToken right = getRightToken(node);
-				result.add(newAnalysisMessage(file.getPath(), left, right,
-						message, severity));
+				result.add(newAnalysisMessage(file.getName().getPath(), left,
+						right, message, severity));
 			} else {
-				result.add(newAnalysisMessageAtTop(file.getPath(), message,
-						severity));
+				result.add(newAnalysisMessageAtTop(file.getName().getPath(),
+						message, severity));
 			}
 		}
 

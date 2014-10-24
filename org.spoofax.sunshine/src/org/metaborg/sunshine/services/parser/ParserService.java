@@ -3,7 +3,6 @@
  */
 package org.metaborg.sunshine.services.parser;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -12,8 +11,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.language.ILanguage;
-import org.metaborg.spoofax.core.language.ILanguageService;
-import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.service.syntax.SyntaxFacet;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.parser.model.IParserConfig;
@@ -36,21 +34,16 @@ public class ParserService {
 
 	private final Map<ILanguage, IParserConfig> parserConfigs = new WeakHashMap<ILanguage, IParserConfig>();
 
-	private final ILanguageService languageService;
-	private final IResourceService resourceService;
+	private final ILanguageIdentifierService languageIdentifierService;
 
 	@Inject
-	public ParserService(ILanguageService languageService,
-			IResourceService resourceService) {
-		this.languageService = languageService;
-		this.resourceService = resourceService;
+	public ParserService(ILanguageIdentifierService languageIdentifierService) {
+		this.languageIdentifierService = languageIdentifierService;
 	}
 
-	public AnalysisFileResult parseFile(File file) {
+	public AnalysisFileResult parseFile(FileObject file) {
 		logger.trace("Parsing file {}", file);
-		final FileObject fileObject = resourceService.resolve(file);
-		ILanguage lang = languageService.getByExt(fileObject.getName()
-				.getExtension());
+		ILanguage lang = languageIdentifierService.identify(file);
 		if (lang == null) {
 			throw new CompilerException("No language registered for file "
 					+ file);

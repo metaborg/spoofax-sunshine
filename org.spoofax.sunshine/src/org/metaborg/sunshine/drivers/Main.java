@@ -3,7 +3,7 @@
  */
 package org.metaborg.sunshine.drivers;
 
-import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,6 @@ import org.metaborg.spoofax.core.language.LanguageVersion;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.service.actions.Action;
 import org.metaborg.sunshine.SunshineModule;
-import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineLanguageArguments;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
@@ -53,13 +52,17 @@ public class Main {
 		final SunshineMainDriver driver = env
 				.getService(SunshineMainDriver.class);
 
-		int exit = driver.run();
-		if (exit == 0) {
-			logger.info("Exiting normally");
-			System.exit(0);
-		} else {
-			logger.info("Exiting with non-zero status {}", exit);
-			System.exit(1);
+		try {
+			int exit = driver.run();
+			if (exit == 0) {
+				logger.info("Exiting normally");
+				System.exit(0);
+			} else {
+				logger.info("Exiting with non-zero status {}", exit);
+				System.exit(1);
+			}
+		} catch (IOException e) {
+			logger.error("Failed to run driver", e);
 		}
 	}
 
@@ -84,8 +87,7 @@ public class Main {
 	public static void initEnvironment(SunshineMainArguments args) {
 		logger.trace("Initializing the environment");
 		final Injector injector = Guice.createInjector(new SpoofaxModule(),
-				new SunshineModule(new LaunchConfiguration(args, new File(
-						args.project))));
+				new SunshineModule(args));
 		env.setInjector(injector);
 	}
 

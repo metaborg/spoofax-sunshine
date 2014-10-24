@@ -3,8 +3,8 @@
  */
 package org.metaborg.sunshine.services.pipelined.builders;
 
-import java.io.File;
-
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spoofax.interpreter.terms.IStrategoList;
@@ -13,7 +13,8 @@ import org.spoofax.interpreter.terms.IStrategoTuple;
 import org.spoofax.interpreter.terms.ITermFactory;
 
 /**
- * A Java representation of the input term to a builder. It is in fact a wrapper over the following:
+ * A Java representation of the input term to a builder. It is in fact a wrapper
+ * over the following:
  * 
  * <code>
  * (node, position, ast, path, project-path)
@@ -23,37 +24,46 @@ import org.spoofax.interpreter.terms.ITermFactory;
  * 
  */
 public class BuilderInputTerm {
-	private static final Logger logger = LogManager.getLogger(BuilderInputTerm.class.getName());
+	private static final Logger logger = LogManager
+			.getLogger(BuilderInputTerm.class.getName());
 
 	private final ITermFactory termFactory;
 	private final IStrategoTerm node;
 	private final IStrategoList position;
 	private final IStrategoTerm ast;
-	private final File file;
-	private final File project;
+	private final FileObject file;
+	private final FileObject project;
 
-	public BuilderInputTerm(ITermFactory factory, IStrategoTerm ast, File file, File project) {
+	public BuilderInputTerm(ITermFactory factory, IStrategoTerm ast,
+			FileObject file, FileObject project) {
 		this(factory, ast, factory.makeList(), ast, file, project);
 	}
 
-	public BuilderInputTerm(ITermFactory factory, IStrategoTerm node, IStrategoList position,
-			IStrategoTerm ast, File file, File project) {
+	public BuilderInputTerm(ITermFactory factory, IStrategoTerm node,
+			IStrategoList position, IStrategoTerm ast, FileObject file,
+			FileObject project) {
 		this.termFactory = factory;
 		this.node = node;
 		this.position = position;
 		this.ast = ast;
 		this.file = file;
 		this.project = project;
-		logger.trace("New instance created for position {} of file {} in project {}", position,
-				file, project);
+		logger.trace(
+				"New instance created for position {} of file {} in project {}",
+				position, file, project);
 	}
 
-	public IStrategoTuple toStratego() {
-		logger.trace("Converting input for position {} of file {} in project {} to Stratego tuple",
+	public IStrategoTuple toStratego() throws FileSystemException {
+		logger.trace(
+				"Converting input for position {} of file {} in project {} to Stratego tuple",
 				position, file, project);
-		return termFactory.makeTuple(node, position, ast,
-				termFactory.makeString(project.toURI().relativize(file.toURI()).toString()),
-				termFactory.makeString(project.getAbsolutePath()));
+		return termFactory.makeTuple(
+				node,
+				position,
+				ast,
+				termFactory.makeString(project.getName().getRelativeName(
+						file.getName())),
+				termFactory.makeString(project.getName().getPath()));
 	}
 
 	public IStrategoTerm getNode() {
@@ -68,11 +78,11 @@ public class BuilderInputTerm {
 		return ast;
 	}
 
-	public File getFile() {
+	public FileObject getFile() {
 		return file;
 	}
 
-	public File getProject() {
+	public FileObject getProject() {
 		return project;
 	};
 }

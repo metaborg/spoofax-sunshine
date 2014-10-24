@@ -3,13 +3,17 @@
  */
 package org.metaborg.sunshine.services.filesource;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkMany;
@@ -22,39 +26,45 @@ import org.metaborg.sunshine.statistics.Statistics;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class FileSource implements ISourceMany<File> {
+public class FileSource implements ISourceMany<FileObject> {
 	private static final Logger logger = LogManager.getLogger(FileSource.class
 			.getName());
 
-	private final Collection<ISinkMany<File>> sinks;
+	private final Collection<ISinkMany<FileObject>> sinks;
 	private final DirMonitor monitor;
 
-	public FileSource(File directory, ILanguageService languageService) {
-		this.sinks = new HashSet<ISinkMany<File>>();
-		ServiceRegistry services = ServiceRegistry.INSTANCE();
-		this.monitor = new DirMonitor(languageService.getSupportedExt(),
-				directory, services.getService(LaunchConfiguration.class)
-						.getCacheDir());
+	public FileSource(FileObject directory, ILanguageService languageService) {
+		this.sinks = new HashSet<ISinkMany<FileObject>>();
+		final ServiceRegistry services = ServiceRegistry.INSTANCE();
+		final LaunchConfiguration launchConfig = services
+				.getService(LaunchConfiguration.class);
+		final IResourceService resourceService = services
+				.getService(IResourceService.class);
+		final ILanguageIdentifierService languageIdentifierService = services
+				.getService(ILanguageIdentifierService.class);
+		this.monitor = new DirMonitor(directory, launchConfig.cacheDir,
+				new AllLanguagesFileSelector(languageIdentifierService),
+				resourceService.manager());
 	}
 
 	@Override
-	public void addSink(ISinkMany<File> sink) {
+	public void addSink(ISinkMany<FileObject> sink) {
 		sinks.add(sink);
 	}
 
-	public void poke() {
+	public void poke() throws IOException {
 		logger.trace("Poked for changes");
 		if (ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).mainArguments.nonincremental) {
 			logger.warn("Resetting the directory monitor for full analysis");
 			monitor.reset();
 		}
 		logger.debug("Getting directory changes");
-		MultiDiff<File> diff = monitor.getChanges();
+		MultiDiff<FileObject> diff = monitor.getChanges();
 		logger.debug("Notifying {} sinks of {} file changes", sinks.size(),
 				diff.size());
 		Statistics.addDataPoint("DELTAFILES",
 				new BoxValidatable<Integer>(diff.size()));
-		for (ISinkMany<File> sink : sinks) {
+		for (ISinkMany<FileObject> sink : sinks) {
 			sink.sink(diff);
 		}
 		logger.trace("Done sinking");

@@ -2,6 +2,7 @@ package org.metaborg.sunshine;
 
 import org.metaborg.sunshine.drivers.SunshineMainDriver;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
+import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.metaborg.sunshine.services.StrategoCallService;
 import org.metaborg.sunshine.services.analyzer.AnalysisService;
@@ -12,15 +13,16 @@ import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
 public class SunshineModule extends AbstractModule {
-	private final LaunchConfiguration launchConfig;
+	private final SunshineMainArguments args;
 
-	public SunshineModule(LaunchConfiguration launchConfig) {
-		this.launchConfig = launchConfig;
+	public SunshineModule(SunshineMainArguments args) {
+		this.args = args;
 	}
 
 	@Override
 	protected void configure() {
-		bind(LaunchConfiguration.class).toInstance(launchConfig);
+		bind(SunshineMainArguments.class).toInstance(args);
+		bind(LaunchConfiguration.class).asEagerSingleton();
 		bind(SunshineMainDriver.class).asEagerSingleton();
 		bind(RuntimeService.class).asEagerSingleton();
 		bind(StrategoCallService.class).asEagerSingleton();

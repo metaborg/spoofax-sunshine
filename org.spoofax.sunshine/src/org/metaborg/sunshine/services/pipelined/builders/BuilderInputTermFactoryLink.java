@@ -3,11 +3,10 @@
  */
 package org.metaborg.sunshine.services.pipelined.builders;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -33,13 +32,13 @@ public class BuilderInputTermFactoryLink implements
 
 	private final Collection<ISinkOne<BuilderInputTerm>> sinks = new HashSet<ISinkOne<BuilderInputTerm>>();
 
-	private final File path;
+	private final FileObject path;
 
 	private boolean onSource;
 
 	private boolean ignoreErrors;
 
-	public BuilderInputTermFactoryLink(File file, boolean onSource,
+	public BuilderInputTermFactoryLink(FileObject file, boolean onSource,
 			boolean ignoreErrors) {
 		this.path = file;
 		this.onSource = onSource;
@@ -58,18 +57,14 @@ public class BuilderInputTermFactoryLink implements
 		logger.trace("Creating builder input term for product");
 		Diff<AnalysisFileResult> select = null;
 		for (Diff<AnalysisFileResult> diff : product) {
-			try {
-				if (diff.getPayload().file().getCanonicalFile()
-						.equals(path.getCanonicalFile())) {
-					select = diff;
-					break;
-				} else {
-					logger.trace(
-							"Input file {} does not match prebaked file {}, skipping.",
-							diff.getPayload().file(), path);
-				}
-			} catch (IOException ioex) {
-				logger.error("File operations failed", ioex);
+			if (diff.getPayload().file().getName().getPath()
+					.equals(path.getName().getPath())) {
+				select = diff;
+				break;
+			} else {
+				logger.trace(
+						"Input file {} does not match prebaked file {}, skipping.",
+						diff.getPayload().file(), path);
 			}
 		}
 		if (select != null) {

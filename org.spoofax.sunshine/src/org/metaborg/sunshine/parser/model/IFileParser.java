@@ -3,8 +3,7 @@
  */
 package org.metaborg.sunshine.parser.model;
 
-import java.io.File;
-
+import org.apache.commons.vfs2.FileObject;
 import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 
 /**
@@ -12,10 +11,9 @@ import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
  * 
  */
 public interface IFileParser<T> {
-
 	AnalysisFileResult parse();
 
 	IParserConfig getConfig();
 
-	File getFile();
+	FileObject getFile();
 }

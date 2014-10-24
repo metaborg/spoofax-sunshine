@@ -1,11 +1,11 @@
 package org.metaborg.sunshine.services.parser;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -49,7 +49,7 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 
 	private final JSGLRParseErrorHandler errorHandler;
 
-	private File file;
+	private FileObject file;
 
 	private InputStream is;
 
@@ -57,7 +57,7 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 		this.cursorLocation = cursorLocation;
 	}
 
-	public JSGLRI(IParserConfig config, File file) {
+	public JSGLRI(IParserConfig config, FileObject file) {
 		this(config);
 		this.file = file;
 	}
@@ -123,9 +123,9 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 		String fileName;
 		String input;
 		if (file != null) {
-			fileName = file.getName();
 			try {
-				input = FileUtils.readFileToString(file);
+				fileName = file.getName().getPath();
+				input = IOUtils.toString(file.getContent().getInputStream());
 			} catch (IOException e) {
 				throw new CompilerException("Could not read file", e);
 			}
@@ -193,12 +193,11 @@ public class JSGLRI implements IFileParser<IStrategoTerm> {
 	}
 
 	@Override
-	public File getFile() {
+	public FileObject getFile() {
 		return file;
 	}
 
 	protected SGLR getParser() {
 		return parser;
 	}
-
 }

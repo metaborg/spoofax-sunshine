@@ -13,7 +13,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.language.ILanguage;
-import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
 import org.metaborg.sunshine.CompilerException;
@@ -32,6 +32,7 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.strategoxt.HybridInterpreter;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 
 /**
@@ -46,16 +47,17 @@ public class AnalysisService {
 
 	private final LaunchConfiguration launchConfig;
 	private final RuntimeService runtimeService;
-	private final ILanguageService languageService;
+	private final ILanguageIdentifierService languageIdentifierService;
 	private final IResourceService resourceService;
 
 	@Inject
 	public AnalysisService(LaunchConfiguration launchConfig,
-			RuntimeService runtimeService, ILanguageService languageService,
+			RuntimeService runtimeService,
+			ILanguageIdentifierService languageIdentifierService,
 			IResourceService resourceService) {
 		this.launchConfig = launchConfig;
 		this.runtimeService = runtimeService;
-		this.languageService = languageService;
+		this.languageIdentifierService = languageIdentifierService;
 		this.resourceService = resourceService;
 	}
 
@@ -73,9 +75,8 @@ public class AnalysisService {
 		logger.debug("Analyzing {} files", inputs.size());
 		Map<ILanguage, Collection<AnalysisFileResult>> lang2files = new HashMap<ILanguage, Collection<AnalysisFileResult>>();
 		for (AnalysisFileResult input : inputs) {
-			final FileObject file = resourceService.resolve(input.file());
-			final ILanguage lang = languageService.getByExt(file.getName()
-					.getExtension());
+			final FileObject file = input.file();
+			final ILanguage lang = languageIdentifierService.identify(file);
 			if (lang2files.get(lang) == null) {
 				lang2files.put(lang, new LinkedList<AnalysisFileResult>());
 			}
@@ -103,8 +104,7 @@ public class AnalysisService {
 		Collection<IStrategoAppl> analysisInput = new LinkedList<IStrategoAppl>();
 		for (AnalysisFileResult input : inputs) {
 			IStrategoString filename = termFactory.makeString(input.file()
-					.getAbsolutePath());
-
+					.getName().getPath());
 			analysisInput.add(termFactory.makeAppl(file_3_constr, filename,
 					input.ast(), termFactory.makeReal(-1.0)));
 		}
@@ -166,9 +166,10 @@ public class AnalysisService {
 	private AnalysisFileResult makeAnalysisFileResult(IStrategoTerm res) {
 		assert res != null;
 		assert res.getSubtermCount() == 8;
-		File file = new File(
-				((IStrategoString) res.getSubterm(2)).stringValue());
-		Collection<IMessage> messages = new HashSet<IMessage>();
+
+		FileObject file = resourceService.resolve(((IStrategoString) res
+				.getSubterm(2)).stringValue());
+		Collection<IMessage> messages = Sets.newHashSet();
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.ERROR,
 				(IStrategoList) res.getSubterm(5)));
 		messages.addAll(MessageHelper.makeMessages(file,

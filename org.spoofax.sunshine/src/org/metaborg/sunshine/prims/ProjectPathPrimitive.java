@@ -27,10 +27,9 @@ public class ProjectPathPrimitive extends AbstractPrimitive {
 		final ServiceRegistry sunshineEnv = ServiceRegistry.INSTANCE();
 		final LaunchConfiguration launch = sunshineEnv
 				.getService(LaunchConfiguration.class);
-		final IStrategoString projectPath = launch.termFactory
-				.makeString(launch.projectDir.getAbsolutePath());
+		IStrategoString projectPath = launch.termFactory
+				.makeString(launch.projectDir.getName().getPath());
 		env.setCurrent(projectPath);
 		return true;
 	}
-
 }

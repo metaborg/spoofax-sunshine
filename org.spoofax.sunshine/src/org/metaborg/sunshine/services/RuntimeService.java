@@ -1,7 +1,6 @@
 package org.metaborg.sunshine.services;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,13 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.runtime.task.primitives.TaskLibrary;
 import org.metaborg.spoofax.core.language.ILanguage;
-import org.metaborg.spoofax.core.language.ILanguageService;
-import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
 import org.metaborg.sunshine.SunshineIOAgent;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -45,26 +42,21 @@ public class RuntimeService {
 	private static final Logger logger = LogManager
 			.getLogger(RuntimeService.class.getName());
 
-	private final IResourceService resourceService;
-	private final ILanguageService languageService;
+	private final ILanguageIdentifierService languageIdentifierService;
 
 	private final Map<ILanguage, HybridInterpreter> prototypes = new HashMap<ILanguage, HybridInterpreter>();
 
 	@Inject
-	public RuntimeService(IResourceService resourceService,
-			ILanguageService languageService) {
-		this.resourceService = resourceService;
-		this.languageService = languageService;
+	public RuntimeService(
+			ILanguageIdentifierService languageIdentifierService) {
+		this.languageIdentifierService = languageIdentifierService;
 	}
 
 	/**
-	 * @throws FileSystemException
 	 * @see #getRuntime(ALanguage)
 	 */
-	public HybridInterpreter getRuntime(File file) {
-		final String extension = resourceService.resolve(file).getName()
-				.getExtension();
-		return getRuntime(languageService.getByExt(extension));
+	public HybridInterpreter getRuntime(FileObject file) {
+		return getRuntime(languageIdentifierService.identify(file));
 	}
 
 	/**

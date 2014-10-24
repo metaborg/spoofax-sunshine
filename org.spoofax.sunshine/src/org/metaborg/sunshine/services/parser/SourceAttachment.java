@@ -3,8 +3,9 @@ package org.metaborg.sunshine.services.parser;
 import static org.spoofax.jsglr.client.imploder.ImploderAttachment.hasImploderOrigin;
 import static org.spoofax.terms.attachments.OriginAttachment.getOrigin;
 
-import java.io.File;
-
+import org.apache.commons.vfs2.FileObject;
+import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.parser.model.IParserConfig;
 import org.spoofax.interpreter.terms.ISimpleTerm;
 import org.spoofax.jsglr.client.imploder.ImploderAttachment;
@@ -16,7 +17,8 @@ import org.spoofax.terms.attachments.VolatileTermAttachmentType;
 /**
  * A tree-wide source resource and parse controller attachment.
  * 
- * Uses {@link ParentAttachment} to identify the root of a tree, where this attachment is stored.
+ * Uses {@link ParentAttachment} to identify the root of a tree, where this
+ * attachment is stored.
  * 
  * @author Lennart Kats <lennart add lclnet.nl>
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -28,17 +30,17 @@ public class SourceAttachment extends AbstractTermAttachment {
 	public static TermAttachmentType<SourceAttachment> TYPE = new VolatileTermAttachmentType<SourceAttachment>(
 			SourceAttachment.class);
 
-	private final File resource;
+	private final FileObject resource;
 
 	private final IParserConfig controller;
 
-	private SourceAttachment(File resource, IParserConfig controller) {
+	private SourceAttachment(FileObject resource, IParserConfig controller) {
 		this.resource = resource;
 		this.controller = controller;
 		assert resource != null;
 	}
 
-	public File getFile() {
+	public FileObject getFile() {
 		return resource;
 	}
 
@@ -50,8 +52,9 @@ public class SourceAttachment extends AbstractTermAttachment {
 		return TYPE;
 	}
 
-	public static File getResource(ISimpleTerm term) {
-		SourceAttachment resource = ParentAttachment.getRoot(term).getAttachment(TYPE);
+	public static FileObject getResource(ISimpleTerm term) {
+		SourceAttachment resource = ParentAttachment.getRoot(term)
+				.getAttachment(TYPE);
 		if (resource != null) {
 			return resource.resource;
 		}
@@ -66,19 +69,25 @@ public class SourceAttachment extends AbstractTermAttachment {
 			return null;
 		}
 
-		String file = ImploderAttachment.getFilename(term);
-		return new File(file);
+		String fileName = ImploderAttachment.getFilename(term);
+		// HACK: get resource service through service registry.
+		final IResourceService resourceService = ServiceRegistry.INSTANCE()
+				.getService(IResourceService.class);
+		return resourceService.resolve(fileName);
 	}
 
 	public static IParserConfig getParseController(ISimpleTerm term) {
-		SourceAttachment resource = ParentAttachment.getRoot(term).getAttachment(TYPE);
+		SourceAttachment resource = ParentAttachment.getRoot(term)
+				.getAttachment(TYPE);
 		return resource == null ? null : resource.controller;
 	}
 
 	/**
-	 * Sets the resource for a term tree. Should only be applied to the root of a tree.
+	 * Sets the resource for a term tree. Should only be applied to the root of
+	 * a tree.
 	 */
-	public static void putSource(ISimpleTerm term, File resource, IParserConfig controller) {
+	public static void putSource(ISimpleTerm term, FileObject resource,
+			IParserConfig controller) {
 		ISimpleTerm root = ParentAttachment.getRoot(term);
 		assert term == root;
 		root.putAttachment(new SourceAttachment(resource, controller));

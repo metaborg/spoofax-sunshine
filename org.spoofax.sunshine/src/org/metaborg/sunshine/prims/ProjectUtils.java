@@ -3,12 +3,12 @@
  */
 package org.metaborg.sunshine.prims;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -26,27 +26,32 @@ import org.strategoxt.HybridInterpreter;
  * 
  */
 public class ProjectUtils {
-
 	private static final Logger logger = LogManager
 			.getLogger(ProjectUtils.class.getName());
 
 	public static void unloadIndex() {
-		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
-		LaunchConfiguration launch = serviceRegistry
-				.getService(LaunchConfiguration.class);
-		logger.trace("Unloading index store for project {}",
-				launch.projectDir.getAbsolutePath());
-
-		HybridInterpreter runtime = serviceRegistry.getService(
-				RuntimeService.class).getRuntime(
-				serviceRegistry.getService(ILanguageService.class).getAny());
-		IOperatorRegistry idxLib = runtime.getContext().getOperatorRegistry(
-				"INDEX");
-		AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
 		try {
-			boolean unloadSuccess = unloadIdxPrim.call(runtime.getContext(),
-					new Strategy[0], new IStrategoTerm[] { runtime.getFactory()
-							.makeString(launch.projectDir.getAbsolutePath()) });
+			ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
+			LaunchConfiguration launch = serviceRegistry
+					.getService(LaunchConfiguration.class);
+			logger.trace("Unloading index store for project {}",
+					launch.projectDir.getName().getPath());
+
+			final ILanguage anyLang = serviceRegistry.getService(
+					ILanguageService.class).getAny();
+			if (anyLang == null)
+				return;
+			HybridInterpreter runtime = serviceRegistry.getService(
+					RuntimeService.class).getRuntime(anyLang);
+			IOperatorRegistry idxLib = runtime.getContext()
+					.getOperatorRegistry("INDEX");
+			AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
+
+			boolean unloadSuccess = unloadIdxPrim.call(
+					runtime.getContext(),
+					new Strategy[0],
+					new IStrategoTerm[] { runtime.getFactory().makeString(
+							launch.projectDir.getName().getPath()) });
 			if (!unloadSuccess) {
 				throw new CompilerException("Could not unload index");
 			}
@@ -60,16 +65,18 @@ public class ProjectUtils {
 		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
 		LaunchConfiguration launch = serviceRegistry
 				.getService(LaunchConfiguration.class);
-		logger.trace("Unloading task engine for project {}",
-				launch.projectDir.getAbsolutePath());
 		try {
-			serviceRegistry.getService(StrategoCallService.class)
-					.callStratego(
-							serviceRegistry.getService(ILanguageService.class)
-									.getAny(),
-							"task-unload",
-							launch.termFactory.makeString(launch.projectDir
-									.getAbsolutePath()));
+			logger.trace("Unloading task engine for project {}",
+					launch.projectDir.getName().getPath());
+			final ILanguage anyLang = serviceRegistry.getService(
+					ILanguageService.class).getAny();
+			if (anyLang == null)
+				return;
+			serviceRegistry.getService(StrategoCallService.class).callStratego(
+					anyLang,
+					"task-unload",
+					launch.termFactory.makeString(launch.projectDir.getName()
+							.getPath()));
 		} catch (Exception ex) {
 			logger.warn("Task engine unload failed", ex);
 		}
@@ -80,63 +87,15 @@ public class ProjectUtils {
 		LaunchConfiguration launch = serviceRegistry
 				.getService(LaunchConfiguration.class);
 		try {
-			FileUtils.deleteDirectory(launch.getCacheDir());
+			launch.cacheDir.delete(new AllFileSelector());
 		} catch (IOException ioex) {
 			logger.fatal(
 					"Could not delete cache directory {} because of exception {}",
-					launch.getCacheDir(), ioex);
+					launch.cacheDir.getName().getPath(), ioex);
 			throw new CompilerException("Could not delete cache directory",
 					ioex);
 		}
 		ProjectUtils.unloadIndex();
 		ProjectUtils.unloadTasks();
-	}
-
-	public static File saveProjectState() {
-		logger.trace("Saving cache folder to a temporary directory");
-		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
-		LaunchConfiguration launch = serviceRegistry
-				.getService(LaunchConfiguration.class);
-		File cacheDir = launch.getCacheDir();
-		File tempDir = new File(FileUtils.getTempDirectory(), "_sunshine_"
-				+ System.currentTimeMillis());
-		if (cacheDir.exists() && cacheDir.isDirectory()) {
-			try {
-				FileUtils.moveDirectory(cacheDir, tempDir);
-			} catch (IOException ioex) {
-				logger.fatal(
-						"Could not move cache dir out of the way because of exception",
-						ioex);
-				throw new RuntimeException("Failed to move cache directory",
-						ioex);
-			}
-			logger.trace("Moved cache dir {} to temporary {}", cacheDir,
-					tempDir);
-			return tempDir;
-		} else {
-			logger.warn("Failed to save cacheDir {} because it does not exist",
-					cacheDir);
-			return null;
-		}
-	}
-
-	public static void restoreProjectState(File tmp) {
-		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
-		LaunchConfiguration launch = serviceRegistry
-				.getService(LaunchConfiguration.class);
-		File cacheDir = launch.getCacheDir();
-		logger.trace("Restoring saved cache {} to original location {}", tmp,
-				cacheDir);
-		try {
-			if (cacheDir.exists())
-				FileUtils.deleteDirectory(cacheDir);
-			FileUtils.moveDirectory(tmp, cacheDir);
-		} catch (IOException ioex) {
-			logger.fatal(
-					"Could not move cache dir back in the project because of exception",
-					ioex);
-			throw new RuntimeException("Failed to restore saved cache dir",
-					ioex);
-		}
 	}
 }
