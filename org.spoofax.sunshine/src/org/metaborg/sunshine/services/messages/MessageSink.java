@@ -9,10 +9,10 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.ISinkMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;

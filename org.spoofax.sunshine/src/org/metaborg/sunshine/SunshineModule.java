@@ -6,7 +6,6 @@ import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.metaborg.sunshine.services.StrategoCallService;
 import org.metaborg.sunshine.services.analyzer.AnalysisService;
-import org.metaborg.sunshine.services.parser.ParserService;
 import org.metaborg.sunshine.statistics.Statistics;
 
 import com.google.inject.AbstractModule;
@@ -26,7 +25,6 @@ public class SunshineModule extends AbstractModule {
 		bind(SunshineMainDriver.class).asEagerSingleton();
 		bind(RuntimeService.class).asEagerSingleton();
 		bind(StrategoCallService.class).asEagerSingleton();
-		bind(ParserService.class).asEagerSingleton();
 		bind(AnalysisService.class).asEagerSingleton();
 		bind(Statistics.class).asEagerSingleton();
 

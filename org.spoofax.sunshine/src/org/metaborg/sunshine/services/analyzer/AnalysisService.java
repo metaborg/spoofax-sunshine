@@ -14,13 +14,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.messages.MessageHelper;
+import org.metaborg.spoofax.core.messages.MessageSeverity;
+import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageHelper;
-import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.services.RuntimeService;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.core.Tools;
@@ -71,14 +72,16 @@ public class AnalysisService {
 	 * @throws CompilerException
 	 */
 	public Collection<AnalysisResult> analyze(
-			Collection<AnalysisFileResult> inputs) throws CompilerException {
+			Collection<ParseResult<IStrategoTerm>> inputs)
+			throws CompilerException {
 		logger.debug("Analyzing {} files", inputs.size());
-		Map<ILanguage, Collection<AnalysisFileResult>> lang2files = new HashMap<ILanguage, Collection<AnalysisFileResult>>();
-		for (AnalysisFileResult input : inputs) {
-			final FileObject file = input.file();
+		Map<ILanguage, Collection<ParseResult<IStrategoTerm>>> lang2files = new HashMap<ILanguage, Collection<ParseResult<IStrategoTerm>>>();
+		for (ParseResult<IStrategoTerm> input : inputs) {
+			final FileObject file = input.source;
 			final ILanguage lang = languageIdentifierService.identify(file);
 			if (lang2files.get(lang) == null) {
-				lang2files.put(lang, new LinkedList<AnalysisFileResult>());
+				lang2files.put(lang,
+						new LinkedList<ParseResult<IStrategoTerm>>());
 			}
 			lang2files.get(lang).add(input);
 		}
@@ -91,7 +94,8 @@ public class AnalysisService {
 	}
 
 	private AnalysisResult analyze(ILanguage lang,
-			Collection<AnalysisFileResult> inputs) throws CompilerException {
+			Collection<ParseResult<IStrategoTerm>> inputs)
+			throws CompilerException {
 		logger.debug("Analyzing {} files of the {} language", inputs.size(),
 				lang.name());
 		ITermFactory termFactory = launchConfig.termFactory;
@@ -102,11 +106,11 @@ public class AnalysisService {
 		IStrategoConstructor file_3_constr = termFactory.makeConstructor(
 				"File", 3);
 		Collection<IStrategoAppl> analysisInput = new LinkedList<IStrategoAppl>();
-		for (AnalysisFileResult input : inputs) {
-			IStrategoString filename = termFactory.makeString(input.file()
+		for (ParseResult<IStrategoTerm> input : inputs) {
+			IStrategoString filename = termFactory.makeString(input.source
 					.getName().getPath());
 			analysisInput.add(termFactory.makeAppl(file_3_constr, filename,
-					input.ast(), termFactory.makeReal(-1.0)));
+					input.result, termFactory.makeReal(-1.0)));
 		}
 
 		final IStrategoList inputTerm = termFactory.makeList(analysisInput);
@@ -179,9 +183,9 @@ public class AnalysisService {
 		IStrategoTerm ast = res.getSubterm(4);
 		IStrategoTerm previousAst = res.getSubterm(3);
 
-		return new AnalysisFileResult(new AnalysisFileResult(null, file,
-				Arrays.asList(new IMessage[] {}), previousAst), file, messages,
-				ast);
+		return new AnalysisFileResult(new ParseResult<IStrategoTerm>(
+				previousAst, file, Arrays.asList(new IMessage[] {}), -1), file,
+				messages, ast);
 	}
 
 	private Collection<String> makeAffectedPartitions(IStrategoTerm affectedTerm) {

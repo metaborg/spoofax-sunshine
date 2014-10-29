@@ -13,13 +13,15 @@ import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.sunshine.CompilerCrashHandler;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
-import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageEmitter;
 import org.metaborg.sunshine.pipeline.ILinkManyToMany;
+import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.metaborg.sunshine.prims.ProjectUtils;
 import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
@@ -30,11 +32,13 @@ import org.metaborg.sunshine.services.filesource.FileSourceFilter;
 import org.metaborg.sunshine.services.messages.MessageExtractorLink;
 import org.metaborg.sunshine.services.messages.MessageSink;
 import org.metaborg.sunshine.services.parser.JSGLRLink;
+import org.metaborg.sunshine.services.parser.ParseToAnalysisResultLink;
 import org.metaborg.sunshine.services.pipelined.builders.BuilderInputTermFactoryLink;
 import org.metaborg.sunshine.services.pipelined.builders.BuilderSink;
 import org.metaborg.sunshine.statistics.IValidatable;
 import org.metaborg.sunshine.statistics.Statistics;
 import org.metaborg.util.arrays.Arrays2;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.google.inject.Inject;
 
@@ -86,15 +90,17 @@ public class SunshineMainDriver {
 		FileSourceFilter fsf = new FileSourceFilter(args.filefilter);
 		filesSource.addSink(fsf);
 		logger.trace("Created file source filter {}", fsf);
-		LinkMapperOneToOne<FileObject, AnalysisFileResult> parserMapper = new LinkMapperOneToOne<FileObject, AnalysisFileResult>(
+		LinkMapperOneToOne<FileObject, ParseResult<IStrategoTerm>> parserMapper = new LinkMapperOneToOne<FileObject, ParseResult<IStrategoTerm>>(
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
+		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> parseToAnalysisResultMapper = new ParseToAnalysisResultLink();
+		parserMapper.addSink(parseToAnalysisResultMapper);
 
 		MessageSink messageSink = new MessageSink();
 		emitter = new MessageEmitter(messageSink);
 		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector = new MessageExtractorLink();
-		parserMapper.addSink(messageSelector);
+		parseToAnalysisResultMapper.addSink(messageSelector);
 		logger.trace("Message selector {} linked on parse mapper {}",
 				messageSelector, parserMapper);
 
@@ -102,10 +108,9 @@ public class SunshineMainDriver {
 
 		if (!args.parseonly) {
 			if (!args.legacyobserver) {
-				ILinkManyToMany<AnalysisFileResult, AnalysisFileResult> analyzerLink = null;
+				ILinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
-					// fsf.addSink(analyzerLink);
 					parserMapper.addSink(analyzerLink);
 					analyzerLink.addSink(messageSelector);
 				}
@@ -124,14 +129,14 @@ public class SunshineMainDriver {
 						if (!args.noanalysis)
 							analyzerLink.addSink(inputMakeLink);
 						else
-							parserMapper.addSink(inputMakeLink);
+							parseToAnalysisResultMapper.addSink(inputMakeLink);
 						inputMakeLink.addSink(compileBuilder);
 					}
 				}
 			} else {
-				LinkMapperOneToOne<AnalysisFileResult, AnalysisFileResult> analyzerMapper = null;
+				LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult> analyzerMapper = null;
 				if (!args.noanalysis) {
-					analyzerMapper = new LinkMapperOneToOne<AnalysisFileResult, AnalysisFileResult>(
+					analyzerMapper = new LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult>(
 							new LegacyAnalyzerLink(languageIdentifierService));
 					parserMapper.addSink(analyzerMapper);
 					ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector2 = new MessageExtractorLink();
@@ -151,7 +156,7 @@ public class SunshineMainDriver {
 						logger.trace("Wiring builder up into pipeline");
 
 						if (args.noanalysis) {
-							parserMapper.addSink(inputMakeLink);
+							parseToAnalysisResultMapper.addSink(inputMakeLink);
 						} else {
 							analyzerMapper.addSink(inputMakeLink);
 						}

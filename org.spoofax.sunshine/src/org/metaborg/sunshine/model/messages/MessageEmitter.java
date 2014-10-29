@@ -3,6 +3,8 @@ package org.metaborg.sunshine.model.messages;
 import java.io.PrintStream;
 import java.util.Collection;
 
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.sunshine.services.messages.MessageSink;
 
 public class MessageEmitter {

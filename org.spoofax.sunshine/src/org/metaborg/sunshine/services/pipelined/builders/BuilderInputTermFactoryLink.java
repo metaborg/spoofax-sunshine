@@ -9,10 +9,10 @@ import java.util.HashSet;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.ILinkManyToOne;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
@@ -81,7 +81,7 @@ public class BuilderInputTermFactoryLink implements
 
 				IStrategoTerm ast = onSource
 						&& select.getPayload().previousResult() != null ? select
-						.getPayload().previousResult().ast()
+						.getPayload().previousResult().result
 						: select.getPayload().ast();
 				LaunchConfiguration launch = ServiceRegistry.INSTANCE()
 						.getService(LaunchConfiguration.class);

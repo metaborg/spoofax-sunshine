@@ -12,13 +12,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.messages.MessageHelper;
+import org.metaborg.spoofax.core.messages.MessageSeverity;
+import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.model.messages.IMessage;
-import org.metaborg.sunshine.model.messages.MessageHelper;
-import org.metaborg.sunshine.model.messages.MessageSeverity;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.services.RuntimeService;
@@ -38,7 +39,7 @@ import com.google.inject.Inject;
  * 
  */
 public class LegacyAnalyzerLink extends
-		ALinkOneToOne<AnalysisFileResult, AnalysisFileResult> {
+		ALinkOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult> {
 
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
 
@@ -54,21 +55,22 @@ public class LegacyAnalyzerLink extends
 	}
 
 	@Override
-	public Diff<AnalysisFileResult> sinkWork(Diff<AnalysisFileResult> input) {
+	public Diff<AnalysisFileResult> sinkWork(
+			Diff<ParseResult<IStrategoTerm>> input) {
 		return new Diff<AnalysisFileResult>(analyze(input.getPayload()),
 				input.getDiffKind());
 	}
 
-	private AnalysisFileResult analyze(AnalysisFileResult parseResult) {
-		logger.debug("Analyzing AST of file {}", parseResult.file());
-		if (parseResult.ast() == null) {
+	private AnalysisFileResult analyze(ParseResult<IStrategoTerm> parseResult) {
+		logger.debug("Analyzing AST of file {}", parseResult.source);
+		if (parseResult.result == null) {
 			logger.info(
 					"Analysis cannot continue because there is no AST for file {}",
-					parseResult.file());
+					parseResult.source);
 			return null;
 		}
 		ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
-		final FileObject file = parseResult.file();
+		final FileObject file = parseResult.source;
 		ILanguage lang = languageIdentifierService.identify(file);
 
 		LaunchConfiguration launch = serviceRegistry
@@ -81,7 +83,7 @@ public class LegacyAnalyzerLink extends
 		IStrategoString projectTerm;
 		try {
 			fileTerm = termFactory.makeString(launch.projectDir.getName()
-					.getRelativeName(parseResult.file().getName()));
+					.getRelativeName(parseResult.source.getName()));
 			projectTerm = termFactory.makeString(launch.projectDir.getName()
 					.getPath());
 		} catch (FileSystemException e) {
@@ -90,7 +92,7 @@ public class LegacyAnalyzerLink extends
 			throw new CompilerException(msg, e);
 		}
 
-		IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.ast(),
+		IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result,
 				fileTerm, projectTerm);
 		runtime.setCurrent(inputTerm);
 		String function = lang.facet(StrategoFacet.class).analysisStrategy();
@@ -112,11 +114,11 @@ public class LegacyAnalyzerLink extends
 	}
 
 	private AnalysisFileResult makeAnalysisResult(
-			AnalysisFileResult parseResult, IStrategoTuple resultTuple) {
+			ParseResult<IStrategoTerm> parseResult, IStrategoTuple resultTuple) {
 		assert resultTuple != null;
 		assert resultTuple.getSubtermCount() == 5;
 		IStrategoTerm ast = resultTuple.getSubterm(0);
-		FileObject file = parseResult.file();
+		FileObject file = parseResult.source;
 		Collection<IMessage> messages = new HashSet<IMessage>();
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.ERROR,
 				(IStrategoList) resultTuple.getSubterm(1)));

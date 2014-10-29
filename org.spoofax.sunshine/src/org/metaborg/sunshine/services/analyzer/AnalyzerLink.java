@@ -7,25 +7,27 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.DiffKind;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
 public class AnalyzerLink extends
-		ALinkManyToMany<AnalysisFileResult, AnalysisFileResult> {
+		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> {
 
 	private static final Logger logger = LogManager
 			.getLogger(AnalyzerLink.class.getName());
 
 	@Override
 	public MultiDiff<AnalysisFileResult> sinkWork(
-			MultiDiff<AnalysisFileResult> input) {
+			MultiDiff<ParseResult<IStrategoTerm>> input) {
 		logger.debug("Analyzing {} changed files", input.size());
 
 		final Collection<AnalysisResult> aResults = ServiceRegistry.INSTANCE()
