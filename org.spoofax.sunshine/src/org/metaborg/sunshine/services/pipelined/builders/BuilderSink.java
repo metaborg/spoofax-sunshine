@@ -4,6 +4,7 @@
 package org.metaborg.sunshine.services.pipelined.builders;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -120,8 +121,11 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 								.stringValue());
 				final String resultContents = ((IStrategoString) result
 						.getSubterm(1)).stringValue();
-				IOUtils.write(resultContents, resultFile.getContent()
-						.getOutputStream());
+
+				try (OutputStream stream = resultFile.getContent()
+						.getOutputStream()) {
+					IOUtils.write(resultContents, stream);
+				}
 			} catch (IOException e) {
 				throw new CompilerException("Builder " + action.name
 						+ "failed to write result", e);
