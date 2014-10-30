@@ -3,21 +3,25 @@
  */
 package org.metaborg.sunshine.drivers;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
+import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.sunshine.CompilerCrashHandler;
 import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
-import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
-import org.metaborg.sunshine.model.messages.IMessage;
 import org.metaborg.sunshine.model.messages.MessageEmitter;
 import org.metaborg.sunshine.pipeline.ILinkManyToMany;
+import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.connectors.LinkMapperOneToOne;
 import org.metaborg.sunshine.prims.ProjectUtils;
 import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
@@ -25,14 +29,18 @@ import org.metaborg.sunshine.services.analyzer.AnalyzerLink;
 import org.metaborg.sunshine.services.analyzer.legacy.LegacyAnalyzerLink;
 import org.metaborg.sunshine.services.filesource.FileSource;
 import org.metaborg.sunshine.services.filesource.FileSourceFilter;
-import org.metaborg.sunshine.services.language.LanguageService;
 import org.metaborg.sunshine.services.messages.MessageExtractorLink;
 import org.metaborg.sunshine.services.messages.MessageSink;
 import org.metaborg.sunshine.services.parser.JSGLRLink;
+import org.metaborg.sunshine.services.parser.ParseToAnalysisResultLink;
 import org.metaborg.sunshine.services.pipelined.builders.BuilderInputTermFactoryLink;
 import org.metaborg.sunshine.services.pipelined.builders.BuilderSink;
 import org.metaborg.sunshine.statistics.IValidatable;
 import org.metaborg.sunshine.statistics.Statistics;
+import org.metaborg.util.arrays.Arrays2;
+import org.spoofax.interpreter.terms.IStrategoTerm;
+
+import com.google.inject.Inject;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -42,10 +50,21 @@ public class SunshineMainDriver {
 	private static final Logger logger = LogManager
 			.getLogger(SunshineMainDriver.class.getName());
 
+	private final LaunchConfiguration launchConfig;
+	private final ILanguageService languageService;
+	private final ILanguageIdentifierService languageIdentifierService;
+
 	private MessageEmitter emitter;
 	private FileSource filesSource;
 
-	public SunshineMainDriver() {
+	@Inject
+	public SunshineMainDriver(LaunchConfiguration launchConfig,
+			ILanguageService languageService,
+			ILanguageIdentifierService languageIdentifierService) {
+		this.launchConfig = launchConfig;
+		this.languageService = languageService;
+		this.languageIdentifierService = languageIdentifierService;
+
 		logger.trace("Initializing & setting uncaught exception handler");
 		Thread.currentThread().setUncaughtExceptionHandler(
 				new CompilerCrashHandler());
@@ -53,7 +72,7 @@ public class SunshineMainDriver {
 
 	public void init() throws CompilerException {
 		logger.trace("Beginning init");
-		if (ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).mainArguments.nonincremental) {
+		if (launchConfig.mainArguments.nonincremental) {
 			ProjectUtils.cleanProject();
 			ProjectUtils.unloadTasks();
 			ProjectUtils.unloadIndex();
@@ -61,27 +80,27 @@ public class SunshineMainDriver {
 		logger.trace("Init completed");
 	}
 
-	private void initPipeline() {
+	private void initPipeline() throws IOException {
 		logger.debug("Initializing pipeline");
-		ServiceRegistry env = ServiceRegistry.INSTANCE();
-		LaunchConfiguration launch = env.getService(LaunchConfiguration.class);
-		SunshineMainArguments args = launch.mainArguments;
+		SunshineMainArguments args = launchConfig.mainArguments;
 
 		Statistics.startTimer("PIPELINE_CONSTRUCT");
-		filesSource = new FileSource(launch.projectDir);
+		filesSource = new FileSource(launchConfig.projectDir, languageService);
 		logger.trace("Created file source {}", filesSource);
 		FileSourceFilter fsf = new FileSourceFilter(args.filefilter);
 		filesSource.addSink(fsf);
 		logger.trace("Created file source filter {}", fsf);
-		LinkMapperOneToOne<File, AnalysisFileResult> parserMapper = new LinkMapperOneToOne<File, AnalysisFileResult>(
+		LinkMapperOneToOne<FileObject, ParseResult<IStrategoTerm>> parserMapper = new LinkMapperOneToOne<FileObject, ParseResult<IStrategoTerm>>(
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
+		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> parseToAnalysisResultMapper = new ParseToAnalysisResultLink();
+		parserMapper.addSink(parseToAnalysisResultMapper);
 
 		MessageSink messageSink = new MessageSink();
 		emitter = new MessageEmitter(messageSink);
 		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector = new MessageExtractorLink();
-		parserMapper.addSink(messageSelector);
+		parseToAnalysisResultMapper.addSink(messageSelector);
 		logger.trace("Message selector {} linked on parse mapper {}",
 				messageSelector, parserMapper);
 
@@ -89,54 +108,55 @@ public class SunshineMainDriver {
 
 		if (!args.parseonly) {
 			if (!args.legacyobserver) {
-				ILinkManyToMany<AnalysisFileResult, AnalysisFileResult> analyzerLink = null;
+				ILinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
-					// fsf.addSink(analyzerLink);
 					parserMapper.addSink(analyzerLink);
 					analyzerLink.addSink(messageSelector);
 				}
 
 				if (args.builder != null) {
-					for (File file : getFilesToBuild()) {
+					for (FileObject file : getFilesToBuild()) {
 						logger.trace("Creating builder links for builder {}",
 								args.builder);
 						BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
 								file, args.noanalysis || args.buildonsource,
 								args.buildwitherrors);
 						BuilderSink compileBuilder = new BuilderSink(
-								args.builder);
+								args.builder, launchConfig,
+								languageIdentifierService);
 						logger.trace("Wiring builder up into pipeline");
 						if (!args.noanalysis)
 							analyzerLink.addSink(inputMakeLink);
 						else
-							parserMapper.addSink(inputMakeLink);
+							parseToAnalysisResultMapper.addSink(inputMakeLink);
 						inputMakeLink.addSink(compileBuilder);
 					}
 				}
 			} else {
-				LinkMapperOneToOne<AnalysisFileResult, AnalysisFileResult> analyzerMapper = null;
+				LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult> analyzerMapper = null;
 				if (!args.noanalysis) {
-					analyzerMapper = new LinkMapperOneToOne<AnalysisFileResult, AnalysisFileResult>(
-							new LegacyAnalyzerLink());
+					analyzerMapper = new LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult>(
+							new LegacyAnalyzerLink(languageIdentifierService));
 					parserMapper.addSink(analyzerMapper);
 					ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector2 = new MessageExtractorLink();
 					analyzerMapper.addSink(messageSelector2);
 					messageSelector2.addSink(messageSink);
 				}
 				if (args.builder != null) {
-					for (File file : getFilesToBuild()) {
+					for (FileObject file : getFilesToBuild()) {
 						logger.trace("Creating builder links for builder {}",
 								args.builder);
 						BuilderInputTermFactoryLink inputMakeLink = new BuilderInputTermFactoryLink(
 								file, args.noanalysis || args.buildonsource,
 								args.buildwitherrors);
 						BuilderSink compileBuilder = new BuilderSink(
-								args.builder);
+								args.builder, launchConfig,
+								languageIdentifierService);
 						logger.trace("Wiring builder up into pipeline");
 
 						if (args.noanalysis) {
-							parserMapper.addSink(inputMakeLink);
+							parseToAnalysisResultMapper.addSink(inputMakeLink);
 						} else {
 							analyzerMapper.addSink(inputMakeLink);
 						}
@@ -153,14 +173,12 @@ public class SunshineMainDriver {
 		logger.info("Pipeline initialized");
 	}
 
-	private Collection<File> getFilesToBuild() {
-		ServiceRegistry env = ServiceRegistry.INSTANCE();
-		LaunchConfiguration launch = env.getService(LaunchConfiguration.class);
-		SunshineMainArguments args = launch.mainArguments;
-		Collection<File> files = new LinkedList<File>();
+	private Collection<FileObject> getFilesToBuild() throws IOException {
+		SunshineMainArguments args = launchConfig.mainArguments;
+		Collection<FileObject> files = new LinkedList<FileObject>();
 		if (args.filetobuildon != null) {
-			File buildTargetFile = new File(launch.projectDir,
-					args.filetobuildon);
+			final FileObject buildTargetFile = launchConfig.projectDir
+					.resolveFile(args.filetobuildon);
 			if (!buildTargetFile.exists()) {
 				throw new CompilerException("File not found: "
 						+ args.filetobuildon);
@@ -168,13 +186,12 @@ public class SunshineMainDriver {
 			files.add(buildTargetFile);
 		}
 		if (args.filestobuildon != null) {
-			LanguageService languageService = env
-					.getService(LanguageService.class);
-			files.addAll(FileUtils.listFiles(
-					new File(launch.projectDir, args.filestobuildon),
-					languageService.getSupportedExtens().toArray(
-							new String[languageService.getSupportedExtens()
-									.size()]), true));
+			final FileObject directory = launchConfig.projectDir
+					.resolveFile(args.filestobuildon);
+			final FileObject[] languageFiles = directory
+					.findFiles(new AllLanguagesFileSelector(
+							languageIdentifierService));
+			Arrays2.addAll(files, languageFiles);
 		}
 		if (files.size() == 0 && args.filestobuildon != null) {
 			throw new CompilerException("No files found matching: "
@@ -183,7 +200,7 @@ public class SunshineMainDriver {
 		return files;
 	}
 
-	public int run() {
+	public int run() throws IOException {
 		Statistics.startTimer("RUN");
 		logger.debug("Beginning run");
 		init();
@@ -191,8 +208,7 @@ public class SunshineMainDriver {
 		Statistics
 				.addDataPoint(
 						"INCREMENTAL",
-						ServiceRegistry.INSTANCE().getService(
-								LaunchConfiguration.class).mainArguments.nonincremental ? IValidatable.NEVER_VALIDATABLE
+						launchConfig.mainArguments.nonincremental ? IValidatable.NEVER_VALIDATABLE
 								: IValidatable.ALWAYS_VALIDATABLE);
 		logger.trace("Beginning pushing file changes");
 		Statistics.startTimer("POKE");

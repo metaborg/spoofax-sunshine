@@ -22,6 +22,8 @@ import org.apache.logging.log4j.Logger;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 
+import com.google.inject.Inject;
+
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
@@ -34,10 +36,10 @@ public class Statistics {
 	private final Stack<DataRecording> recordingStack = new Stack<DataRecording>();
 	private final File targetFile;
 
-	public Statistics() {
-		if (isStatEnabled()) {
-			File f = new File(ServiceRegistry.INSTANCE().getService(
-					LaunchConfiguration.class).mainArguments.statstarget);
+	@Inject
+	public Statistics(LaunchConfiguration launchConfig) {
+		if (launchConfig.mainArguments.statstarget != null) {
+			File f = new File(launchConfig.mainArguments.statstarget);
 			targetFile = new File(f.getParent(), FilenameUtils.getBaseName(f
 					.getName())
 					+ "_"

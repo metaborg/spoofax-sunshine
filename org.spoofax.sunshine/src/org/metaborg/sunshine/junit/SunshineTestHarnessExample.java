@@ -1,9 +1,8 @@
 package org.metaborg.sunshine.junit;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
+import org.apache.commons.vfs2.FileObject;
 import org.junit.Test;
 
 /**
@@ -15,36 +14,35 @@ import org.junit.Test;
 public class SunshineTestHarnessExample extends LanguageTestHarness {
 
 	@Override
-	public Path getPathToLanguageRepository() {
-		return FileSystems.getDefault().getPath(
-				"/Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/include");
+	public FileObject getPathToLanguageRepository() {
+		return resourceService
+				.resolve("/Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/include");
 	}
 
 	@Override
-	public Path getPathToInputFile() {
-		return FileSystems.getDefault().getPath(
-				"/Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/test/example.ent");
+	public FileObject getPathToInputFile() {
+		return resourceService
+				.resolve("/Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/test/example.ent");
 	}
 
 	@Test
 	public void testParseFileSucceeds() throws IOException {
-		assertParseSucceeds(getPathToInputFile().toFile());
+		assertParseSucceeds(getPathToInputFile());
 	}
 
 	@Test
 	public void testParseFileFails() throws IOException {
-		assertParseFails(getPathToInputFile().toFile());
+		assertParseFails(getPathToInputFile());
 	}
 
 	@Test
 	public void testAnalyzeFileSucceeds() throws IOException {
-		assertAnalysisSucceeds(getPathToInputFile().toFile());
+		assertAnalysisSucceeds(getPathToInputFile());
 	}
 
 	@Test
 	public void testAnalyzeFileFails() throws IOException {
-		assertAnalysisFails(getPathToInputFile().toFile());
+		assertAnalysisFails(getPathToInputFile());
 	}
-
 
 }

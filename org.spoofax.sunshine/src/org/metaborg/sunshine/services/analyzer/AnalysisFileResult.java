@@ -3,11 +3,12 @@
  */
 package org.metaborg.sunshine.services.analyzer;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.metaborg.sunshine.model.messages.IMessage;
+import org.apache.commons.vfs2.FileObject;
+import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.spoofax.core.parser.ParseResult;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
@@ -15,14 +16,13 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  * 
  */
 public class AnalysisFileResult {
-
 	private final Collection<IMessage> messages = new LinkedList<IMessage>();
-	private File file;
-	private AnalysisFileResult previous;
+	private FileObject file;
+	private ParseResult<IStrategoTerm> previous;
 	private IStrategoTerm ast;
 
-	public AnalysisFileResult(AnalysisFileResult previous, File f, Collection<IMessage> messages,
-			IStrategoTerm ast) {
+	public AnalysisFileResult(ParseResult<IStrategoTerm> previous,
+			FileObject f, Collection<IMessage> messages, IStrategoTerm ast) {
 		this.previous = previous;
 		this.file = f;
 		this.ast = ast;
@@ -37,11 +37,11 @@ public class AnalysisFileResult {
 		return ast;
 	}
 
-	public File file() {
+	public FileObject file() {
 		return file;
 	}
 
-	public AnalysisFileResult previousResult() {
+	public ParseResult<IStrategoTerm> previousResult() {
 		return previous;
 	}
 }

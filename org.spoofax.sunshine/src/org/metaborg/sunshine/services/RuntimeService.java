@@ -1,32 +1,32 @@
 package org.metaborg.sunshine.services;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.runtime.task.primitives.TaskLibrary;
+import org.metaborg.spoofax.core.language.ILanguage;
+import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
+import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
 import org.metaborg.sunshine.SunshineIOAgent;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.prims.SunshineLibrary;
-import org.metaborg.sunshine.services.language.ALanguage;
-import org.metaborg.sunshine.services.language.LanguageService;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.library.index.legacy.LegacyIndexLibrary;
 import org.spoofax.jsglr.client.imploder.ImploderOriginTermFactory;
 import org.strategoxt.HybridInterpreter;
 import org.strategoxt.IncompatibleJarException;
 import org.strategoxt.NoInteropRegistererJarException;
+
+import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 
 /**
  * Singleton service for the production of language-specific Stratego
@@ -39,20 +39,24 @@ import org.strategoxt.NoInteropRegistererJarException;
  * 
  */
 public class RuntimeService {
-	private static final String EXTENSION_CTREE = "ctree";
-	private static final String EXTENSION_JAR = "jar";
-
 	private static final Logger logger = LogManager
 			.getLogger(RuntimeService.class.getName());
 
-	private final Map<ALanguage, HybridInterpreter> prototypes = new HashMap<ALanguage, HybridInterpreter>();
+	private final ILanguageIdentifierService languageIdentifierService;
+
+	private final Map<ILanguage, HybridInterpreter> prototypes = new HashMap<ILanguage, HybridInterpreter>();
+
+	@Inject
+	public RuntimeService(
+			ILanguageIdentifierService languageIdentifierService) {
+		this.languageIdentifierService = languageIdentifierService;
+	}
 
 	/**
 	 * @see #getRuntime(ALanguage)
 	 */
-	public HybridInterpreter getRuntime(File file) {
-		return getRuntime(ServiceRegistry.INSTANCE()
-				.getService(LanguageService.class).getLanguageByExten(file));
+	public HybridInterpreter getRuntime(FileObject file) {
+		return getRuntime(languageIdentifierService.identify(file));
 	}
 
 	/**
@@ -75,7 +79,7 @@ public class RuntimeService {
 	 *         interpreter.
 	 * 
 	 */
-	public HybridInterpreter getRuntime(ALanguage lang) {
+	public HybridInterpreter getRuntime(ILanguage lang) {
 		HybridInterpreter proto = prototypes.get(lang);
 		if (proto == null) {
 			proto = createPrototypeRuntime(lang);
@@ -90,7 +94,7 @@ public class RuntimeService {
 		return interp;
 	}
 
-	private HybridInterpreter createPrototypeRuntime(ALanguage lang) {
+	private HybridInterpreter createPrototypeRuntime(ILanguage lang) {
 		final HybridInterpreter interp = new HybridInterpreter(
 				new ImploderOriginTermFactory(ServiceRegistry.INSTANCE()
 						.getService(LaunchConfiguration.class).termFactory));
@@ -115,40 +119,26 @@ public class RuntimeService {
 	}
 
 	private static void loadCompilerFiles(HybridInterpreter interp,
-			ALanguage lang) {
-		LinkedList<File> jars = new LinkedList<File>();
-		LinkedList<File> ctrees = new LinkedList<File>();
-		for (Path p : lang.getCompilerFiles()) {
-			File file = p.toFile();
-			if (FilenameUtils.getExtension(file.getAbsolutePath())
-					.equalsIgnoreCase(EXTENSION_CTREE)) {
-				ctrees.add(file);
-			} else if (FilenameUtils.getExtension(file.getAbsolutePath())
-					.equalsIgnoreCase(EXTENSION_JAR)) {
-				jars.add(file);
-			} else {
-				throw new RuntimeException(
-						"Unsupported file extension for compiler file: " + file);
-			}
-		}
+			ILanguage lang) {
+		final StrategoFacet strategoFacet = lang.facet(StrategoFacet.class);
+		final Iterable<FileObject> jars = strategoFacet.jarFiles();
+		final Iterable<FileObject> ctrees = strategoFacet.ctreeFiles();
+
 		// for some reason the order is important. We must always load the
 		// ctrees first (if any).
-		if (ctrees.size() > 0)
-			loadCompilerCTree(interp,
-					(File[]) ctrees.toArray(new File[ctrees.size()]));
-		if (jars.size() > 0)
-			loadCompilerJar(interp,
-					(File[]) jars.toArray(new File[jars.size()]));
+		if (Iterables.size(ctrees) > 0)
+			loadCompilerCTree(interp, ctrees);
+		if (Iterables.size(jars) > 0)
+			loadCompilerJar(interp, jars);
 	}
 
-	private static void loadCompilerJar(HybridInterpreter interp, File[] jars) {
-		final URL[] classpath = new URL[jars.length];
-
+	private static void loadCompilerJar(HybridInterpreter interp,
+			Iterable<FileObject> jars) {
 		try {
-			for (int idx = 0; idx < classpath.length; idx++) {
-				File jar = jars[idx];
-				jar = jar.isAbsolute() ? jar : jar.getAbsoluteFile();
-				classpath[idx] = jar.toURI().toURL();
+			final URL[] classpath = new URL[Iterables.size(jars)];
+			int i = 0;
+			for (FileObject jar : jars) {
+				classpath[i] = jar.getURL();
 			}
 			logger.trace("Loading jar files {}", (Object) classpath);
 			interp.loadJars(classpath);
@@ -166,12 +156,12 @@ public class RuntimeService {
 	}
 
 	private static void loadCompilerCTree(HybridInterpreter interp,
-			File[] ctrees) {
+			Iterable<FileObject> ctrees) {
 		try {
-			for (File file : ctrees) {
-				logger.trace("Loading ctree {}", file.getPath());
-				interp.load(new BufferedInputStream(new FileInputStream(file
-						.getAbsolutePath())));
+			for (FileObject file : ctrees) {
+				logger.trace("Loading ctree {}", file.getName());
+				interp.load(new BufferedInputStream(file.getContent()
+						.getInputStream()));
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to load ctree", e);

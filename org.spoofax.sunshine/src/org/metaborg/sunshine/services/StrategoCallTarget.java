@@ -3,8 +3,8 @@
  */
 package org.metaborg.sunshine.services;
 
+import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.services.language.ALanguage;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**
@@ -17,15 +17,15 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  */
 public class StrategoCallTarget {
 
-	private final ALanguage language;
+	private final ILanguage language;
 	private final String strategyName;
 
-	public StrategoCallTarget(ALanguage language, String strategyName) {
+	public StrategoCallTarget(ILanguage language, String strategyName) {
 		this.language = language;
 		this.strategyName = strategyName;
 	}
 
-	public ALanguage getLanguage() {
+	public ILanguage getLanguage() {
 		return language;
 	}
 

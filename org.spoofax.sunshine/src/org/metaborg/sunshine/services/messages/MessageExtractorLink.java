@@ -5,7 +5,7 @@ package org.metaborg.sunshine.services.messages;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.sunshine.model.messages.IMessage;
+import org.metaborg.spoofax.core.messages.IMessage;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.DiffKind;
