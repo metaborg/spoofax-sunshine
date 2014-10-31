@@ -139,6 +139,7 @@ public class RuntimeService {
 			int i = 0;
 			for (FileObject jar : jars) {
 				classpath[i] = jar.getURL();
+				++i;
 			}
 			logger.trace("Loading jar files {}", (Object) classpath);
 			interp.loadJars(classpath);
