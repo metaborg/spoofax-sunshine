@@ -113,7 +113,8 @@ public class Main {
 						.copyOf(resourceService.resolveAll(langArgs.ctrees)),
 						ImmutableSet.copyOf(resourceService
 								.resolveAll(langArgs.jars)), langArgs.observer,
-						null, ImmutableMap.<String, Action> of());
+						null, null, null, null, ImmutableMap
+								.<String, Action> of());
 			}
 		} catch (Exception e) {
 			logger.throwing(e);
