@@ -5,6 +5,7 @@ package org.metaborg.sunshine.drivers;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import org.apache.commons.vfs2.FileObject;
@@ -37,7 +38,6 @@ import org.metaborg.sunshine.services.pipelined.builders.BuilderInputTermFactory
 import org.metaborg.sunshine.services.pipelined.builders.BuilderSink;
 import org.metaborg.sunshine.statistics.IValidatable;
 import org.metaborg.sunshine.statistics.Statistics;
-import org.metaborg.util.arrays.Arrays2;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.google.inject.Inject;
@@ -191,7 +191,7 @@ public class SunshineMainDriver {
 			final FileObject[] languageFiles = directory
 					.findFiles(new AllLanguagesFileSelector(
 							languageIdentifierService));
-			Arrays2.addAll(files, languageFiles);
+			Collections.addAll(files, languageFiles);
 		}
 		if (files.size() == 0 && args.filestobuildon != null) {
 			throw new CompilerException("No files found matching: "
