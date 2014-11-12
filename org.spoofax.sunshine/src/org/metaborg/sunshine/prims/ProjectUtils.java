@@ -89,11 +89,8 @@ public class ProjectUtils {
 		try {
 			launch.cacheDir.delete(new AllFileSelector());
 		} catch (IOException ioex) {
-			logger.fatal(
-					"Could not delete cache directory {} because of exception {}",
-					launch.cacheDir.getName().getPath(), ioex);
-			throw new CompilerException("Could not delete cache directory",
-					ioex);
+			logger.warn("Could not delete cache directory "
+					+ launch.cacheDir.getName().getPath(), ioex);
 		}
 		ProjectUtils.unloadIndex();
 		ProjectUtils.unloadTasks();
