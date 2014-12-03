@@ -1,12 +1,12 @@
 package org.metaborg.sunshine;
 
 import org.metaborg.runtime.task.primitives.TaskLibrary;
+import org.metaborg.spoofax.core.analysis.AnalysisService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.drivers.SunshineMainDriver;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.prims.SunshineLibrary;
-import org.metaborg.sunshine.services.analyzer.AnalysisService;
 import org.metaborg.sunshine.statistics.Statistics;
 import org.spoofax.interpreter.library.IOperatorRegistry;
 import org.spoofax.interpreter.library.index.legacy.LegacyIndexLibrary;

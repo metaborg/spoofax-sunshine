@@ -7,6 +7,9 @@ import java.util.Collection;
 
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
+import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
+import org.metaborg.spoofax.core.analysis.AnalysisResult;
+import org.metaborg.spoofax.core.analysis.AnalysisService;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
@@ -17,9 +20,6 @@ import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
-import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
-import org.metaborg.sunshine.services.analyzer.AnalysisResult;
-import org.metaborg.sunshine.services.analyzer.AnalysisService;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.google.common.collect.Lists;

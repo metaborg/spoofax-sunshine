@@ -9,6 +9,7 @@ import java.util.HashSet;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.messages.IMessage;
 import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -17,7 +18,6 @@ import org.metaborg.sunshine.pipeline.ILinkManyToOne;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
-import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 /**

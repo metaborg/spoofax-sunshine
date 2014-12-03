@@ -7,6 +7,9 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
+import org.metaborg.spoofax.core.analysis.AnalysisResult;
+import org.metaborg.spoofax.core.analysis.AnalysisService;
 import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
