@@ -11,13 +11,13 @@ import java.util.LinkedList;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.spoofax.core.messages.IMessage;
 import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.sunshine.CompilerCrashHandler;
-import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.model.messages.MessageEmitter;
@@ -70,7 +70,7 @@ public class SunshineMainDriver {
 				new CompilerCrashHandler());
 	}
 
-	public void init() throws CompilerException {
+	public void init() throws SpoofaxException {
 		logger.trace("Beginning init");
 		if (launchConfig.mainArguments.nonincremental) {
 			ProjectUtils.cleanProject();
@@ -180,7 +180,7 @@ public class SunshineMainDriver {
 			final FileObject buildTargetFile = launchConfig.projectDir
 					.resolveFile(args.filetobuildon);
 			if (!buildTargetFile.exists()) {
-				throw new CompilerException("File not found: "
+				throw new SpoofaxException("File not found: "
 						+ args.filetobuildon);
 			}
 			files.add(buildTargetFile);
@@ -194,7 +194,7 @@ public class SunshineMainDriver {
 			Collections.addAll(files, languageFiles);
 		}
 		if (files.size() == 0 && args.filestobuildon != null) {
-			throw new CompilerException("No files found matching: "
+			throw new SpoofaxException("No files found matching: "
 					+ args.filestobuildon);
 		}
 		return files;

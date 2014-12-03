@@ -6,15 +6,16 @@ package org.metaborg.sunshine.prims;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.AllFileSelector;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageService;
-import org.metaborg.sunshine.CompilerException;
+import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
+import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
-import org.metaborg.sunshine.services.RuntimeService;
-import org.metaborg.sunshine.services.StrategoCallService;
 import org.spoofax.interpreter.library.AbstractPrimitive;
 import org.spoofax.interpreter.library.IOperatorRegistry;
 import org.spoofax.interpreter.stratego.Strategy;
@@ -42,7 +43,7 @@ public class ProjectUtils {
 			if (anyLang == null)
 				return;
 			HybridInterpreter runtime = serviceRegistry.getService(
-					RuntimeService.class).getRuntime(anyLang);
+					StrategoRuntimeService.class).getRuntime(anyLang);
 			IOperatorRegistry idxLib = runtime.getContext()
 					.getOperatorRegistry("INDEX");
 			AbstractPrimitive unloadIdxPrim = idxLib.get("LANG_index_unload");
@@ -53,7 +54,7 @@ public class ProjectUtils {
 					new IStrategoTerm[] { runtime.getFactory().makeString(
 							launch.projectDir.getName().getPath()) });
 			if (!unloadSuccess) {
-				throw new CompilerException("Could not unload index");
+				throw new SpoofaxException("Could not unload index");
 			}
 		} catch (Exception ex) {
 			logger.warn("Index unload failed", ex);
@@ -72,11 +73,13 @@ public class ProjectUtils {
 					ILanguageService.class).getAny();
 			if (anyLang == null)
 				return;
-			serviceRegistry.getService(StrategoCallService.class).callStratego(
-					anyLang,
-					"task-unload",
-					launch.termFactory.makeString(launch.projectDir.getName()
-							.getPath()));
+			final FileObject projectDir = launch.projectDir;
+			serviceRegistry.getService(IStrategoRuntimeService.class)
+					.callStratego(
+							anyLang,
+							"task-unload",
+							launch.termFactory.makeString(projectDir.getName()
+									.getPath()), projectDir);
 		} catch (Exception ex) {
 			logger.warn("Task engine unload failed", ex);
 		}

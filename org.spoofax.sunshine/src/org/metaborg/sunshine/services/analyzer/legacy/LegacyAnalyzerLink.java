@@ -10,6 +10,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.messages.IMessage;
@@ -17,12 +18,11 @@ import org.metaborg.spoofax.core.messages.MessageHelper;
 import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
-import org.metaborg.sunshine.CompilerException;
+import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
-import org.metaborg.sunshine.services.RuntimeService;
 import org.metaborg.sunshine.services.analyzer.AnalysisFileResult;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.terms.IStrategoList;
@@ -77,7 +77,7 @@ public class LegacyAnalyzerLink extends
 				.getService(LaunchConfiguration.class);
 		ITermFactory termFactory = launch.termFactory;
 		HybridInterpreter runtime = serviceRegistry.getService(
-				RuntimeService.class).getRuntime(lang);
+				StrategoRuntimeService.class).getRuntime(lang);
 
 		IStrategoString fileTerm;
 		IStrategoString projectTerm;
@@ -89,7 +89,7 @@ public class LegacyAnalyzerLink extends
 		} catch (FileSystemException e) {
 			final String msg = "Cannot create path and project-path for analysis input";
 			logger.fatal(msg, e);
-			throw new CompilerException(msg, e);
+			throw new SpoofaxException(msg, e);
 		}
 
 		IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result,
@@ -100,7 +100,7 @@ public class LegacyAnalyzerLink extends
 		try {
 			success = runtime.invoke(function);
 			if (!success) {
-				throw new CompilerException(ANALYSIS_CRASHED_MSG);
+				throw new SpoofaxException(ANALYSIS_CRASHED_MSG);
 			} else {
 				logger.debug("Ignoring further files to analyze. Not implemented");
 				IStrategoTuple resultTuple = (IStrategoTuple) runtime.current();
@@ -109,7 +109,7 @@ public class LegacyAnalyzerLink extends
 				return makeAnalysisResult(parseResult, resultTuple);
 			}
 		} catch (InterpreterException e) {
-			throw new CompilerException(ANALYSIS_CRASHED_MSG, e);
+			throw new SpoofaxException(ANALYSIS_CRASHED_MSG, e);
 		}
 	}
 

@@ -8,11 +8,11 @@ import java.io.IOException;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.parser.IParseService;
 import org.metaborg.spoofax.core.parser.ParseResult;
-import org.metaborg.sunshine.CompilerException;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
@@ -53,7 +53,7 @@ public class JSGLRLink extends
 		} catch (IOException e) {
 			final String msg = "Could not parse" + file;
 			logger.fatal(msg, e);
-			throw new CompilerException(msg, e);
+			throw new SpoofaxException(msg, e);
 		}
 	}
 

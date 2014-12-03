@@ -11,16 +11,16 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.service.actions.Action;
 import org.metaborg.spoofax.core.service.actions.ActionsFacet;
-import org.metaborg.sunshine.CompilerException;
+import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
-import org.metaborg.sunshine.services.StrategoCallService;
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
@@ -79,7 +79,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	 * @param product
 	 *            The {@link BuilderInputTerm} to run this builder on.
 	 * 
-	 * @throws CompilerException
+	 * @throws SpoofaxException
 	 */
 	@Override
 	public void sink(Diff<BuilderInputTerm> product) {
@@ -99,16 +99,16 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 		} catch (FileSystemException e) {
 			final String msg = "Cannot construct input tuple for builder";
 			logger.fatal(msg, e);
-			throw new CompilerException(msg, e);
+			throw new SpoofaxException(msg, e);
 		}
 	}
 
 	private IStrategoTerm invoke(Action action, IStrategoTerm input) {
 		IStrategoTerm result = ServiceRegistry
 				.INSTANCE()
-				.getService(StrategoCallService.class)
+				.getService(IStrategoRuntimeService.class)
 				.callStratego(action.inputLangauge, action.strategoStrategy,
-						input);
+						input, lauchConfig.projectDir);
 		processResult(action, result);
 		return result;
 	}
@@ -127,7 +127,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 					IOUtils.write(resultContents, stream);
 				}
 			} catch (IOException e) {
-				throw new CompilerException("Builder " + action.name
+				throw new SpoofaxException("Builder " + action.name
 						+ "failed to write result", e);
 			}
 		}
@@ -140,7 +140,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 			} else {
 				logger.fatal("Builder returned an unsupported result type {}",
 						result);
-				throw new CompilerException(
+				throw new SpoofaxException(
 						"Unsupported return value from builder: " + result);
 			}
 		} else {
@@ -149,7 +149,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 					|| !(result.getSubterm(1) instanceof IStrategoString)) {
 				logger.fatal("Builder returned an unsupported result type {}",
 						result);
-				throw new CompilerException(
+				throw new SpoofaxException(
 						"Unsupported return value from builder: " + result);
 			} else {
 				return true;

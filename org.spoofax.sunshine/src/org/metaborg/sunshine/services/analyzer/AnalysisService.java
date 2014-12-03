@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.messages.IMessage;
@@ -20,9 +21,8 @@ import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
-import org.metaborg.sunshine.CompilerException;
+import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
-import org.metaborg.sunshine.services.RuntimeService;
 import org.spoofax.interpreter.core.InterpreterException;
 import org.spoofax.interpreter.core.Tools;
 import org.spoofax.interpreter.terms.IStrategoAppl;
@@ -47,13 +47,13 @@ public class AnalysisService {
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
 
 	private final LaunchConfiguration launchConfig;
-	private final RuntimeService runtimeService;
+	private final IStrategoRuntimeService runtimeService;
 	private final ILanguageIdentifierService languageIdentifierService;
 	private final IResourceService resourceService;
 
 	@Inject
 	public AnalysisService(LaunchConfiguration launchConfig,
-			RuntimeService runtimeService,
+			IStrategoRuntimeService runtimeService,
 			ILanguageIdentifierService languageIdentifierService,
 			IResourceService resourceService) {
 		this.launchConfig = launchConfig;
@@ -69,11 +69,11 @@ public class AnalysisService {
 	 * 
 	 * @see #analyze(File)
 	 * @param inputs
-	 * @throws CompilerException
+	 * @throws SpoofaxException
 	 */
 	public Collection<AnalysisResult> analyze(
 			Collection<ParseResult<IStrategoTerm>> inputs)
-			throws CompilerException {
+			throws SpoofaxException {
 		logger.debug("Analyzing {} files", inputs.size());
 		Map<ILanguage, Collection<ParseResult<IStrategoTerm>>> lang2files = new HashMap<ILanguage, Collection<ParseResult<IStrategoTerm>>>();
 		for (ParseResult<IStrategoTerm> input : inputs) {
@@ -95,7 +95,7 @@ public class AnalysisService {
 
 	private AnalysisResult analyze(ILanguage lang,
 			Collection<ParseResult<IStrategoTerm>> inputs)
-			throws CompilerException {
+			throws SpoofaxException {
 		logger.debug("Analyzing {} files of the {} language", inputs.size(),
 				lang.name());
 		ITermFactory termFactory = launchConfig.termFactory;
@@ -125,12 +125,12 @@ public class AnalysisService {
 			boolean success = runtime.invoke(function);
 			logger.debug("Analysis completed with success: {}", success);
 			if (!success) {
-				throw new CompilerException(ANALYSIS_CRASHED_MSG);
+				throw new SpoofaxException(ANALYSIS_CRASHED_MSG);
 			} else {
 				if (!(runtime.current() instanceof IStrategoAppl)) {
 					logger.fatal("Unexpected results from analysis {}",
 							runtime.current());
-					throw new CompilerException(
+					throw new SpoofaxException(
 							"Unexpected results from analysis: "
 									+ runtime.current());
 				}
@@ -163,7 +163,7 @@ public class AnalysisService {
 						affectedPartitions, debugResult, timeResult);
 			}
 		} catch (InterpreterException interpex) {
-			throw new CompilerException(ANALYSIS_CRASHED_MSG, interpex);
+			throw new SpoofaxException(ANALYSIS_CRASHED_MSG, interpex);
 		}
 	}
 
