@@ -9,7 +9,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.AnalysisResult;
-import org.metaborg.spoofax.core.analysis.AnalysisService;
+import org.metaborg.spoofax.core.analysis.IAnalysisService;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
@@ -23,6 +23,7 @@ import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.google.common.collect.Lists;
+import com.google.inject.TypeLiteral;
 
 /**
  * Thin wrapper over Sunshine to use for testing languages' parser/analyzer
@@ -56,9 +57,10 @@ public abstract class LanguageTestHarness {
 		final ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
 		final ILanguage language = serviceRegistry.getService(
 				ILanguageIdentifierService.class).identify(inputFile);
-		@SuppressWarnings("unchecked")
+
 		final ParseResult<IStrategoTerm> parseResult = serviceRegistry
-				.getService(IParseService.class).parse(inputFile, language);
+				.getService(new TypeLiteral<IParseService<IStrategoTerm>>() {
+				}).parse(inputFile, language);
 		assertNoMessage(parseResult, MessageSeverity.ERROR);
 	}
 
@@ -75,14 +77,16 @@ public abstract class LanguageTestHarness {
 		final ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
 		final ILanguage language = serviceRegistry.getService(
 				ILanguageIdentifierService.class).identify(inputFile);
-		@SuppressWarnings("unchecked")
+
 		final ParseResult<IStrategoTerm> parseResult = serviceRegistry
-				.getService(IParseService.class).parse(inputFile, language);
-		@SuppressWarnings("unchecked")
-		Collection<AnalysisResult> analysisResults = ServiceRegistry.INSTANCE()
-				.getService(AnalysisService.class)
-				.analyze(Lists.newArrayList(parseResult));
-		for (AnalysisResult result : analysisResults) {
+				.getService(new TypeLiteral<IParseService<IStrategoTerm>>() {
+				}).parse(inputFile, language);
+		Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> analysisResults = ServiceRegistry
+				.INSTANCE()
+				.getService(
+						new TypeLiteral<IAnalysisService<IStrategoTerm, IStrategoTerm>>() {
+						}).analyze(Lists.newArrayList(parseResult));
+		for (AnalysisResult<IStrategoTerm, IStrategoTerm> result : analysisResults) {
 			assertNotEquals("No analysis results", result.fileResults.size(), 0);
 			assertNoMessage(result.fileResults, MessageSeverity.ERROR);
 		}
@@ -97,9 +101,10 @@ public abstract class LanguageTestHarness {
 		fail("Analysis succeeded, failure expected");
 	}
 
-	public static void assertNoMessage(Collection<AnalysisFileResult> results,
+	public static void assertNoMessage(
+			Collection<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> results,
 			MessageSeverity severity) {
-		for (AnalysisFileResult result : results) {
+		for (AnalysisFileResult<IStrategoTerm, IStrategoTerm> result : results) {
 			for (IMessage msg : result.messages()) {
 				assertNotEquals(severity + msg.toString() + "\n",
 						msg.severity(), severity);

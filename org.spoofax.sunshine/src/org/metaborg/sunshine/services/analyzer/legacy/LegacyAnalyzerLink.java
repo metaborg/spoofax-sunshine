@@ -38,8 +38,9 @@ import com.google.inject.Inject;
  * @author vladvergu
  * 
  */
-public class LegacyAnalyzerLink extends
-		ALinkOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult> {
+public class LegacyAnalyzerLink
+		extends
+		ALinkOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult<IStrategoTerm, IStrategoTerm>> {
 
 	private final static String ANALYSIS_CRASHED_MSG = "Analysis failed";
 
@@ -55,13 +56,14 @@ public class LegacyAnalyzerLink extends
 	}
 
 	@Override
-	public Diff<AnalysisFileResult> sinkWork(
+	public Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> sinkWork(
 			Diff<ParseResult<IStrategoTerm>> input) {
-		return new Diff<AnalysisFileResult>(analyze(input.getPayload()),
-				input.getDiffKind());
+		return new Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>>(
+				analyze(input.getPayload()), input.getDiffKind());
 	}
 
-	private AnalysisFileResult analyze(ParseResult<IStrategoTerm> parseResult) {
+	private AnalysisFileResult<IStrategoTerm, IStrategoTerm> analyze(
+			ParseResult<IStrategoTerm> parseResult) {
 		logger.debug("Analyzing AST of file {}", parseResult.source);
 		if (parseResult.result == null) {
 			logger.info(
@@ -113,7 +115,7 @@ public class LegacyAnalyzerLink extends
 		}
 	}
 
-	private AnalysisFileResult makeAnalysisResult(
+	private AnalysisFileResult<IStrategoTerm, IStrategoTerm> makeAnalysisResult(
 			ParseResult<IStrategoTerm> parseResult, IStrategoTuple resultTuple) {
 		assert resultTuple != null;
 		assert resultTuple.getSubtermCount() == 5;
@@ -127,6 +129,7 @@ public class LegacyAnalyzerLink extends
 				(IStrategoList) resultTuple.getSubterm(2)));
 		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.NOTE,
 				(IStrategoList) resultTuple.getSubterm(3)));
-		return new AnalysisFileResult(parseResult, file, messages, ast);
+		return new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(
+				parseResult, file, messages, ast);
 	}
 }

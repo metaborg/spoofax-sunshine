@@ -1,7 +1,6 @@
 package org.metaborg.sunshine;
 
 import org.metaborg.runtime.task.primitives.TaskLibrary;
-import org.metaborg.spoofax.core.analysis.AnalysisService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.drivers.SunshineMainDriver;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -28,7 +27,6 @@ public class SunshineModule extends AbstractModule {
 		bind(LaunchConfiguration.class).asEagerSingleton();
 		bind(SunshineMainDriver.class).asEagerSingleton();
 		bind(StrategoRuntimeService.class).asEagerSingleton();
-		bind(AnalysisService.class).asEagerSingleton();
 		bind(Statistics.class).asEagerSingleton();
 
 		final Multibinder<IOperatorRegistry> strategoLibraryBinder = Multibinder

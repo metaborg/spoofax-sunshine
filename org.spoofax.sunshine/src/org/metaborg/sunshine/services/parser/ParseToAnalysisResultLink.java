@@ -7,17 +7,20 @@ import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
-public class ParseToAnalysisResultLink extends
-		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> {
+public class ParseToAnalysisResultLink
+		extends
+		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult<IStrategoTerm, IStrategoTerm>> {
 	@Override
-	public MultiDiff<AnalysisFileResult> sinkWork(
+	public MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> sinkWork(
 			MultiDiff<ParseResult<IStrategoTerm>> input) {
-		final MultiDiff<AnalysisFileResult> output = new MultiDiff<AnalysisFileResult>();
+		final MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> output = new MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>>();
 		for (Diff<ParseResult<IStrategoTerm>> diff : input) {
 			final ParseResult<IStrategoTerm> parseResult = diff.getPayload();
-			output.add(new Diff<AnalysisFileResult>(new AnalysisFileResult(
-					parseResult, parseResult.source, parseResult.messages,
-					parseResult.result), diff.getDiffKind()));
+			output.add(new Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>>(
+					new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(
+							parseResult, parseResult.source,
+							parseResult.messages, parseResult.result), diff
+							.getDiffKind()));
 		}
 		return output;
 	}

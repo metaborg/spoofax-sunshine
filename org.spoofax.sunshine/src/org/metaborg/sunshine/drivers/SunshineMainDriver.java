@@ -93,13 +93,13 @@ public class SunshineMainDriver {
 		LinkMapperOneToOne<FileObject, ParseResult<IStrategoTerm>> parserMapper = new LinkMapperOneToOne<FileObject, ParseResult<IStrategoTerm>>(
 				new JSGLRLink());
 		logger.trace("Created mapper {} for parser", parserMapper);
-		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> parseToAnalysisResultMapper = new ParseToAnalysisResultLink();
+		ALinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult<IStrategoTerm, IStrategoTerm>> parseToAnalysisResultMapper = new ParseToAnalysisResultLink();
 		parserMapper.addSink(parseToAnalysisResultMapper);
 
 		MessageSink messageSink = new MessageSink();
 		emitter = new MessageEmitter(messageSink);
 		fsf.addSink(parserMapper);
-		ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector = new MessageExtractorLink();
+		ILinkManyToMany<AnalysisFileResult<IStrategoTerm, IStrategoTerm>, IMessage> messageSelector = new MessageExtractorLink();
 		parseToAnalysisResultMapper.addSink(messageSelector);
 		logger.trace("Message selector {} linked on parse mapper {}",
 				messageSelector, parserMapper);
@@ -108,7 +108,7 @@ public class SunshineMainDriver {
 
 		if (!args.parseonly) {
 			if (!args.legacyobserver) {
-				ILinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult> analyzerLink = null;
+				ILinkManyToMany<ParseResult<IStrategoTerm>, AnalysisFileResult<IStrategoTerm, IStrategoTerm>> analyzerLink = null;
 				if (!args.noanalysis) {
 					analyzerLink = new AnalyzerLink();
 					parserMapper.addSink(analyzerLink);
@@ -134,12 +134,12 @@ public class SunshineMainDriver {
 					}
 				}
 			} else {
-				LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult> analyzerMapper = null;
+				LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult<IStrategoTerm, IStrategoTerm>> analyzerMapper = null;
 				if (!args.noanalysis) {
-					analyzerMapper = new LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult>(
+					analyzerMapper = new LinkMapperOneToOne<ParseResult<IStrategoTerm>, AnalysisFileResult<IStrategoTerm, IStrategoTerm>>(
 							new LegacyAnalyzerLink(languageIdentifierService));
 					parserMapper.addSink(analyzerMapper);
-					ILinkManyToMany<AnalysisFileResult, IMessage> messageSelector2 = new MessageExtractorLink();
+					ILinkManyToMany<AnalysisFileResult<IStrategoTerm, IStrategoTerm>, IMessage> messageSelector2 = new MessageExtractorLink();
 					analyzerMapper.addSink(messageSelector2);
 					messageSelector2.addSink(messageSink);
 				}

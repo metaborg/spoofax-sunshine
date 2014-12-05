@@ -19,6 +19,8 @@ import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.DiffKind;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
+import com.google.inject.TypeLiteral;
+
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
@@ -42,9 +44,11 @@ public class JSGLRLink extends
 		final ILanguage language = serviceRegistry.getService(
 				ILanguageIdentifierService.class).identify(file);
 		try {
-			@SuppressWarnings("unchecked")
 			final ParseResult<IStrategoTerm> parseResult = serviceRegistry
-					.getService(IParseService.class).parse(file, language);
+					.getService(
+							new TypeLiteral<IParseService<IStrategoTerm>>() {
+							}).parse(file,
+							language);
 			logger.trace("Parsing of file {} produced AST {} and {} messages",
 					input.getPayload(), parseResult.result,
 					parseResult.messages.size());

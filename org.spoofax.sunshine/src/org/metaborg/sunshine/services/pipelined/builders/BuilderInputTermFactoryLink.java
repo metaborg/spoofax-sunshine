@@ -24,8 +24,9 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
  * 
  */
-public class BuilderInputTermFactoryLink implements
-		ILinkManyToOne<AnalysisFileResult, BuilderInputTerm> {
+public class BuilderInputTermFactoryLink
+		implements
+		ILinkManyToOne<AnalysisFileResult<IStrategoTerm, IStrategoTerm>, BuilderInputTerm> {
 
 	private static final Logger logger = LogManager
 			.getLogger(BuilderInputTermFactoryLink.class.getName());
@@ -52,11 +53,12 @@ public class BuilderInputTermFactoryLink implements
 	}
 
 	@Override
-	public void sink(MultiDiff<AnalysisFileResult> product) {
+	public void sink(
+			MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> product) {
 		assert product != null;
 		logger.trace("Creating builder input term for product");
-		Diff<AnalysisFileResult> select = null;
-		for (Diff<AnalysisFileResult> diff : product) {
+		Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> select = null;
+		for (Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> diff : product) {
 			if (diff.getPayload().file().getName().getPath()
 					.equals(path.getName().getPath())) {
 				select = diff;
@@ -80,9 +82,9 @@ public class BuilderInputTermFactoryLink implements
 						.getPayload().file());
 
 				IStrategoTerm ast = onSource
-						&& select.getPayload().previousResult() != null ? select
-						.getPayload().previousResult().result
-						: select.getPayload().ast();
+						&& select.getPayload().parseResult() != null ? select
+						.getPayload().parseResult().result : select
+						.getPayload().result();
 				LaunchConfiguration launch = ServiceRegistry.INSTANCE()
 						.getService(LaunchConfiguration.class);
 				BuilderInputTerm payload = new BuilderInputTerm(
