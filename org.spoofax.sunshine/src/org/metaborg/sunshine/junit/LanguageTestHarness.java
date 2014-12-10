@@ -3,7 +3,6 @@ package org.metaborg.sunshine.junit;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
@@ -20,9 +19,10 @@ import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
+import org.metaborg.util.iterators.Iterables2;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
 import com.google.inject.TypeLiteral;
 
 /**
@@ -81,15 +81,14 @@ public abstract class LanguageTestHarness {
 		final ParseResult<IStrategoTerm> parseResult = serviceRegistry
 				.getService(new TypeLiteral<IParseService<IStrategoTerm>>() {
 				}).parse(inputFile, language);
-		Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> analysisResults = ServiceRegistry
+		AnalysisResult<IStrategoTerm, IStrategoTerm> result = ServiceRegistry
 				.INSTANCE()
 				.getService(
 						new TypeLiteral<IAnalysisService<IStrategoTerm, IStrategoTerm>>() {
-						}).analyze(Lists.newArrayList(parseResult));
-		for (AnalysisResult<IStrategoTerm, IStrategoTerm> result : analysisResults) {
-			assertNotEquals("No analysis results", result.fileResults.size(), 0);
-			assertNoMessage(result.fileResults, MessageSeverity.ERROR);
-		}
+						}).analyze(Iterables2.singleton(parseResult), language);
+		assertNotEquals("No analysis results",
+				Iterables.size(result.fileResults), 0);
+		assertNoMessage(result.fileResults, MessageSeverity.ERROR);
 	}
 
 	public void assertAnalysisFails(FileObject inputFile) throws IOException {
@@ -102,7 +101,7 @@ public abstract class LanguageTestHarness {
 	}
 
 	public static void assertNoMessage(
-			Collection<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> results,
+			Iterable<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> results,
 			MessageSeverity severity) {
 		for (AnalysisFileResult<IStrategoTerm, IStrategoTerm> result : results) {
 			for (IMessage msg : result.messages()) {

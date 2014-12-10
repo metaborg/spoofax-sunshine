@@ -7,9 +7,11 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.AnalysisResult;
 import org.metaborg.spoofax.core.analysis.IAnalysisService;
+import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
@@ -18,6 +20,9 @@ import org.metaborg.sunshine.pipeline.diff.DiffKind;
 import org.metaborg.sunshine.pipeline.diff.MultiDiff;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
+import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.inject.TypeLiteral;
 
 /**
@@ -36,11 +41,13 @@ public class AnalyzerLink
 			MultiDiff<ParseResult<IStrategoTerm>> input) {
 		logger.debug("Analyzing {} changed files", input.size());
 
-		final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> aResults = ServiceRegistry
-				.INSTANCE()
-				.getService(
-						new TypeLiteral<IAnalysisService<IStrategoTerm, IStrategoTerm>>() {
-						}).analyze(input.values());
+		final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> aResults = analyze(
+				input.values(),
+				ServiceRegistry
+						.INSTANCE()
+						.getService(
+								new TypeLiteral<IAnalysisService<IStrategoTerm, IStrategoTerm>>() {
+								}));
 
 		logger.trace("Analysis completed with {} results", aResults.size());
 		final MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> results = new MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>>();
@@ -50,6 +57,25 @@ public class AnalyzerLink
 				results.add(new Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>>(
 						fileResult, DiffKind.ADDITION));
 			}
+		}
+		return results;
+	}
+
+	public Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> analyze(
+			Collection<ParseResult<IStrategoTerm>> inputs,
+			IAnalysisService<IStrategoTerm, IStrategoTerm> analyzer)
+			throws SpoofaxException {
+		logger.debug("Analyzing {} files", inputs.size());
+		Multimap<ILanguage, ParseResult<IStrategoTerm>> lang2files = LinkedHashMultimap
+				.create();
+		for (ParseResult<IStrategoTerm> input : inputs) {
+			lang2files.put(input.parsedWith, input);
+		}
+		logger.trace("Files grouped in {} languages", lang2files.size());
+		final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> results = Lists
+				.newArrayList(lang2files.keySet().size());
+		for (ILanguage lang : lang2files.keySet()) {
+			results.add(analyzer.analyze(lang2files.get(lang), lang));
 		}
 		return results;
 	}
