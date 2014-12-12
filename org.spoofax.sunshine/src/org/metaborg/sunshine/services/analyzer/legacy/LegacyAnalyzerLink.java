@@ -15,7 +15,7 @@ import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.messages.IMessage;
-import org.metaborg.spoofax.core.messages.MessageHelper;
+import org.metaborg.spoofax.core.messages.MessageFactory;
 import org.metaborg.spoofax.core.messages.MessageSeverity;
 import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.service.stratego.StrategoFacet;
@@ -122,12 +122,12 @@ public class LegacyAnalyzerLink
 		IStrategoTerm ast = resultTuple.getSubterm(0);
 		FileObject file = parseResult.source;
 		Collection<IMessage> messages = new HashSet<IMessage>();
-		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.ERROR,
+		messages.addAll(MessageFactory.makeMessages(file, MessageSeverity.ERROR,
 				(IStrategoList) resultTuple.getSubterm(1)));
-		messages.addAll(MessageHelper.makeMessages(file,
+		messages.addAll(MessageFactory.makeMessages(file,
 				MessageSeverity.WARNING,
 				(IStrategoList) resultTuple.getSubterm(2)));
-		messages.addAll(MessageHelper.makeMessages(file, MessageSeverity.NOTE,
+		messages.addAll(MessageFactory.makeMessages(file, MessageSeverity.NOTE,
 				(IStrategoList) resultTuple.getSubterm(3)));
 		return new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(
 				parseResult, file, messages, ast);
