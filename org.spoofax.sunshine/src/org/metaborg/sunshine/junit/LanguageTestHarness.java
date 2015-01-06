@@ -14,9 +14,9 @@ import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.messages.IMessage;
 import org.metaborg.spoofax.core.messages.MessageSeverity;
-import org.metaborg.spoofax.core.parser.IParseService;
-import org.metaborg.spoofax.core.parser.ParseResult;
 import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.syntax.ISyntaxService;
+import org.metaborg.spoofax.core.syntax.ParseResult;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.util.iterators.Iterables2;
@@ -59,7 +59,7 @@ public abstract class LanguageTestHarness {
 				ILanguageIdentifierService.class).identify(inputFile);
 
 		final ParseResult<IStrategoTerm> parseResult = serviceRegistry
-				.getService(new TypeLiteral<IParseService<IStrategoTerm>>() {
+				.getService(new TypeLiteral<ISyntaxService<IStrategoTerm>>() {
 				}).parse(inputFile, language);
 		assertNoMessage(parseResult, MessageSeverity.ERROR);
 	}
@@ -79,7 +79,7 @@ public abstract class LanguageTestHarness {
 				ILanguageIdentifierService.class).identify(inputFile);
 
 		final ParseResult<IStrategoTerm> parseResult = serviceRegistry
-				.getService(new TypeLiteral<IParseService<IStrategoTerm>>() {
+				.getService(new TypeLiteral<ISyntaxService<IStrategoTerm>>() {
 				}).parse(inputFile, language);
 		AnalysisResult<IStrategoTerm, IStrategoTerm> result = ServiceRegistry
 				.INSTANCE()

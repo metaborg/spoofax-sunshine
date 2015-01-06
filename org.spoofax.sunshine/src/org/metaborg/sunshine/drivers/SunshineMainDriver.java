@@ -17,7 +17,8 @@ import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.spoofax.core.messages.IMessage;
-import org.metaborg.spoofax.core.parser.ParseResult;
+import org.metaborg.spoofax.core.syntax.ParseResult;
+import org.metaborg.spoofax.core.text.ISourceTextService;
 import org.metaborg.sunshine.CompilerCrashHandler;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
@@ -53,6 +54,7 @@ public class SunshineMainDriver {
 	private final LaunchConfiguration launchConfig;
 	private final ILanguageService languageService;
 	private final ILanguageIdentifierService languageIdentifierService;
+	private final ISourceTextService sourceTextService;
 
 	private MessageEmitter emitter;
 	private FileSource filesSource;
@@ -60,10 +62,12 @@ public class SunshineMainDriver {
 	@Inject
 	public SunshineMainDriver(LaunchConfiguration launchConfig,
 			ILanguageService languageService,
-			ILanguageIdentifierService languageIdentifierService) {
+			ILanguageIdentifierService languageIdentifierService,
+			ISourceTextService sourceTextService) {
 		this.launchConfig = launchConfig;
 		this.languageService = languageService;
 		this.languageIdentifierService = languageIdentifierService;
+		this.sourceTextService = sourceTextService;
 
 		logger.trace("Initializing & setting uncaught exception handler");
 		Thread.currentThread().setUncaughtExceptionHandler(
@@ -97,7 +101,7 @@ public class SunshineMainDriver {
 		parserMapper.addSink(parseToAnalysisResultMapper);
 
 		MessageSink messageSink = new MessageSink();
-		emitter = new MessageEmitter(messageSink);
+		emitter = new MessageEmitter(messageSink, sourceTextService);
 		fsf.addSink(parserMapper);
 		ILinkManyToMany<AnalysisFileResult<IStrategoTerm, IStrategoTerm>, IMessage> messageSelector = new MessageExtractorLink();
 		parseToAnalysisResultMapper.addSink(messageSelector);

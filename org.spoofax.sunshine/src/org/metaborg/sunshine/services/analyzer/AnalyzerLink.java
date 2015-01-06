@@ -12,7 +12,7 @@ import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.AnalysisResult;
 import org.metaborg.spoofax.core.analysis.IAnalysisService;
 import org.metaborg.spoofax.core.language.ILanguage;
-import org.metaborg.spoofax.core.parser.ParseResult;
+import org.metaborg.spoofax.core.syntax.ParseResult;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;

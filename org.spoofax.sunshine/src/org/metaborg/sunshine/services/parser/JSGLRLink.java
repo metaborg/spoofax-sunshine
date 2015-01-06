@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
-import org.metaborg.spoofax.core.parser.IParseService;
-import org.metaborg.spoofax.core.parser.ParseResult;
+import org.metaborg.spoofax.core.syntax.ISyntaxService;
+import org.metaborg.spoofax.core.syntax.ParseResult;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
@@ -46,7 +46,7 @@ public class JSGLRLink extends
 		try {
 			final ParseResult<IStrategoTerm> parseResult = serviceRegistry
 					.getService(
-							new TypeLiteral<IParseService<IStrategoTerm>>() {
+							new TypeLiteral<ISyntaxService<IStrategoTerm>>() {
 							}).parse(file,
 							language);
 			logger.trace("Parsing of file {} produced AST {} and {} messages",
