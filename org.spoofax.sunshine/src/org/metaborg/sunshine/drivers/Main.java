@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.metaborg.spoofax.core.SpoofaxModule;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
 import org.metaborg.spoofax.core.language.LanguageVersion;
 import org.metaborg.spoofax.core.resource.IResourceService;
@@ -86,8 +85,8 @@ public class Main {
 
 	public static void initEnvironment(SunshineMainArguments args) {
 		logger.trace("Initializing the environment");
-		final Injector injector = Guice.createInjector(new SpoofaxModule(),
-				new SunshineModule(args));
+		final Injector injector = Guice
+				.createInjector(new SunshineModule(args));
 		env.setInjector(injector);
 	}
 

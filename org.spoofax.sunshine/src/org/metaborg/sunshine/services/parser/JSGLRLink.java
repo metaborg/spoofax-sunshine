@@ -47,8 +47,7 @@ public class JSGLRLink extends
 			final ParseResult<IStrategoTerm> parseResult = serviceRegistry
 					.getService(
 							new TypeLiteral<ISyntaxService<IStrategoTerm>>() {
-							}).parse(file,
-							language);
+							}).parse(file, language);
 			logger.trace("Parsing of file {} produced AST {} and {} messages",
 					input.getPayload(), parseResult.result,
 					parseResult.messages.size());
@@ -60,5 +59,4 @@ public class JSGLRLink extends
 			throw new SpoofaxException(msg, e);
 		}
 	}
-
 }
