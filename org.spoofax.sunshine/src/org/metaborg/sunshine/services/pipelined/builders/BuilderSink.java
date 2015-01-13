@@ -119,8 +119,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 				final FileObject resultFile = lauchConfig.projectDir
 						.resolveFile(((IStrategoString) result.getSubterm(0))
 								.stringValue());
-				final String resultContents = ((IStrategoString) result
-						.getSubterm(1)).stringValue();
+				final String resultContents = result.getSubterm(1).toString();
 
 				try (OutputStream stream = resultFile.getContent()
 						.getOutputStream()) {
@@ -145,8 +144,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 			}
 		} else {
 			if (result == null || result.getSubtermCount() != 2
-					|| !(result.getSubterm(0) instanceof IStrategoString)
-					|| !(result.getSubterm(1) instanceof IStrategoString)) {
+					|| !(result.getSubterm(0) instanceof IStrategoString)) {
 				logger.fatal("Builder returned an unsupported result type {}",
 						result);
 				throw new SpoofaxException(
