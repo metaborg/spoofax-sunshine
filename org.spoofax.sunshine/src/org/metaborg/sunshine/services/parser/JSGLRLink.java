@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.metaborg.sunshine.services.parser;
 
 import java.io.IOException;
@@ -13,6 +10,7 @@ import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.syntax.ISyntaxService;
 import org.metaborg.spoofax.core.syntax.ParseResult;
+import org.metaborg.spoofax.core.text.ISourceTextService;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkOneToOne;
 import org.metaborg.sunshine.pipeline.diff.Diff;
@@ -21,10 +19,6 @@ import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.google.inject.TypeLiteral;
 
-/**
- * @author Vlad Vergu <v.a.vergu add tudelft.nl>
- * 
- */
 public class JSGLRLink extends
 		ALinkOneToOne<FileObject, ParseResult<IStrategoTerm>> {
 
@@ -44,10 +38,12 @@ public class JSGLRLink extends
 		final ILanguage language = serviceRegistry.getService(
 				ILanguageIdentifierService.class).identify(file);
 		try {
+			final String inputText = serviceRegistry.getService(
+					ISourceTextService.class).text(file);
 			final ParseResult<IStrategoTerm> parseResult = serviceRegistry
 					.getService(
 							new TypeLiteral<ISyntaxService<IStrategoTerm>>() {
-							}).parse(file, language);
+							}).parse(inputText, file, language);
 			logger.trace("Parsing of file {} produced AST {} and {} messages",
 					input.getPayload(), parseResult.result,
 					parseResult.messages.size());
