@@ -127,7 +127,14 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 				final FileObject resultFile = lauchConfig.projectDir
 						.resolveFile(((IStrategoString) result.getSubterm(0))
 								.stringValue());
-				final String resultContents = result.getSubterm(1).toString();
+				final IStrategoTerm resultTerm = result.getSubterm(1);
+				final String resultContents;
+				if (resultTerm.getTermType() == IStrategoTerm.STRING) {
+					resultContents = ((IStrategoString) resultTerm)
+							.stringValue();
+				} else {
+					resultContents = resultTerm.toString();
+				}
 
 				try (OutputStream stream = resultFile.getContent()
 						.getOutputStream()) {
