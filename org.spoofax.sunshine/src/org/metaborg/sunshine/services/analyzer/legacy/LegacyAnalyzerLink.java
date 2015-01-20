@@ -14,6 +14,7 @@ import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisService;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoFacet;
+import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.messages.IMessage;
@@ -79,7 +80,8 @@ public class LegacyAnalyzerLink
 				.getService(LaunchConfiguration.class);
 		ITermFactory termFactory = launch.termFactory;
 		HybridInterpreter runtime = serviceRegistry.getService(
-				StrategoRuntimeService.class).getRuntime(lang);
+				StrategoRuntimeService.class).runtime(
+				new SpoofaxContext(lang, launch.projectDir));
 
 		IStrategoString fileTerm;
 		IStrategoString projectTerm;

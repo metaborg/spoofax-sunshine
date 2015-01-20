@@ -1,7 +1,6 @@
 package org.metaborg.sunshine;
 
 import org.apache.commons.vfs2.FileSystemManager;
-import org.metaborg.runtime.task.primitives.TaskLibrary;
 import org.metaborg.spoofax.core.SpoofaxModule;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.resource.ResourceService;
@@ -13,7 +12,6 @@ import org.metaborg.sunshine.prims.SunshineLibrary;
 import org.metaborg.sunshine.services.filesource.SunshineFileSystemManagerProvider;
 import org.metaborg.sunshine.statistics.Statistics;
 import org.spoofax.interpreter.library.IOperatorRegistry;
-import org.spoofax.interpreter.library.index.legacy.LegacyIndexLibrary;
 
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
@@ -44,8 +42,6 @@ public class SunshineModule extends SpoofaxModule {
 
 		final Multibinder<IOperatorRegistry> strategoLibraryBinder = Multibinder
 				.newSetBinder(binder(), IOperatorRegistry.class);
-		strategoLibraryBinder.addBinding().toInstance(new TaskLibrary());
-		strategoLibraryBinder.addBinding().toInstance(new LegacyIndexLibrary());
 		strategoLibraryBinder.addBinding().toInstance(new SunshineLibrary());
 
 		bind(String.class).annotatedWith(

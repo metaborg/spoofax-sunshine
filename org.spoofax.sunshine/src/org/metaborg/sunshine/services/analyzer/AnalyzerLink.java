@@ -5,14 +5,17 @@ package org.metaborg.sunshine.services.analyzer;
 
 import java.util.Collection;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.AnalysisResult;
 import org.metaborg.spoofax.core.analysis.IAnalysisService;
+import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.syntax.ParseResult;
+import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;
@@ -65,6 +68,8 @@ public class AnalyzerLink
 			Collection<ParseResult<IStrategoTerm>> inputs,
 			IAnalysisService<IStrategoTerm, IStrategoTerm> analyzer)
 			throws SpoofaxException {
+		final FileObject projectDir = ServiceRegistry.INSTANCE().getService(
+				LaunchConfiguration.class).projectDir;
 		logger.debug("Analyzing {} files", inputs.size());
 		Multimap<ILanguage, ParseResult<IStrategoTerm>> lang2files = LinkedHashMultimap
 				.create();
@@ -75,7 +80,8 @@ public class AnalyzerLink
 		final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> results = Lists
 				.newArrayList(lang2files.keySet().size());
 		for (ILanguage lang : lang2files.keySet()) {
-			results.add(analyzer.analyze(lang2files.get(lang), lang));
+			results.add(analyzer.analyze(lang2files.get(lang),
+					new SpoofaxContext(lang, projectDir)));
 		}
 		return results;
 	}

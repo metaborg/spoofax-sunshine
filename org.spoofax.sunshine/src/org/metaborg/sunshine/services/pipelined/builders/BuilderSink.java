@@ -12,11 +12,13 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.metaborg.spoofax.core.SpoofaxException;
+import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.service.actions.Action;
 import org.metaborg.spoofax.core.service.actions.ActionsFacet;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
+import org.metaborg.spoofax.core.stratego.StrategoRuntimeUtils;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
@@ -24,6 +26,7 @@ import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.strategoxt.HybridInterpreter;
 
 /**
  * @author Vlad Vergu <v.a.vergu add tudelft.nl>
@@ -104,11 +107,16 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
 	}
 
 	private IStrategoTerm invoke(Action action, IStrategoTerm input) {
-		IStrategoTerm result = ServiceRegistry
-				.INSTANCE()
-				.getService(IStrategoRuntimeService.class)
-				.callStratego(action.inputLangauge, action.strategoStrategy,
-						input, lauchConfig.projectDir);
+		final ServiceRegistry services = ServiceRegistry.INSTANCE();
+		final LaunchConfiguration launch = services
+				.getService(LaunchConfiguration.class);
+		final IStrategoRuntimeService runtimeService = services
+				.getService(IStrategoRuntimeService.class);
+		final HybridInterpreter interpreter = runtimeService
+				.runtime(new SpoofaxContext(action.inputLangauge,
+						launch.projectDir));
+		final IStrategoTerm result = StrategoRuntimeUtils.invoke(interpreter,
+				input, action.strategoStrategy);
 		processResult(action, result);
 		return result;
 	}
