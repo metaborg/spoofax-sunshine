@@ -3,10 +3,16 @@ package org.metaborg.sunshine.drivers;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
+import org.metaborg.spoofax.core.analysis.stratego.StrategoFacet;
+import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
+import org.metaborg.spoofax.core.language.ILanguageService;
+import org.metaborg.spoofax.core.language.IdentificationFacet;
 import org.metaborg.spoofax.core.language.LanguageVersion;
+import org.metaborg.spoofax.core.language.ResourceExtensionFacet;
+import org.metaborg.spoofax.core.language.ResourceExtensionsIdentifier;
 import org.metaborg.spoofax.core.resource.IResourceService;
-import org.metaborg.spoofax.core.service.actions.Action;
+import org.metaborg.spoofax.core.syntax.SyntaxFacet;
 import org.metaborg.sunshine.SunshineModule;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.environment.SunshineLanguageArguments;
@@ -16,8 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -88,15 +94,41 @@ public class Main {
                 final SunshineLanguageArguments langArgs = args.getLanguageArgs();
                 final FileObject tempDirectory = resourceService.resolve("tmp:///");
                 tempDirectory.createFolder();
-                langDiscovery.create(langArgs.lang, new LanguageVersion(1, 0, 0, 0), tempDirectory,
+                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, 0), tempDirectory,
                     ImmutableSet.copyOf(langArgs.extens), resourceService.resolve(langArgs.tbl), langArgs.ssymb,
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.ctrees)),
-                    ImmutableSet.copyOf(resourceService.resolveAll(langArgs.jars)), langArgs.observer, null, null,
-                    null, null, ImmutableMap.<String, Action>of());
+                    ImmutableSet.copyOf(resourceService.resolveAll(langArgs.jars)), langArgs.observer);
             }
         } catch(Exception e) {
             logger.error("Failed to discover language", e);
         }
+    }
+
+    private static ILanguage createLanguage(String name, LanguageVersion version, FileObject location,
+        ImmutableSet<String> extensions, FileObject parseTable, String startSymbol,
+        ImmutableSet<FileObject> ctreeFiles, ImmutableSet<FileObject> jarFiles, String analysisStrategy) {
+        logger.debug("Creating language {} from custom parameters", name);
+
+        final ILanguageService languageService = env.getService(ILanguageService.class);
+        final ILanguage language = languageService.create(name, version, location);
+
+        final IdentificationFacet identificationFacet =
+            new IdentificationFacet(new ResourceExtensionsIdentifier(extensions));
+        language.addFacet(identificationFacet);
+
+        final ResourceExtensionFacet resourceExtensionsFacet = new ResourceExtensionFacet(extensions);
+        language.addFacet(resourceExtensionsFacet);
+
+        final SyntaxFacet syntaxFacet = new SyntaxFacet(parseTable, Sets.newHashSet(startSymbol));
+        language.addFacet(syntaxFacet);
+
+        final StrategoFacet strategoFacet =
+            new StrategoFacet(ctreeFiles, jarFiles, analysisStrategy, null, null, null, null);
+        language.addFacet(strategoFacet);
+
+        languageService.add(language);
+
+        return language;
     }
 
     public static void usage(boolean exit) {
