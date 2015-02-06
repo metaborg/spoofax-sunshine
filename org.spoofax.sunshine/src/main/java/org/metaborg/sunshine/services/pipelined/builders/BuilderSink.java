@@ -10,10 +10,10 @@ import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
-import org.metaborg.spoofax.core.service.actions.Action;
-import org.metaborg.spoofax.core.service.actions.ActionsFacet;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeUtils;
+import org.metaborg.spoofax.core.transform.stratego.Action;
+import org.metaborg.spoofax.core.transform.stratego.MenusFacet;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
@@ -74,7 +74,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
         final ILanguage language = languageIdentifierService.identify(file);
-        final Action action = language.facet(ActionsFacet.class).get(builderName);
+        final Action action = language.facet(MenusFacet.class).action(builderName);
 
         if(action == null) {
             logger.error("Builder {} could not be found", builderName);
@@ -97,7 +97,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         final IStrategoRuntimeService runtimeService = services.getService(IStrategoRuntimeService.class);
         final HybridInterpreter interpreter =
             runtimeService.runtime(new SpoofaxContext(action.inputLangauge, launch.projectDir));
-        final IStrategoTerm result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategoStrategy);
+        final IStrategoTerm result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
         processResult(action, result);
         return result;
     }
