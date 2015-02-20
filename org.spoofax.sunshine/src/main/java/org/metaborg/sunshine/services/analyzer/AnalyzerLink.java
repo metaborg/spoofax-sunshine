@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.spoofax.core.SpoofaxException;
+import org.metaborg.spoofax.core.analysis.AnalysisException;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.AnalysisResult;
 import org.metaborg.spoofax.core.analysis.IAnalysisService;
@@ -34,11 +35,16 @@ public class AnalyzerLink extends
         MultiDiff<ParseResult<IStrategoTerm>> input) {
         logger.debug("Analyzing {} changed files", input.size());
 
-        final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> aResults =
-            analyze(
+        Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> aResults;
+        try {
+            aResults =
+                analyze(
                 input.values(),
                 ServiceRegistry.INSTANCE().getService(
                     new TypeLiteral<IAnalysisService<IStrategoTerm, IStrategoTerm>>() {}));
+        } catch(AnalysisException e) {
+            throw new SpoofaxException(e);
+        }
 
         logger.trace("Analysis completed with {} results", aResults.size());
         final MultiDiff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> results =
@@ -54,7 +60,7 @@ public class AnalyzerLink extends
 
     public Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> analyze(
         Collection<ParseResult<IStrategoTerm>> inputs, IAnalysisService<IStrategoTerm, IStrategoTerm> analyzer)
-        throws SpoofaxException {
+        throws AnalysisException {
         final FileObject projectDir = ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).projectDir;
         logger.debug("Analyzing {} files", inputs.size());
         Multimap<ILanguage, ParseResult<IStrategoTerm>> lang2files = LinkedHashMultimap.create();

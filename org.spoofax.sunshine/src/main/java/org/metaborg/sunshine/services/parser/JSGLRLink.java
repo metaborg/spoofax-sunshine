@@ -7,6 +7,7 @@ import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.syntax.ISyntaxService;
+import org.metaborg.spoofax.core.syntax.ParseException;
 import org.metaborg.spoofax.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.text.ISourceTextService;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -39,7 +40,7 @@ public class JSGLRLink extends ALinkOneToOne<FileObject, ParseResult<IStrategoTe
             logger.trace("Parsing of file {} produced AST {} and {} messages", input.getPayload(), parseResult.result,
                 parseResult.messages.size());
             return new Diff<ParseResult<IStrategoTerm>>(parseResult, input.getDiffKind());
-        } catch(IOException e) {
+        } catch(IOException | ParseException e) {
             final String msg = "Could not parse" + file;
             logger.error(msg, e);
             throw new SpoofaxException(msg, e);
