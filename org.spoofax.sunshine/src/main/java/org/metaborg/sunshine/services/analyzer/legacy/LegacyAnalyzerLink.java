@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.metaborg.spoofax.core.SpoofaxException;
+import org.metaborg.spoofax.core.SpoofaxRuntimeException;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisService;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoFacet;
@@ -76,7 +76,7 @@ public class LegacyAnalyzerLink extends
         } catch(FileSystemException e) {
             final String msg = "Cannot create path and project-path for analysis input";
             logger.error(msg, e);
-            throw new SpoofaxException(msg, e);
+            throw new SpoofaxRuntimeException(msg, e);
         }
 
         IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result, fileTerm, projectTerm);
@@ -86,7 +86,7 @@ public class LegacyAnalyzerLink extends
         try {
             success = runtime.invoke(function);
             if(!success) {
-                throw new SpoofaxException(ANALYSIS_CRASHED_MSG);
+                throw new SpoofaxRuntimeException(ANALYSIS_CRASHED_MSG);
             } else {
                 logger.debug("Ignoring further files to analyze. Not implemented");
                 IStrategoTuple resultTuple = (IStrategoTuple) runtime.current();
@@ -94,7 +94,7 @@ public class LegacyAnalyzerLink extends
                 return makeAnalysisResult(parseResult, resultTuple);
             }
         } catch(InterpreterException e) {
-            throw new SpoofaxException(ANALYSIS_CRASHED_MSG, e);
+            throw new SpoofaxRuntimeException(ANALYSIS_CRASHED_MSG, e);
         }
     }
 

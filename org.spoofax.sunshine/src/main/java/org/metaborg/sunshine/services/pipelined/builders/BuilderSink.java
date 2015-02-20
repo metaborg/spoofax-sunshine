@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.metaborg.spoofax.core.SpoofaxException;
+import org.metaborg.spoofax.core.SpoofaxRuntimeException;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
@@ -69,7 +69,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
      * @param product
      *            The {@link BuilderInputTerm} to run this builder on.
      * 
-     * @throws SpoofaxException
+     * @throws SpoofaxRuntimeException
      */
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
@@ -87,7 +87,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         } catch(FileSystemException e) {
             final String msg = "Cannot construct input tuple for builder";
             logger.error(msg, e);
-            throw new SpoofaxException(msg, e);
+            throw new SpoofaxRuntimeException(msg, e);
         }
     }
 
@@ -119,7 +119,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                     IOUtils.write(resultContents, stream);
                 }
             } catch(IOException e) {
-                throw new SpoofaxException("Builder " + action.name + "failed to write result", e);
+                throw new SpoofaxRuntimeException("Builder " + action.name + "failed to write result", e);
             }
         }
     }
@@ -130,12 +130,12 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                 return false;
             } else {
                 logger.error("Builder returned an unsupported result type {}", result);
-                throw new SpoofaxException("Unsupported return value from builder: " + result);
+                throw new SpoofaxRuntimeException("Unsupported return value from builder: " + result);
             }
         } else {
             if(result == null || result.getSubtermCount() != 2 || !(result.getSubterm(0) instanceof IStrategoString)) {
                 logger.error("Builder returned an unsupported result type {}", result);
-                throw new SpoofaxException("Unsupported return value from builder: " + result);
+                throw new SpoofaxRuntimeException("Unsupported return value from builder: " + result);
             } else {
                 return true;
             }

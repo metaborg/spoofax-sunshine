@@ -3,7 +3,7 @@ package org.metaborg.sunshine.services.parser;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
-import org.metaborg.spoofax.core.SpoofaxException;
+import org.metaborg.spoofax.core.SpoofaxRuntimeException;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.syntax.ISyntaxService;
@@ -43,7 +43,7 @@ public class JSGLRLink extends ALinkOneToOne<FileObject, ParseResult<IStrategoTe
         } catch(IOException | ParseException e) {
             final String msg = "Could not parse" + file;
             logger.error(msg, e);
-            throw new SpoofaxException(msg, e);
+            throw new SpoofaxRuntimeException(msg, e);
         }
     }
 }
