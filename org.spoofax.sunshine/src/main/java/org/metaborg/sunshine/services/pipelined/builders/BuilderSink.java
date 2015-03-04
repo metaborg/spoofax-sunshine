@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.SpoofaxRuntimeException;
 import org.metaborg.spoofax.core.context.ContextIdentifier;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
@@ -95,10 +96,17 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     private IStrategoTerm invoke(Action action, IStrategoTerm input) {
         final ServiceRegistry services = ServiceRegistry.INSTANCE();
         final IStrategoRuntimeService runtimeService = services.getService(IStrategoRuntimeService.class);
-        final HybridInterpreter interpreter =
-            runtimeService.runtime(new SpoofaxContext(new ContextIdentifier(lauchConfig.projectDir,
-                action.inputLangauge)));
-        final IStrategoTerm result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
+        final IStrategoTerm result;
+        try {
+            final HybridInterpreter interpreter =
+                runtimeService.runtime(new SpoofaxContext(new ContextIdentifier(lauchConfig.projectDir,
+                    action.inputLangauge)));
+            result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
+        } catch(SpoofaxException e) {
+            final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";
+            logger.error(msg, e);
+            throw new SpoofaxRuntimeException(msg, e);
+        }
         processResult(action, result);
         return result;
     }

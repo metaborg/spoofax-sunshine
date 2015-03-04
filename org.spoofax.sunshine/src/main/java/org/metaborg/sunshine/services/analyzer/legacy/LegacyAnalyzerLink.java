@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.metaborg.spoofax.core.SpoofaxException;
 import org.metaborg.spoofax.core.SpoofaxRuntimeException;
 import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisService;
@@ -64,16 +65,21 @@ public class LegacyAnalyzerLink extends
 
         LaunchConfiguration launch = serviceRegistry.getService(LaunchConfiguration.class);
         ITermFactory termFactory = launch.termFactory;
-        HybridInterpreter runtime =
-            serviceRegistry.getService(StrategoRuntimeService.class).runtime(
-                new SpoofaxContext(new ContextIdentifier(launch.projectDir, lang)));
 
-        IStrategoString fileTerm;
-        IStrategoString projectTerm;
+        final HybridInterpreter runtime;
+        final IStrategoString fileTerm;
+        final IStrategoString projectTerm;
         try {
+            runtime =
+                serviceRegistry.getService(StrategoRuntimeService.class).runtime(
+                    new SpoofaxContext(new ContextIdentifier(launch.projectDir, lang)));
             fileTerm =
                 termFactory.makeString(launch.projectDir.getName().getRelativeName(parseResult.source.getName()));
             projectTerm = termFactory.makeString(launch.projectDir.getName().getPath());
+        } catch(SpoofaxException e) {
+            final String msg = "Cannot get Stratego interpreter";
+            logger.error(msg, e);
+            throw new SpoofaxRuntimeException(msg, e);
         } catch(FileSystemException e) {
             final String msg = "Cannot create path and project-path for analysis input";
             logger.error(msg, e);
