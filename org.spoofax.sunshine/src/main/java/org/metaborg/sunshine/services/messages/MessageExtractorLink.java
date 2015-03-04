@@ -19,7 +19,7 @@ public class MessageExtractorLink extends ALinkManyToMany<AnalysisFileResult<ISt
 
         for(Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> diff : input) {
             final DiffKind kind = diff.getDiffKind();
-            for(IMessage msg : diff.getPayload().messages()) {
+            for(IMessage msg : diff.getPayload().messages) {
                 result.add(new Diff<IMessage>(msg, kind));
             }
         }

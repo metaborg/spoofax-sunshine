@@ -16,8 +16,8 @@ public class ParseToAnalysisResultLink extends
         for(Diff<ParseResult<IStrategoTerm>> diff : input) {
             final ParseResult<IStrategoTerm> parseResult = diff.getPayload();
             output.add(new Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>>(
-                new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(parseResult, parseResult.source,
-                    parseResult.messages, parseResult.result), diff.getDiffKind()));
+                new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(parseResult.result, parseResult.source,
+                    parseResult.messages, parseResult), diff.getDiffKind()));
         }
         return output;
     }

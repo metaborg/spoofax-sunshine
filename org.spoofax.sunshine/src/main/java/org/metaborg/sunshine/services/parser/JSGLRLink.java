@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
+import com.google.common.collect.Iterables;
 import com.google.inject.TypeLiteral;
 
 public class JSGLRLink extends ALinkOneToOne<FileObject, ParseResult<IStrategoTerm>> {
@@ -38,7 +39,7 @@ public class JSGLRLink extends ALinkOneToOne<FileObject, ParseResult<IStrategoTe
                 serviceRegistry.getService(new TypeLiteral<ISyntaxService<IStrategoTerm>>() {}).parse(inputText, file,
                     language);
             logger.trace("Parsing of file {} produced AST {} and {} messages", input.getPayload(), parseResult.result,
-                parseResult.messages.size());
+                Iterables.size(parseResult.messages));
             return new Diff<ParseResult<IStrategoTerm>>(parseResult, input.getDiffKind());
         } catch(IOException | ParseException e) {
             final String msg = "Could not parse" + file;

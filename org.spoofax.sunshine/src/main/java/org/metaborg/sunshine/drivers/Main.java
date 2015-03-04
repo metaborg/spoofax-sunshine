@@ -3,6 +3,7 @@ package org.metaborg.sunshine.drivers;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
+import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisMode;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
@@ -123,7 +124,8 @@ public class Main {
         language.addFacet(syntaxFacet);
 
         final StrategoFacet strategoFacet =
-            new StrategoFacet(ctreeFiles, jarFiles, analysisStrategy, null, null, null, null);
+            new StrategoFacet(ctreeFiles, jarFiles, analysisStrategy, StrategoAnalysisMode.MultiAST, null, null, null,
+                null);
         language.addFacet(strategoFacet);
 
         languageService.add(language);
