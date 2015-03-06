@@ -12,7 +12,7 @@ Many. This is most likely an incomplete list:
 ## Usage
 Basically:
 
-    java -cp sunshine.jar Main --help
+    java -cp sunshine.jar org/metaborg/sunshine/drivers/Main --help
 
 This will cause Sunshine to start and display a list of supported parameters.
 
@@ -20,7 +20,7 @@ This will cause Sunshine to start and display a list of supported parameters.
 
 A basic example of command line parameters is given below, which causes Sunshine to analyse all files in the project directory incrementally and run the *webdsl-metrics* builder on *yellowgrass.app*.
 
-    java -cp sunshine.jar Main
+    java -cp sunshine.jar org/metaborg/sunshine/drivers/Main
     --lang WebDSL
     --ctree ../../webdsl2/include/webdsl.ctree
     --jar ../../webdsl2/include/webdsl.jar
@@ -38,7 +38,7 @@ A basic example of command line parameters is given below, which causes Sunshine
 
 Sunshine has a mechanism to automatically discover and configure languages. The example above becomes:
 
-    java -cp sunshine.jar Main
+    java -cp sunshine.jar org/metaborg/sunshine/drivers/Main
     --auto-lang ../../webdsl2/include
     --project ../../yellowgrass/
     --builder "Compute Metrics"
