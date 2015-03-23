@@ -16,6 +16,7 @@ import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
 import org.metaborg.spoofax.core.messages.IMessage;
 import org.metaborg.spoofax.core.messages.MessageSeverity;
+import org.metaborg.spoofax.core.resource.ResourceService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.spoofax.core.syntax.ParseResult;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -72,7 +73,8 @@ public class LegacyAnalyzerLink extends
         try {
             runtime =
                 serviceRegistry.getService(StrategoRuntimeService.class).runtime(
-                    new SpoofaxContext(new ContextIdentifier(launch.projectDir, lang)));
+                    new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
+                        new ContextIdentifier(launch.projectDir, lang)));
             fileTerm =
                 termFactory.makeString(launch.projectDir.getName().getRelativeName(parseResult.source.getName()));
             projectTerm = termFactory.makeString(launch.projectDir.getName().getPath());

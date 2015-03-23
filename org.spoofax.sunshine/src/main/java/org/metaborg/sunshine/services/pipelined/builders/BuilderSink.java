@@ -12,6 +12,7 @@ import org.metaborg.spoofax.core.context.ContextIdentifier;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
+import org.metaborg.spoofax.core.resource.ResourceService;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeUtils;
 import org.metaborg.spoofax.core.transform.stratego.menu.Action;
@@ -99,8 +100,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         final IStrategoTerm result;
         try {
             final HybridInterpreter interpreter =
-                runtimeService.runtime(new SpoofaxContext(new ContextIdentifier(lauchConfig.projectDir,
-                    action.inputLangauge)));
+                runtimeService.runtime(new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
+                    new ContextIdentifier(lauchConfig.projectDir, action.inputLangauge)));
             result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
         } catch(SpoofaxException e) {
             final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";

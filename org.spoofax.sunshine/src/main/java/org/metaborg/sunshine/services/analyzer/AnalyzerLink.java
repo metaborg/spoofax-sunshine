@@ -11,6 +11,7 @@ import org.metaborg.spoofax.core.analysis.IAnalysisService;
 import org.metaborg.spoofax.core.context.ContextIdentifier;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.language.ILanguage;
+import org.metaborg.spoofax.core.resource.ResourceService;
 import org.metaborg.spoofax.core.syntax.ParseResult;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -72,7 +73,8 @@ public class AnalyzerLink extends
         final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> results =
             Lists.newArrayList(lang2files.keySet().size());
         for(ILanguage lang : lang2files.keySet()) {
-            results.add(analyzer.analyze(lang2files.get(lang), new SpoofaxContext(new ContextIdentifier(projectDir,
+            results.add(analyzer.analyze(lang2files.get(lang), new SpoofaxContext(ServiceRegistry.INSTANCE()
+                .getService(ResourceService.class), new ContextIdentifier(projectDir,
                 lang))));
         }
         return results;
