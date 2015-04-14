@@ -67,7 +67,7 @@ public class AnalyzerLink extends
         logger.debug("Analyzing {} files", inputs.size());
         Multimap<ILanguage, ParseResult<IStrategoTerm>> lang2files = LinkedHashMultimap.create();
         for(ParseResult<IStrategoTerm> input : inputs) {
-            lang2files.put(input.parsedWith, input);
+            lang2files.put(input.language, input);
         }
         logger.trace("Files grouped in {} languages", lang2files.size());
         final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> results =
