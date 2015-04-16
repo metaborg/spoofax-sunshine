@@ -82,10 +82,10 @@ public class FileSource implements ISourceMany<FileObject> {
                     diff.add(new Diff<FileObject>(change.resource(), DiffKind.MODIFICATION));
                     break;
                 case Rename:
-                    if(change.renamedFrom() != null) {
+                    if(change.from() != null) {
                         diff.add(new Diff<FileObject>(change.resource(), DiffKind.ADDITION));
                     }
-                    if(change.renamedTo() != null) {
+                    if(change.to() != null) {
                         diff.add(new Diff<FileObject>(change.resource(), DiffKind.DELETION));
                     }
                     break;
