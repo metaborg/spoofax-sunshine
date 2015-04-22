@@ -46,12 +46,13 @@ public class BuilderInputTermFactoryLink implements
         logger.trace("Creating builder input term for product");
         Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> select = null;
         for(Diff<AnalysisFileResult<IStrategoTerm, IStrategoTerm>> diff : product) {
-            if(diff.getPayload().source.getName().getPath().equals(path.getName().getPath())) {
+            if(diff.getPayload().source().getName().getPath().equals(path.getName().getPath())) {
                 select = diff;
                 break;
             } else {
                 logger
-                    .trace("Input file {} does not match prebaked file {}, skipping.", diff.getPayload().source, path);
+.trace("Input file {} does not match prebaked file {}, skipping.", diff.getPayload().source(),
+                    path);
             }
         }
         if(select != null) {
@@ -63,14 +64,14 @@ public class BuilderInputTermFactoryLink implements
                 }
             }
             if(!errors_exist || ignoreErrors) {
-                logger.trace("Selected file {} for creating input", select.getPayload().source);
+                logger.trace("Selected file {} for creating input", select.getPayload().source());
 
                 IStrategoTerm ast =
                     onSource && select.getPayload().previous != null ? select.getPayload().previous.result
                         : select.getPayload().result;
                 LaunchConfiguration launch = ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class);
                 BuilderInputTerm payload =
-                    new BuilderInputTerm(launch.termFactory, ast, select.getPayload().source, launch.projectDir);
+                    new BuilderInputTerm(launch.termFactory, ast, select.getPayload().source(), launch.projectDir);
                 Diff<BuilderInputTerm> result = new Diff<BuilderInputTerm>(payload, select.getDiffKind());
                 for(ISinkOne<BuilderInputTerm> sink : sinks) {
                     logger.trace("Sinking input term for file {} to builder {}", path, sink);

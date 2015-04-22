@@ -55,13 +55,13 @@ public class LegacyAnalyzerLink extends
     }
 
     private AnalysisFileResult<IStrategoTerm, IStrategoTerm> analyze(ParseResult<IStrategoTerm> parseResult) {
-        logger.debug("Analyzing AST of file {}", parseResult.source);
+        final FileObject file = parseResult.source();
+        logger.debug("Analyzing AST of file {}", file);
         if(parseResult.result == null) {
-            logger.info("Analysis cannot continue because there is no AST for file {}", parseResult.source);
+            logger.info("Analysis cannot continue because there is no AST for file {}", file);
             return null;
         }
         ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
-        final FileObject file = parseResult.source;
         ILanguage lang = languageIdentifierService.identify(file);
 
         LaunchConfiguration launch = serviceRegistry.getService(LaunchConfiguration.class);
@@ -75,8 +75,7 @@ public class LegacyAnalyzerLink extends
                 serviceRegistry.getService(StrategoRuntimeService.class).runtime(
                     new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
                         new ContextIdentifier(launch.projectDir, lang)));
-            fileTerm =
-                termFactory.makeString(launch.projectDir.getName().getRelativeName(parseResult.source.getName()));
+            fileTerm = termFactory.makeString(launch.projectDir.getName().getRelativeName(file.getName()));
             projectTerm = termFactory.makeString(launch.projectDir.getName().getPath());
         } catch(SpoofaxException e) {
             final String msg = "Cannot get Stratego interpreter";
@@ -112,7 +111,7 @@ public class LegacyAnalyzerLink extends
         assert resultTuple != null;
         assert resultTuple.getSubtermCount() == 5;
         IStrategoTerm ast = resultTuple.getSubterm(0);
-        FileObject file = parseResult.source;
+        FileObject file = parseResult.source();
         Collection<IMessage> messages = new HashSet<IMessage>();
         messages.addAll(StrategoAnalysisService.makeMessages(file, MessageSeverity.ERROR,
             (IStrategoList) resultTuple.getSubterm(1)));
