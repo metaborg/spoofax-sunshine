@@ -8,7 +8,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
-import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.spoofax.core.resource.IResourceChange;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.resource.OfflineResourceChangeMonitor;
@@ -30,15 +29,15 @@ public class FileSource implements ISourceMany<FileObject> {
     private final Collection<ISinkMany<FileObject>> sinks;
     private final OfflineResourceChangeMonitor monitor;
 
-    public FileSource(FileObject directory, ILanguageService languageService) {
+    public FileSource(FileObject directory) {
         this.sinks = new HashSet<ISinkMany<FileObject>>();
         final ServiceRegistry services = ServiceRegistry.INSTANCE();
         final IResourceService resourceService = services.getService(IResourceService.class);
         final ILanguageIdentifierService languageIdentifierService =
             services.getService(ILanguageIdentifierService.class);
         this.monitor =
-            new OfflineResourceChangeMonitor(resourceService.root(), resourceService.userStorage(),
-                new AllLanguagesFileSelector(languageIdentifierService), resourceService);
+            new OfflineResourceChangeMonitor(directory, resourceService.userStorage(), new AllLanguagesFileSelector(
+                languageIdentifierService), resourceService);
         try {
             monitor.read();
         } catch(FileSystemException e) {

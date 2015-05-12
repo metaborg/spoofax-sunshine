@@ -77,7 +77,7 @@ public class SunshineMainDriver {
         SunshineMainArguments args = launchConfig.mainArguments;
 
         Statistics.startTimer("PIPELINE_CONSTRUCT");
-        filesSource = new FileSource(launchConfig.projectDir, languageService);
+        filesSource = new FileSource(launchConfig.projectDir);
         logger.trace("Created file source {}", filesSource);
         FileSourceFilter fsf = new FileSourceFilter(args.filefilter);
         filesSource.addSink(fsf);
