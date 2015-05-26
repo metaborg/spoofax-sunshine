@@ -37,7 +37,7 @@ public class JSGLRLink extends ALinkOneToOne<FileObject, ParseResult<IStrategoTe
             final String inputText = serviceRegistry.getService(ISourceTextService.class).text(file);
             final ParseResult<IStrategoTerm> parseResult =
                 serviceRegistry.getService(new TypeLiteral<ISyntaxService<IStrategoTerm>>() {}).parse(inputText, file,
-                    language);
+                    language, null);
             logger.trace("Parsing of file {} produced AST {} and {} messages", input.getPayload(), parseResult.result,
                 Iterables.size(parseResult.messages));
             return new Diff<ParseResult<IStrategoTerm>>(parseResult, input.getDiffKind());
