@@ -111,7 +111,7 @@ public class Main {
         logger.debug("Creating language {} from custom parameters", name);
 
         final ILanguageService languageService = env.getService(ILanguageService.class);
-        final ILanguage language = languageService.create(name, version, location);
+        final ILanguage language = languageService.create(name, version, location, name);
 
         final IdentificationFacet identificationFacet =
             new IdentificationFacet(new ResourceExtensionsIdentifier(extensions));
