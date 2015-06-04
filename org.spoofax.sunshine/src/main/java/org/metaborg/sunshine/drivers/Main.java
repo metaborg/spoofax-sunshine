@@ -95,7 +95,7 @@ public class Main {
                 final SunshineLanguageArguments langArgs = args.getLanguageArgs();
                 final FileObject tempDirectory = resourceService.resolve("tmp:///");
                 tempDirectory.createFolder();
-                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, 0), tempDirectory,
+                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, ""), tempDirectory,
                     ImmutableSet.copyOf(langArgs.extens), resourceService.resolve(langArgs.tbl), langArgs.ssymb,
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.ctrees)),
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.jars)), langArgs.observer);
