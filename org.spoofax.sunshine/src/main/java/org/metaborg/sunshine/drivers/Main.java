@@ -95,7 +95,7 @@ public class Main {
                 final SunshineLanguageArguments langArgs = args.getLanguageArgs();
                 final FileObject tempDirectory = resourceService.resolve("tmp:///");
                 tempDirectory.createFolder();
-                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, 0), tempDirectory,
+                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, ""), tempDirectory,
                     ImmutableSet.copyOf(langArgs.extens), resourceService.resolve(langArgs.tbl), langArgs.ssymb,
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.ctrees)),
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.jars)), langArgs.observer);
@@ -111,7 +111,7 @@ public class Main {
         logger.debug("Creating language {} from custom parameters", name);
 
         final ILanguageService languageService = env.getService(ILanguageService.class);
-        final ILanguage language = languageService.create(name, version, location);
+        final ILanguage language = languageService.create(name, version, location, name);
 
         final IdentificationFacet identificationFacet =
             new IdentificationFacet(new ResourceExtensionsIdentifier(extensions));
