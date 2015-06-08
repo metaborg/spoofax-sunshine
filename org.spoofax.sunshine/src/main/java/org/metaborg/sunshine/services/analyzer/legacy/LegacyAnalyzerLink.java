@@ -120,6 +120,6 @@ public class LegacyAnalyzerLink extends
             (IStrategoList) resultTuple.getSubterm(2)));
         messages.addAll(StrategoAnalysisService.makeMessages(file, MessageSeverity.NOTE,
             (IStrategoList) resultTuple.getSubterm(3)));
-        return new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(ast, file, messages, parseResult);
+        return new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(ast, file, null, messages, parseResult);
     }
 }
