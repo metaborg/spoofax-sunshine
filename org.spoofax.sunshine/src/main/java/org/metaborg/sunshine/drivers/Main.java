@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisMode;
-import org.metaborg.spoofax.core.analysis.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
 import org.metaborg.spoofax.core.language.ILanguageService;
@@ -13,6 +12,7 @@ import org.metaborg.spoofax.core.language.LanguageVersion;
 import org.metaborg.spoofax.core.language.ResourceExtensionFacet;
 import org.metaborg.spoofax.core.language.ResourceExtensionsIdentifier;
 import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.syntax.SyntaxFacet;
 import org.metaborg.sunshine.SunshineModule;
 import org.metaborg.sunshine.environment.ServiceRegistry;
