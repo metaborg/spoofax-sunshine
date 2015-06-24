@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisMode;
-import org.metaborg.spoofax.core.analysis.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.language.ILanguage;
 import org.metaborg.spoofax.core.language.ILanguageDiscoveryService;
 import org.metaborg.spoofax.core.language.ILanguageService;
@@ -13,6 +12,7 @@ import org.metaborg.spoofax.core.language.LanguageVersion;
 import org.metaborg.spoofax.core.language.ResourceExtensionFacet;
 import org.metaborg.spoofax.core.language.ResourceExtensionsIdentifier;
 import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.spoofax.core.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.syntax.SyntaxFacet;
 import org.metaborg.sunshine.SunshineModule;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -95,7 +95,7 @@ public class Main {
                 final SunshineLanguageArguments langArgs = args.getLanguageArgs();
                 final FileObject tempDirectory = resourceService.resolve("tmp:///");
                 tempDirectory.createFolder();
-                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, 0), tempDirectory,
+                createLanguage(langArgs.lang, new LanguageVersion(1, 0, 0, ""), tempDirectory,
                     ImmutableSet.copyOf(langArgs.extens), resourceService.resolve(langArgs.tbl), langArgs.ssymb,
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.ctrees)),
                     ImmutableSet.copyOf(resourceService.resolveAll(langArgs.jars)), langArgs.observer);
@@ -111,7 +111,7 @@ public class Main {
         logger.debug("Creating language {} from custom parameters", name);
 
         final ILanguageService languageService = env.getService(ILanguageService.class);
-        final ILanguage language = languageService.create(name, version, location);
+        final ILanguage language = languageService.create(name, version, location, name);
 
         final IdentificationFacet identificationFacet =
             new IdentificationFacet(new ResourceExtensionsIdentifier(extensions));
