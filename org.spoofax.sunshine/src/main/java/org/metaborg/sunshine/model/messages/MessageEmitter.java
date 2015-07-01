@@ -8,7 +8,8 @@ import java.util.Collection;
 
 import org.metaborg.spoofax.core.messages.IMessage;
 import org.metaborg.spoofax.core.messages.MessageSeverity;
-import org.metaborg.spoofax.core.text.ISourceTextService;
+import org.metaborg.spoofax.core.source.AffectedSourceHelper;
+import org.metaborg.spoofax.core.source.ISourceTextService;
 import org.metaborg.sunshine.services.messages.MessageSink;
 
 public class MessageEmitter {
