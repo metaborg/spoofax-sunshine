@@ -6,8 +6,8 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.metaborg.core.SpoofaxException;
-import org.metaborg.core.SpoofaxRuntimeException;
+import org.metaborg.core.MetaborgException;
+import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.context.ContextIdentifier;
 import org.metaborg.core.language.ILanguage;
 import org.metaborg.core.language.ILanguageIdentifierService;
@@ -15,8 +15,8 @@ import org.metaborg.core.resource.ResourceService;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeUtils;
-import org.metaborg.spoofax.core.transform.stratego.menu.Action;
-import org.metaborg.spoofax.core.transform.stratego.menu.MenusFacet;
+import org.metaborg.spoofax.core.transform.menu.Action;
+import org.metaborg.spoofax.core.transform.menu.MenusFacet;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
@@ -72,7 +72,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
      * @param product
      *            The {@link BuilderInputTerm} to run this builder on.
      * 
-     * @throws SpoofaxRuntimeException
+     * @throws MetaborgRuntimeException
      */
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
@@ -90,7 +90,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         } catch(FileSystemException e) {
             final String msg = "Cannot construct input tuple for builder";
             logger.error(msg, e);
-            throw new SpoofaxRuntimeException(msg, e);
+            throw new MetaborgRuntimeException(msg, e);
         }
     }
 
@@ -103,10 +103,10 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                 runtimeService.runtime(new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
                     new ContextIdentifier(lauchConfig.projectDir, action.inputLangauge)));
             result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
-        } catch(SpoofaxException e) {
+        } catch(MetaborgException e) {
             final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";
             logger.error(msg, e);
-            throw new SpoofaxRuntimeException(msg, e);
+            throw new MetaborgRuntimeException(msg, e);
         }
         processResult(action, result);
         return result;
@@ -129,7 +129,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                     IOUtils.write(resultContents, stream);
                 }
             } catch(IOException e) {
-                throw new SpoofaxRuntimeException("Builder " + action.name + "failed to write result", e);
+                throw new MetaborgRuntimeException("Builder " + action.name + "failed to write result", e);
             }
         }
     }
@@ -140,12 +140,12 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                 return false;
             } else {
                 logger.error("Builder returned an unsupported result type {}", result);
-                throw new SpoofaxRuntimeException("Unsupported return value from builder: " + result);
+                throw new MetaborgRuntimeException("Unsupported return value from builder: " + result);
             }
         } else {
             if(result == null || result.getSubtermCount() != 2 || !(result.getSubterm(0) instanceof IStrategoString)) {
                 logger.error("Builder returned an unsupported result type {}", result);
-                throw new SpoofaxRuntimeException("Unsupported return value from builder: " + result);
+                throw new MetaborgRuntimeException("Unsupported return value from builder: " + result);
             } else {
                 return true;
             }

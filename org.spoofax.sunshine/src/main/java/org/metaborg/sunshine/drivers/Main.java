@@ -11,7 +11,7 @@ import org.metaborg.core.language.LanguageVersion;
 import org.metaborg.core.language.ResourceExtensionFacet;
 import org.metaborg.core.language.ResourceExtensionsIdentifier;
 import org.metaborg.core.resource.IResourceService;
-import org.metaborg.spoofax.core.analysis.stratego.StrategoAnalysisMode;
+import org.metaborg.spoofax.core.analysis.StrategoAnalysisMode;
 import org.metaborg.spoofax.core.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.syntax.SyntaxFacet;
 import org.metaborg.sunshine.SunshineModule;

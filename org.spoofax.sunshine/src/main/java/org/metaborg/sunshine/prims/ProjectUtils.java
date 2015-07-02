@@ -3,7 +3,7 @@ package org.metaborg.sunshine.prims;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.AllFileSelector;
-import org.metaborg.core.SpoofaxRuntimeException;
+import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -32,7 +32,7 @@ public class ProjectUtils {
                 unloadIdxPrim.call(runtime.getContext(), new Strategy[0], new IStrategoTerm[] { runtime.getFactory()
                     .makeString(launch.projectDir.getName().getPath()) });
             if(!unloadSuccess) {
-                throw new SpoofaxRuntimeException("Could not unload index");
+                throw new MetaborgRuntimeException("Could not unload index");
             }
         } catch(Exception ex) {
             logger.warn("Index unload failed", ex);
@@ -54,7 +54,7 @@ public class ProjectUtils {
                 unloadIdxPrim.call(runtime.getContext(), new Strategy[0], new IStrategoTerm[] { runtime.getFactory()
                     .makeString(launch.projectDir.getName().getPath()) });
             if(!unloadSuccess) {
-                throw new SpoofaxRuntimeException("Could not unload task engine");
+                throw new MetaborgRuntimeException("Could not unload task engine");
             }
         } catch(Exception ex) {
             logger.warn("Task engine unload failed", ex);

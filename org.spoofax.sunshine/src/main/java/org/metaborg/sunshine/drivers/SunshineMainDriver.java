@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import org.apache.commons.vfs2.FileObject;
-import org.metaborg.core.SpoofaxRuntimeException;
+import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.language.AllLanguagesFileSelector;
 import org.metaborg.core.language.ILanguageIdentifierService;
@@ -62,7 +62,7 @@ public class SunshineMainDriver {
         Thread.currentThread().setUncaughtExceptionHandler(new CompilerCrashHandler());
     }
 
-    public void init() throws SpoofaxRuntimeException {
+    public void init() throws MetaborgRuntimeException {
         logger.trace("Beginning init");
         if(launchConfig.mainArguments.nonincremental) {
             ProjectUtils.cleanProject();
@@ -172,7 +172,7 @@ public class SunshineMainDriver {
         if(args.filetobuildon != null) {
             final FileObject buildTargetFile = launchConfig.projectDir.resolveFile(args.filetobuildon);
             if(!buildTargetFile.exists()) {
-                throw new SpoofaxRuntimeException("File not found: " + args.filetobuildon);
+                throw new MetaborgRuntimeException("File not found: " + args.filetobuildon);
             }
             files.add(buildTargetFile);
         }
@@ -183,7 +183,7 @@ public class SunshineMainDriver {
             Collections.addAll(files, languageFiles);
         }
         if(files.size() == 0 && args.filestobuildon != null) {
-            throw new SpoofaxRuntimeException("No files found matching: " + args.filestobuildon);
+            throw new MetaborgRuntimeException("No files found matching: " + args.filestobuildon);
         }
         return files;
     }

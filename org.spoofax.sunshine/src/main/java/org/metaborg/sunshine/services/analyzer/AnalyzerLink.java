@@ -3,7 +3,7 @@ package org.metaborg.sunshine.services.analyzer;
 import java.util.Collection;
 
 import org.apache.commons.vfs2.FileObject;
-import org.metaborg.core.SpoofaxRuntimeException;
+import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.analysis.AnalysisException;
 import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.analysis.AnalysisResult;
@@ -45,7 +45,7 @@ public class AnalyzerLink extends
                     ServiceRegistry.INSTANCE().getService(
                         new TypeLiteral<IAnalysisService<IStrategoTerm, IStrategoTerm>>() {}));
         } catch(AnalysisException e) {
-            throw new SpoofaxRuntimeException(e);
+            throw new MetaborgRuntimeException(e);
         }
 
         logger.trace("Analysis completed with {} results", aResults.size());
