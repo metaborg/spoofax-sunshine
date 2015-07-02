@@ -10,16 +10,19 @@ import org.metaborg.sunshine.statistics.Statistics;
 import org.spoofax.interpreter.library.IOperatorRegistry;
 
 import com.google.inject.multibindings.Multibinder;
-import com.google.inject.name.Names;
 
 public class SunshineModule extends SpoofaxModule {
     private final SunshineMainArguments args;
 
+    
     public SunshineModule(SunshineMainArguments args) {
         this.args = args;
     }
 
-    @Override protected void bindOther() {
+
+    @Override protected void configure() {
+        super.configure();
+
         bind(SunshineMainArguments.class).toInstance(args);
         bind(LaunchConfiguration.class).asEagerSingleton();
         bind(SunshineMainDriver.class).asEagerSingleton();
@@ -29,9 +32,5 @@ public class SunshineModule extends SpoofaxModule {
         final Multibinder<IOperatorRegistry> strategoLibraryBinder =
             Multibinder.newSetBinder(binder(), IOperatorRegistry.class);
         strategoLibraryBinder.addBinding().toInstance(new SunshineLibrary());
-
-        bind(String.class).annotatedWith(Names.named("LanguageDiscoveryAnalysisOverride")).toInstance("analysis-cmd");
-        bind(ClassLoader.class).annotatedWith(Names.named("ResourceClassLoader")).toInstance(
-            this.getClass().getClassLoader());
     }
 }
