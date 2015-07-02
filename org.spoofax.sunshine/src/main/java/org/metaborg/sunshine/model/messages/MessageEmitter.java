@@ -6,10 +6,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
 
-import org.metaborg.spoofax.core.messages.IMessage;
-import org.metaborg.spoofax.core.messages.MessageSeverity;
-import org.metaborg.spoofax.core.source.AffectedSourceHelper;
-import org.metaborg.spoofax.core.source.ISourceTextService;
+import org.metaborg.core.messages.IMessage;
+import org.metaborg.core.messages.MessageSeverity;
+import org.metaborg.core.source.AffectedSourceHelper;
+import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.sunshine.services.messages.MessageSink;
 
 public class MessageEmitter {

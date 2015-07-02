@@ -6,11 +6,11 @@ import java.util.HashSet;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
-import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
-import org.metaborg.spoofax.core.resource.IResourceChange;
-import org.metaborg.spoofax.core.resource.IResourceService;
-import org.metaborg.spoofax.core.resource.OfflineResourceChangeMonitor;
+import org.metaborg.core.language.AllLanguagesFileSelector;
+import org.metaborg.core.language.ILanguageIdentifierService;
+import org.metaborg.core.resource.IResourceChange;
+import org.metaborg.core.resource.IResourceService;
+import org.metaborg.core.resource.OfflineResourceChangeMonitor;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkMany;

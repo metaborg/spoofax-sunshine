@@ -1,7 +1,7 @@
 package org.metaborg.sunshine.services.messages;
 
-import org.metaborg.spoofax.core.analysis.AnalysisFileResult;
-import org.metaborg.spoofax.core.messages.IMessage;
+import org.metaborg.core.analysis.AnalysisFileResult;
+import org.metaborg.core.messages.IMessage;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
 import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.metaborg.sunshine.pipeline.diff.DiffKind;

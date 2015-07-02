@@ -3,7 +3,7 @@ package org.metaborg.sunshine.prims;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.AllFileSelector;
-import org.metaborg.spoofax.core.SpoofaxRuntimeException;
+import org.metaborg.core.SpoofaxRuntimeException;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;

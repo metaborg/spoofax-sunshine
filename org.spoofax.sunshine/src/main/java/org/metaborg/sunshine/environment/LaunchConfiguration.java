@@ -6,7 +6,7 @@ package org.metaborg.sunshine.environment;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
-import org.metaborg.spoofax.core.resource.IResourceService;
+import org.metaborg.core.resource.IResourceService;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.jsglr.io.ParseTableManager;
