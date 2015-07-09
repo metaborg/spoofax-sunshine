@@ -8,7 +8,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.core.language.AllLanguagesFileSelector;
 import org.metaborg.core.language.ILanguageIdentifierService;
-import org.metaborg.core.resource.IResourceChange;
+import org.metaborg.core.resource.ResourceChange;
 import org.metaborg.core.resource.IResourceService;
 import org.metaborg.core.resource.OfflineResourceChangeMonitor;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -56,7 +56,7 @@ public class FileSource implements ISourceMany<FileObject> {
             monitor.reset();
         }
         logger.debug("Getting directory changes");
-        final Iterable<IResourceChange> changes = monitor.update();
+        final Iterable<ResourceChange> changes = monitor.update();
         monitor.write();
         final MultiDiff<FileObject> diff = createDiff(changes);
         logger.debug("Notifying {} sinks of {} file changes", sinks.size(), diff.size());
@@ -67,25 +67,25 @@ public class FileSource implements ISourceMany<FileObject> {
         logger.trace("Done sinking");
     }
 
-    public MultiDiff<FileObject> createDiff(Iterable<IResourceChange> changes) {
+    public MultiDiff<FileObject> createDiff(Iterable<ResourceChange> changes) {
         final MultiDiff<FileObject> diff = new MultiDiff<FileObject>();
-        for(IResourceChange change : changes) {
-            switch(change.kind()) {
+        for(ResourceChange change : changes) {
+            switch(change.kind) {
                 case Create:
-                    diff.add(new Diff<FileObject>(change.resource(), DiffKind.ADDITION));
+                    diff.add(new Diff<FileObject>(change.resource, DiffKind.ADDITION));
                     break;
                 case Delete:
-                    diff.add(new Diff<FileObject>(change.resource(), DiffKind.DELETION));
+                    diff.add(new Diff<FileObject>(change.resource, DiffKind.DELETION));
                     break;
                 case Modify:
-                    diff.add(new Diff<FileObject>(change.resource(), DiffKind.MODIFICATION));
+                    diff.add(new Diff<FileObject>(change.resource, DiffKind.MODIFICATION));
                     break;
                 case Rename:
-                    if(change.from() != null) {
-                        diff.add(new Diff<FileObject>(change.resource(), DiffKind.ADDITION));
+                    if(change.from != null) {
+                        diff.add(new Diff<FileObject>(change.resource, DiffKind.ADDITION));
                     }
-                    if(change.to() != null) {
-                        diff.add(new Diff<FileObject>(change.resource(), DiffKind.DELETION));
+                    if(change.to != null) {
+                        diff.add(new Diff<FileObject>(change.resource, DiffKind.DELETION));
                     }
                     break;
             }
