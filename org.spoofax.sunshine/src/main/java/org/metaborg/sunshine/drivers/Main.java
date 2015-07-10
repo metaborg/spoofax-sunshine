@@ -7,6 +7,7 @@ import org.metaborg.core.language.ILanguage;
 import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.language.IdentificationFacet;
+import org.metaborg.core.language.LanguageIdentifier;
 import org.metaborg.core.language.LanguageVersion;
 import org.metaborg.core.language.ResourceExtensionFacet;
 import org.metaborg.core.language.ResourceExtensionsIdentifier;
@@ -111,7 +112,7 @@ public class Main {
         logger.debug("Creating language {} from custom parameters", name);
 
         final ILanguageService languageService = env.getService(ILanguageService.class);
-        final ILanguage language = languageService.create(name, version, location, name);
+        final ILanguage language = languageService.create(new LanguageIdentifier(name, name, version), location, name);
 
         final IdentificationFacet identificationFacet =
             new IdentificationFacet(new ResourceExtensionsIdentifier(extensions));
