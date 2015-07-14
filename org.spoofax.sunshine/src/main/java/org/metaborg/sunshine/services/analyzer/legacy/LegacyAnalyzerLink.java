@@ -74,7 +74,7 @@ public class LegacyAnalyzerLink extends
             runtime =
                 serviceRegistry.getService(StrategoRuntimeService.class).runtime(
                     new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
-                        new ContextIdentifier(launch.projectDir, lang)));
+                        new ContextIdentifier(launch.projectDir, lang), serviceRegistry.injector()));
             fileTerm =
                 termFactory.makeString(launch.projectDir.getName().getRelativeName(parseResult.source.getName()));
             projectTerm = termFactory.makeString(launch.projectDir.getName().getPath());

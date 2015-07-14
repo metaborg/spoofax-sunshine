@@ -26,6 +26,10 @@ public class ServiceRegistry {
 
     }
 
+    public Injector injector() {
+        return injector;
+    }
+
     public <T> T getService(Class<T> clazz) {
         T service = injector.getInstance(clazz);
         logger.trace("Retrieved provider {} for service {}", clazz, service);

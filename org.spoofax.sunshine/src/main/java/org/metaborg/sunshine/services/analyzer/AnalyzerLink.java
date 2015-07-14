@@ -74,7 +74,8 @@ public class AnalyzerLink extends
             Lists.newArrayList(lang2files.keySet().size());
         for(ILanguage lang : lang2files.keySet()) {
             results.add(analyzer.analyze(lang2files.get(lang), new SpoofaxContext(ServiceRegistry.INSTANCE()
-                .getService(ResourceService.class), new ContextIdentifier(projectDir, lang))));
+                .getService(ResourceService.class), new ContextIdentifier(projectDir, lang), ServiceRegistry.INSTANCE()
+                .injector())));
         }
         return results;
     }

@@ -101,7 +101,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         try {
             final HybridInterpreter interpreter =
                 runtimeService.runtime(new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
-                    new ContextIdentifier(lauchConfig.projectDir, action.inputLangauge)));
+                    new ContextIdentifier(lauchConfig.projectDir, action.inputLangauge), ServiceRegistry.INSTANCE()
+                        .injector()));
             result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
         } catch(MetaborgException e) {
             final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";
