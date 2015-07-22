@@ -9,7 +9,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.context.ContextIdentifier;
-import org.metaborg.core.language.ILanguage;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageIdentifierService;
 import org.metaborg.core.resource.ResourceService;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
@@ -76,8 +76,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
      */
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
-        final ILanguage language = languageIdentifierService.identify(file);
-        final Action action = language.facet(MenusFacet.class).action(builderName);
+        final ILanguageImpl language = languageIdentifierService.identify(file);
+        final Action action = language.facets(MenusFacet.class).action(builderName);
 
         if(action == null) {
             logger.error("Builder {} could not be found", builderName);

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgRuntimeException;
-import org.metaborg.core.language.ILanguage;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageIdentifierService;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.syntax.ISyntaxService;
@@ -32,7 +32,7 @@ public class JSGLRLink extends ALinkOneToOne<FileObject, ParseResult<IStrategoTe
 
         final ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
         final FileObject file = input.getPayload();
-        final ILanguage language = serviceRegistry.getService(ILanguageIdentifierService.class).identify(file);
+        final ILanguageImpl language = serviceRegistry.getService(ILanguageIdentifierService.class).identify(file);
         try {
             final String inputText = serviceRegistry.getService(ISourceTextService.class).text(file);
             final ParseResult<IStrategoTerm> parseResult =

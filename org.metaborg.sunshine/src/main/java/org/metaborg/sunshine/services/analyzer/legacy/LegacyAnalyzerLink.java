@@ -9,7 +9,7 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.context.ContextIdentifier;
-import org.metaborg.core.language.ILanguage;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageIdentifierService;
 import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
@@ -62,7 +62,7 @@ public class LegacyAnalyzerLink extends
         }
         ServiceRegistry serviceRegistry = ServiceRegistry.INSTANCE();
         final FileObject file = parseResult.source;
-        ILanguage lang = languageIdentifierService.identify(file);
+        ILanguageImpl lang = languageIdentifierService.identify(file);
 
         LaunchConfiguration launch = serviceRegistry.getService(LaunchConfiguration.class);
         ITermFactory termFactory = launch.termFactory;
@@ -90,7 +90,7 @@ public class LegacyAnalyzerLink extends
 
         IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result, fileTerm, projectTerm);
         runtime.setCurrent(inputTerm);
-        String function = lang.facet(StrategoFacet.class).analysisStrategy();
+        String function = lang.facets(StrategoFacet.class).analysisStrategy();
         boolean success;
         try {
             success = runtime.invoke(function);

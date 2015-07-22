@@ -3,7 +3,7 @@ package org.metaborg.sunshine.drivers;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
-import org.metaborg.core.language.ILanguage;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.language.IdentificationFacet;
@@ -106,13 +106,13 @@ public class Main {
         }
     }
 
-    private static ILanguage createLanguage(String name, LanguageVersion version, FileObject location,
+    private static ILanguageImpl createLanguage(String name, LanguageVersion version, FileObject location,
         ImmutableSet<String> extensions, FileObject parseTable, String startSymbol,
         ImmutableSet<FileObject> ctreeFiles, ImmutableSet<FileObject> jarFiles, String analysisStrategy) {
         logger.debug("Creating language {} from custom parameters", name);
 
         final ILanguageService languageService = env.getService(ILanguageService.class);
-        final ILanguage language = languageService.create(new LanguageIdentifier(name, name, version), location, name);
+        final ILanguageImpl language = languageService.create(new LanguageIdentifier(name, name, version), location, name);
 
         final IdentificationFacet identificationFacet =
             new IdentificationFacet(new ResourceExtensionsIdentifier(extensions));
