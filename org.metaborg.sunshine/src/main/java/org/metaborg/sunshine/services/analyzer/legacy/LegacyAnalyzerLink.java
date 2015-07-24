@@ -9,8 +9,8 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.context.ContextIdentifier;
-import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageIdentifierService;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
 import org.metaborg.core.resource.ResourceService;
@@ -33,6 +33,7 @@ import org.spoofax.interpreter.terms.IStrategoTuple;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.strategoxt.HybridInterpreter;
 
+import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
 public class LegacyAnalyzerLink extends
@@ -73,6 +74,7 @@ public class LegacyAnalyzerLink extends
         try {
             runtime =
                 serviceRegistry.getService(StrategoRuntimeService.class).runtime(
+                    Iterables.get(lang.components(), 0),
                     new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
                         new ContextIdentifier(launch.projectDir, lang), serviceRegistry.injector()));
             fileTerm =
@@ -90,7 +92,7 @@ public class LegacyAnalyzerLink extends
 
         IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result, fileTerm, projectTerm);
         runtime.setCurrent(inputTerm);
-        String function = lang.facets(StrategoFacet.class).analysisStrategy();
+        String function = lang.facet(StrategoFacet.class).analysisStrategy();
         boolean success;
         try {
             success = runtime.invoke(function);

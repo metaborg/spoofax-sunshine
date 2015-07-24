@@ -9,8 +9,10 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.context.ContextIdentifier;
-import org.metaborg.core.language.ILanguageImpl;
+import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageIdentifierService;
+import org.metaborg.core.language.ILanguageImpl;
+import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.resource.ResourceService;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
@@ -27,6 +29,8 @@ import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.strategoxt.HybridInterpreter;
+
+import com.google.common.collect.Iterables;
 
 public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     private static final Logger logger = LoggerFactory.getLogger(BuilderSink.class.getName());
@@ -77,7 +81,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
         final ILanguageImpl language = languageIdentifierService.identify(file);
-        final Action action = language.facets(MenusFacet.class).action(builderName);
+        final Action action = language.facet(MenusFacet.class).action(builderName);
 
         if(action == null) {
             logger.error("Builder {} could not be found", builderName);
@@ -97,12 +101,16 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     private IStrategoTerm invoke(Action action, IStrategoTerm input) {
         final ServiceRegistry services = ServiceRegistry.INSTANCE();
         final IStrategoRuntimeService runtimeService = services.getService(IStrategoRuntimeService.class);
+        final ILanguageService languageService = services.getService(ILanguageService.class);
+        final ILanguageImpl languageImpl = languageService.getImpl(action.inputLanguageId);
+        final ILanguageComponent component = Iterables.get(languageImpl.components(), 0);
         final IStrategoTerm result;
         try {
             final HybridInterpreter interpreter =
-                runtimeService.runtime(new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
-                    new ContextIdentifier(lauchConfig.projectDir, action.inputLangauge), ServiceRegistry.INSTANCE()
-                        .injector()));
+                runtimeService.runtime(component,
+                    new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
+                        new ContextIdentifier(lauchConfig.projectDir, languageImpl), ServiceRegistry.INSTANCE()
+                            .injector()));
             result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
         } catch(MetaborgException e) {
             final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";
