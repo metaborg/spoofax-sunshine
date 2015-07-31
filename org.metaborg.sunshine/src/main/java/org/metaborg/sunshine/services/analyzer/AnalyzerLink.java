@@ -9,7 +9,7 @@ import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.analysis.AnalysisResult;
 import org.metaborg.core.analysis.IAnalysisService;
 import org.metaborg.core.context.ContextIdentifier;
-import org.metaborg.core.language.ILanguage;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.resource.ResourceService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
@@ -65,14 +65,14 @@ public class AnalyzerLink extends
         throws AnalysisException {
         final FileObject projectDir = ServiceRegistry.INSTANCE().getService(LaunchConfiguration.class).projectDir;
         logger.debug("Analyzing {} files", inputs.size());
-        Multimap<ILanguage, ParseResult<IStrategoTerm>> lang2files = LinkedHashMultimap.create();
+        Multimap<ILanguageImpl, ParseResult<IStrategoTerm>> lang2files = LinkedHashMultimap.create();
         for(ParseResult<IStrategoTerm> input : inputs) {
             lang2files.put(input.language, input);
         }
         logger.trace("Files grouped in {} languages", lang2files.size());
         final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> results =
             Lists.newArrayList(lang2files.keySet().size());
-        for(ILanguage lang : lang2files.keySet()) {
+        for(ILanguageImpl lang : lang2files.keySet()) {
             results.add(analyzer.analyze(lang2files.get(lang), new SpoofaxContext(ServiceRegistry.INSTANCE()
                 .getService(ResourceService.class), new ContextIdentifier(projectDir, lang), ServiceRegistry.INSTANCE()
                 .injector())));
