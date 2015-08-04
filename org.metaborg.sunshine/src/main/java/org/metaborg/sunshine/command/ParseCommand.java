@@ -13,16 +13,22 @@ import org.metaborg.core.syntax.ISyntaxService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.syntax.JSGLRParserConfiguration;
 import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
+import org.metaborg.sunshine.MessagePrinter;
+import org.metaborg.util.log.ILogger;
+import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.core.Tools;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
+import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
 @Parameters
 public class ParseCommand implements ICommand {
+    private static final ILogger logger = LoggerUtils.logger(ParseCommand.class);
+
     @Parameter(names = { "-I", "--no-implode" }, description = "Disables imploding the parse tree") private boolean noImplode;
 
     @Parameter(names = { "-R", "--no-recovery" }, description = "Disables error recovery") private boolean noRecovery;
@@ -33,15 +39,19 @@ public class ParseCommand implements ICommand {
 
     private final TermPrettyPrinter termPrettyPrinter;
 
+    private final MessagePrinter printer;
+
     private final CommonArguments arguments;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
     @Inject public ParseCommand(ISourceTextService sourceTextService, ISyntaxService<IStrategoTerm> syntaxService,
-        TermPrettyPrinter termPrettyPrinter, CommonArguments arguments, InputDelegate inputDelegate) {
+        TermPrettyPrinter termPrettyPrinter, MessagePrinter printer, CommonArguments arguments,
+        InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.syntaxService = syntaxService;
         this.termPrettyPrinter = termPrettyPrinter;
+        this.printer = printer;
         this.arguments = arguments;
         this.inputDelegate = inputDelegate;
     }
@@ -65,10 +75,18 @@ public class ParseCommand implements ICommand {
         final ParseResult<IStrategoTerm> result =
             syntaxService.parse(input, resource, identifiedResource.dialectOrLanguage(), new JSGLRParserConfiguration(
                 !noImplode, !noRecovery));
-
-        if(result == null || result.result == null) {
-            final String message = String.format("Parsing %s failed, parser returned an empty parse result", resource);
-            throw new MetaborgException(message);
+        final boolean success = result.result != null;
+        final boolean messages = !Iterables.isEmpty(result.messages);
+        if(success && messages) {
+            logger.error("Parsing succeeded, but messages were produced: ");
+            printer.print(result.messages);
+        } else if(!success && messages) {
+            logger.error("Parsing failed with following messages: ");
+            printer.print(result.messages);
+            throw new MetaborgException("Parsing failed");
+        } else if(!success) {
+            logger.error("Parsing failed without messages");
+            throw new MetaborgException("Parsing failed");
         }
 
         final String ppResult = Tools.asJavaString(termPrettyPrinter.prettyPrint(result.result));

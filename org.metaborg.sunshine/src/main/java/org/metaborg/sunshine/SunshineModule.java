@@ -34,6 +34,9 @@ public class SunshineModule extends SpoofaxModule {
         bind(CommonArguments.class).in(Singleton.class);
         bind(ProjectPathDelegate.class).in(Singleton.class);
         bind(InputDelegate.class).in(Singleton.class);
+
+        bind(MessagePrinter.class).in(Singleton.class);
+
         bind(Main.class).in(Singleton.class);
     }
 

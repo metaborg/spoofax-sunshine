@@ -7,7 +7,9 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
+import org.metaborg.core.build.CleanInput;
 import org.metaborg.core.build.ConsoleBuildMessagePrinter;
+import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageComponent;
@@ -81,6 +83,12 @@ public class BuildCommand implements ICommand {
         final IProject project = projectPathDelegate.project();
         final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
 
+        try {
+            runner.clean(new CleanInput(project, null), null, null).schedule().block();
+        } catch(InterruptedException e) {
+
+        }
+
         // @formatter:off
         final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
         inputBuilder
@@ -117,7 +125,12 @@ public class BuildCommand implements ICommand {
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
 
         try {
-            runner.build(input, null, null).schedule().block().result();
+            final IBuildOutput<?, ?, ?> output = runner.build(input, null, null).schedule().block().result();
+            if(!output.success()) {
+                logger.error("Build failed");
+            } else {
+                logger.info("Build successful");
+            }
         } catch(MetaborgRuntimeException e) {
             throw new MetaborgException("Build failed", e);
         } catch(InterruptedException e) {
