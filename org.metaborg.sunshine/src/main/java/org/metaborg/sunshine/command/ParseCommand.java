@@ -13,8 +13,6 @@ import org.metaborg.core.syntax.ISyntaxService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.syntax.JSGLRParserConfiguration;
 import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spoofax.interpreter.core.Tools;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
@@ -25,8 +23,6 @@ import com.google.inject.Inject;
 
 @Parameters
 public class ParseCommand implements ICommand {
-    private static final Logger logger = LoggerFactory.getLogger(ParseCommand.class);
-
     @Parameter(names = { "-I", "--no-implode" }, description = "Disables imploding the parse tree") private boolean noImplode;
 
     @Parameter(names = { "-R", "--no-recovery" }, description = "Disables error recovery") private boolean noRecovery;
@@ -76,7 +72,7 @@ public class ParseCommand implements ICommand {
         }
 
         final String ppResult = Tools.asJavaString(termPrettyPrinter.prettyPrint(result.result));
-        logger.info(ppResult);
+        System.out.println(ppResult);
 
         return 0;
     }

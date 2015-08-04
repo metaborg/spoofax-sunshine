@@ -1,6 +1,5 @@
 package org.metaborg.sunshine.command;
 
-import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileSelector;
@@ -18,10 +17,9 @@ import org.metaborg.core.transform.CompileGoal;
 import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
-import org.metaborg.util.log.LoggingOutputStream;
+import org.metaborg.util.log.ILogger;
+import org.metaborg.util.log.LoggerUtils;
 import org.metaborg.util.resource.FileSelectorUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -30,7 +28,7 @@ import com.google.inject.Inject;
 
 @Parameters(commandDescription = "Parses, analyses, and transforms files in a project")
 public class BuildCommand implements ICommand {
-    private static final Logger logger = LoggerFactory.getLogger(BuildCommand.class);
+    private static final ILogger logger = LoggerUtils.logger(BuildCommand.class);
 
     // @formatter:off
     @Parameter(names = { "-f", "--filter" }, description = "Regex filter for filtering which files get built") 
@@ -83,14 +81,12 @@ public class BuildCommand implements ICommand {
         final IProject project = projectPathDelegate.project();
         final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
 
-        final OutputStream logOutputStream = new LoggingOutputStream(logger, false);
-
         // @formatter:off
         final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
         inputBuilder
             .addComponents(components)
             .withSourcesFromDefaultSourceLocations(true)
-            .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, logOutputStream, true, true))
+            .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))
             .withThrowOnErrors(stopOnErrors)
             .withAnalysis(!noAnalysis)
             .withTransformation(!noTransform)
