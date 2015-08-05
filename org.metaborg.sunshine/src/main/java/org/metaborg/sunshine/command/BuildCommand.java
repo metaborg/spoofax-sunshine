@@ -19,6 +19,8 @@ import org.metaborg.core.transform.CompileGoal;
 import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
+import org.metaborg.sunshine.command.arguments.CommonArguments;
+import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.metaborg.util.resource.FileSelectorUtils;
@@ -53,7 +55,7 @@ public class BuildCommand implements ICommand {
     @Parameter(names = { "-g", "--transform-goal" }, description = "Transform goals (names of builders to invoke)")
     private List<String> namedTransformGoals;
 
-    @Parameter(names = { "-C", "--no-compile-goal" }, description = "Disables compilation (on-save handler)")
+    @Parameter(names = { "-C", "--no-compile-goal" }, description = "Disables compile goal (on-save handler)")
     private boolean noCompile;
     // @formatter:on
 
@@ -78,15 +80,20 @@ public class BuildCommand implements ICommand {
         this.projectPathDelegate = projectPathDelegate;
     }
 
+    @Override public boolean validate() {
+        return true;
+    }
+
 
     @Override public int run() throws MetaborgException {
-        final IProject project = projectPathDelegate.project();
         final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
+        final IProject project = projectPathDelegate.project();
 
         try {
             runner.clean(new CleanInput(project, null), null, null).schedule().block();
         } catch(InterruptedException e) {
-
+            logger.error("Clean was cancelled", e);
+            return -1;
         }
 
         // @formatter:off
@@ -128,13 +135,16 @@ public class BuildCommand implements ICommand {
             final IBuildOutput<?, ?, ?> output = runner.build(input, null, null).schedule().block().result();
             if(!output.success()) {
                 logger.error("Build failed");
+                return -1;
             } else {
                 logger.info("Build successful");
             }
         } catch(MetaborgRuntimeException e) {
-            throw new MetaborgException("Build failed", e);
+            logger.error("Build failed", e);
+            return -1;
         } catch(InterruptedException e) {
-            throw new MetaborgException("Build was cancelled", e);
+            logger.error("Build was cancelled", e);
+            return -1;
         }
 
         return 0;

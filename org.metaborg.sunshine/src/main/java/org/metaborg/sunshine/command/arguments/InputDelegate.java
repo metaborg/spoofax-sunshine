@@ -1,6 +1,7 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.arguments;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.language.ILanguageIdentifierService;
@@ -13,7 +14,8 @@ import com.google.inject.Inject;
 
 public class InputDelegate {
     // @formatter:off
-    @Parameter(names = { "-i", "--input" }, required = true, description = "Absolute or relative to current directory path of the input") 
+    @Parameter(names = { "-i", "--input" }, required = true, description = "Path to the input. Can be an absolute path, "
+        + "or a relative path to the project if set, otherwise a relative path to the current directory") 
     private String inputPath;
     // @formatter:on
 
@@ -40,6 +42,21 @@ public class InputDelegate {
     public final IdentifiedResource inputIdentifiedResource(Iterable<? extends ILanguageImpl> languages)
         throws MetaborgException {
         final FileObject resource = inputResource();
+        return languageIdentifierService.identifyToResource(resource, languages);
+    }
+
+    public FileObject inputResource(FileObject base) throws MetaborgException {
+        try {
+            return base.resolveFile(inputPath);
+        } catch(FileSystemException e) {
+            final String message = String.format("Cannot resolve %s", inputPath);
+            throw new MetaborgException(message, e);
+        }
+    }
+
+    public final IdentifiedResource
+        inputIdentifiedResource(FileObject base, Iterable<? extends ILanguageImpl> languages) throws MetaborgException {
+        final FileObject resource = inputResource(base);
         return languageIdentifierService.identifyToResource(resource, languages);
     }
 }

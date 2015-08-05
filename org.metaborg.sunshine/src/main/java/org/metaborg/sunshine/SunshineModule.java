@@ -11,12 +11,12 @@ import org.metaborg.spoofax.core.project.IMavenProjectService;
 import org.metaborg.spoofax.core.project.NullMavenProjectService;
 import org.metaborg.sunshine.command.AnalyzeCommand;
 import org.metaborg.sunshine.command.BuildCommand;
-import org.metaborg.sunshine.command.CommonArguments;
 import org.metaborg.sunshine.command.ICommand;
-import org.metaborg.sunshine.command.InputDelegate;
 import org.metaborg.sunshine.command.ParseCommand;
-import org.metaborg.sunshine.command.ProjectPathDelegate;
 import org.metaborg.sunshine.command.TransformCommand;
+import org.metaborg.sunshine.command.arguments.CommonArguments;
+import org.metaborg.sunshine.command.arguments.InputDelegate;
+import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
 
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
@@ -34,8 +34,6 @@ public class SunshineModule extends SpoofaxModule {
         bind(CommonArguments.class).in(Singleton.class);
         bind(ProjectPathDelegate.class).in(Singleton.class);
         bind(InputDelegate.class).in(Singleton.class);
-
-        bind(MessagePrinter.class).in(Singleton.class);
 
         bind(Main.class).in(Singleton.class);
     }

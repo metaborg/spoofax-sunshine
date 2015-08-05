@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.arguments;
 
 import java.util.Collection;
 import java.util.List;

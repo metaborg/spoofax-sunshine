@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.arguments;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
@@ -12,7 +12,8 @@ import com.google.inject.Inject;
 
 public class ProjectPathDelegate {
     // @formatter:off
-    @Parameter(names = { "-p", "--project" }, required = true, description = "Absolute or relative to current directory path where project resides") 
+    @Parameter(names = { "-p", "--project" }, required = true, description = "Path to the project. "
+        + "Can be an absolute path, or a relative path to the current directory") 
     private String projectPath;
     // @formatter:on
 

@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 
 import org.metaborg.core.MetaborgException;
 import org.metaborg.spoofax.meta.core.SpoofaxMetaModule;
-import org.metaborg.sunshine.command.CommonArguments;
 import org.metaborg.sunshine.command.ICommand;
+import org.metaborg.sunshine.command.arguments.CommonArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,12 @@ public class Main {
             jc.usage();
             return -1;
         }
-        
+
+        if(!command.validate()) {
+            jc.usage();
+            return -1;
+        }
+
         try {
             return command.run();
         } catch(MetaborgException e) {

@@ -1,19 +1,26 @@
 package org.metaborg.sunshine.command;
 
-import java.io.IOException;
-
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
+import org.metaborg.core.MetaborgRuntimeException;
+import org.metaborg.core.build.BuildInput;
+import org.metaborg.core.build.BuildInputBuilder;
+import org.metaborg.core.build.ConsoleBuildMessagePrinter;
+import org.metaborg.core.build.IBuildOutput;
+import org.metaborg.core.build.dependency.IDependencyService;
+import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.language.LanguageUtils;
+import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
-import org.metaborg.core.syntax.ISyntaxService;
 import org.metaborg.core.syntax.ParseResult;
-import org.metaborg.spoofax.core.syntax.JSGLRParserConfiguration;
+import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
-import org.metaborg.sunshine.MessagePrinter;
+import org.metaborg.sunshine.command.arguments.CommonArguments;
+import org.metaborg.sunshine.command.arguments.InputDelegate;
+import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.core.Tools;
@@ -35,58 +42,79 @@ public class ParseCommand implements ICommand {
 
 
     private final ISourceTextService sourceTextService;
-    private final ISyntaxService<IStrategoTerm> syntaxService;
+    private final IDependencyService dependencyService;
+    private final ILanguagePathService languagePathService;
+    private final ISpoofaxProcessorRunner runner;
 
     private final TermPrettyPrinter termPrettyPrinter;
 
-    private final MessagePrinter printer;
-
     private final CommonArguments arguments;
+    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
-    @Inject public ParseCommand(ISourceTextService sourceTextService, ISyntaxService<IStrategoTerm> syntaxService,
-        TermPrettyPrinter termPrettyPrinter, MessagePrinter printer, CommonArguments arguments,
-        InputDelegate inputDelegate) {
+    @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, TermPrettyPrinter termPrettyPrinter,
+        CommonArguments arguments, ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
-        this.syntaxService = syntaxService;
+        this.dependencyService = dependencyService;
+        this.languagePathService = languagePathService;
+        this.runner = runner;
         this.termPrettyPrinter = termPrettyPrinter;
-        this.printer = printer;
         this.arguments = arguments;
+        this.projectPathDelegate = projectPathDelegate;
         this.inputDelegate = inputDelegate;
     }
 
 
+    @Override public boolean validate() {
+        return true;
+    }
+
     @Override public int run() throws MetaborgException {
         final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
         final Iterable<ILanguageImpl> impls = LanguageUtils.toImpls(components);
-
-        final IdentifiedResource identifiedResource = inputDelegate.inputIdentifiedResource(impls);
+        final IProject project = projectPathDelegate.project();
+        final IdentifiedResource identifiedResource = inputDelegate.inputIdentifiedResource(project.location(), impls);
         final FileObject resource = identifiedResource.resource;
 
-        final String input;
-        try {
-            input = sourceTextService.text(resource);
-        } catch(IOException e) {
-            final String message = String.format("Reading %s failed unexpectedly", resource);
-            throw new MetaborgException(message, e);
-        }
+        // @formatter:off
+        final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
+        inputBuilder
+            .addComponents(components)
+            .withDefaultIncludePaths(false)
+            .addSource(resource)
+            .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))
+            .withAnalysis(false)
+            .withTransformation(false)
+            ;
+        // @formatter:on
 
-        final ParseResult<IStrategoTerm> result =
-            syntaxService.parse(input, resource, identifiedResource.dialectOrLanguage(), new JSGLRParserConfiguration(
-                !noImplode, !noRecovery));
-        final boolean success = result.result != null;
-        final boolean messages = !Iterables.isEmpty(result.messages);
-        if(success && messages) {
-            logger.error("Parsing succeeded, but messages were produced: ");
-            printer.print(result.messages);
-        } else if(!success && messages) {
-            logger.error("Parsing failed with following messages: ");
-            printer.print(result.messages);
-            throw new MetaborgException("Parsing failed");
-        } else if(!success) {
-            logger.error("Parsing failed without messages");
-            throw new MetaborgException("Parsing failed");
+        final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
+
+        final ParseResult<IStrategoTerm> result;
+        try {
+            final IBuildOutput<IStrategoTerm, IStrategoTerm, IStrategoTerm> output =
+                runner.build(input, null, null).schedule().block().result();
+            if(!output.success()) {
+                logger.error("Parsing failed");
+                return -1;
+            } else {
+                final Iterable<ParseResult<IStrategoTerm>> results = output.parseResults();
+                final int resultSize = Iterables.size(results);
+                if(resultSize == 1) {
+                    result = Iterables.get(results, 0);
+                } else {
+                    throw new MetaborgException(
+                        String.format("%s parse results were returned instead of 1", resultSize));
+                }
+            }
+        } catch(MetaborgRuntimeException e) {
+            logger.error("Parsing failed", e);
+            return -1;
+        } catch(InterruptedException e) {
+            logger.error("Parsing was cancelled", e);
+            return -1;
         }
 
         final String ppResult = Tools.asJavaString(termPrettyPrinter.prettyPrint(result.result));
