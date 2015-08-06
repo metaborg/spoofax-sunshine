@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.base;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
@@ -9,18 +9,15 @@ import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
-import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
-import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
-import org.metaborg.sunshine.command.arguments.CommonArguments;
-import org.metaborg.sunshine.command.arguments.InputDelegate;
-import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
+import org.metaborg.sunshine.arguments.InputDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.core.Tools;
@@ -32,14 +29,17 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
-@Parameters
-public class ParseCommand implements ICommand {
+@Parameters(commandDescription = "Parses a single file and prints the parsed AST")
+public abstract class ParseCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(ParseCommand.class);
 
-    @Parameter(names = { "-I", "--no-implode" }, description = "Disables imploding the parse tree") private boolean noImplode;
+    // @formatter:off
+    @Parameter(names = { "-I", "--no-implode" }, hidden = true, description = "Disables imploding the parse tree")
+    private boolean noImplode;
 
-    @Parameter(names = { "-R", "--no-recovery" }, description = "Disables error recovery") private boolean noRecovery;
-
+    @Parameter(names = { "-R", "--no-recovery" }, hidden = true, description = "Disables error recovery")
+    private boolean noRecovery;
+    // @formatter:on
 
     private final ISourceTextService sourceTextService;
     private final IDependencyService dependencyService;
@@ -48,20 +48,18 @@ public class ParseCommand implements ICommand {
 
     private final TermPrettyPrinter termPrettyPrinter;
 
-    private final CommonArguments arguments;
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
     @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, TermPrettyPrinter termPrettyPrinter,
-        CommonArguments arguments, ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
+        ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
         this.termPrettyPrinter = termPrettyPrinter;
-        this.arguments = arguments;
         this.projectPathDelegate = projectPathDelegate;
         this.inputDelegate = inputDelegate;
     }
@@ -71,17 +69,23 @@ public class ParseCommand implements ICommand {
         return true;
     }
 
-    @Override public int run() throws MetaborgException {
-        final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
-        final Iterable<ILanguageImpl> impls = LanguageUtils.toImpls(components);
-        final IProject project = projectPathDelegate.project();
-        final IdentifiedResource identifiedResource = inputDelegate.inputIdentifiedResource(project.location(), impls);
-        final FileObject resource = identifiedResource.resource;
+    protected int run(Iterable<ILanguageImpl> impls) throws MetaborgException {
+        try {
+            final IProject project = projectPathDelegate.project();
+            final IdentifiedResource identifiedResource =
+                inputDelegate.inputIdentifiedResource(project.location(), impls);
+            final FileObject resource = identifiedResource.resource;
+            return run(impls, project, resource);
+        } finally {
+            projectPathDelegate.removeProject();
+        }
+    }
 
+    private int run(Iterable<ILanguageImpl> impls, IProject project, FileObject resource) throws MetaborgException {
         // @formatter:off
         final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
         inputBuilder
-            .addComponents(components)
+            .addLanguages(impls)
             .withDefaultIncludePaths(false)
             .addSource(resource)
             .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))

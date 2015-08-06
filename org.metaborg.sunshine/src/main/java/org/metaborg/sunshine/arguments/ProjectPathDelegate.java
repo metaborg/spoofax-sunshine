@@ -1,10 +1,10 @@
-package org.metaborg.sunshine.command.arguments;
+package org.metaborg.sunshine.arguments;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.project.IProject;
-import org.metaborg.core.project.SingleProjectService;
+import org.metaborg.core.project.ISimpleProjectService;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
@@ -17,11 +17,13 @@ public class ProjectPathDelegate {
     private String projectPath;
     // @formatter:on
 
-
     private final IResourceService resourceService;
-    private final SingleProjectService projectService;
+    private final ISimpleProjectService projectService;
 
-    @Inject public ProjectPathDelegate(IResourceService resourceService, SingleProjectService projectService) {
+    private IProject project;
+
+
+    @Inject public ProjectPathDelegate(IResourceService resourceService, ISimpleProjectService projectService) {
         this.resourceService = resourceService;
         this.projectService = projectService;
     }
@@ -37,13 +39,18 @@ public class ProjectPathDelegate {
     }
 
     public IProject project() throws MetaborgException {
+        if(project != null) {
+            return project;
+        }
         final FileObject location = projectLocation();
-        final IProject project = new IProject() {
-            @Override public FileObject location() {
-                return location;
-            }
-        };
-        projectService.set(project);
+        project = projectService.create(location);
         return project;
+    }
+
+    public void removeProject() throws MetaborgException {
+        if(project != null) {
+            projectService.remove(project);
+            project = null;
+        }
     }
 }

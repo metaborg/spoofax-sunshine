@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command.arguments;
+package org.metaborg.sunshine.arguments;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -42,7 +42,12 @@ public class InputDelegate {
     public final IdentifiedResource inputIdentifiedResource(Iterable<? extends ILanguageImpl> languages)
         throws MetaborgException {
         final FileObject resource = inputResource();
-        return languageIdentifierService.identifyToResource(resource, languages);
+        final IdentifiedResource identified = languageIdentifierService.identifyToResource(resource, languages);
+        if(identified == null) {
+            final String message = String.format("Cannot not identify language of %s", resource);
+            throw new MetaborgException(message);
+        }
+        return identified;
     }
 
     public FileObject inputResource(FileObject base) throws MetaborgException {
@@ -57,6 +62,11 @@ public class InputDelegate {
     public final IdentifiedResource
         inputIdentifiedResource(FileObject base, Iterable<? extends ILanguageImpl> languages) throws MetaborgException {
         final FileObject resource = inputResource(base);
-        return languageIdentifierService.identifyToResource(resource, languages);
+        final IdentifiedResource identified = languageIdentifierService.identifyToResource(resource, languages);
+        if(identified == null) {
+            final String message = String.format("Cannot not identify language of %s", resource);
+            throw new MetaborgException(message);
+        }
+        return identified;
     }
 }

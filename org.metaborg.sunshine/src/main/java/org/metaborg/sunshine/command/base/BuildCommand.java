@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.base;
 
 import java.util.List;
 
@@ -12,15 +12,14 @@ import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
-import org.metaborg.core.language.ILanguageComponent;
+import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.transform.CompileGoal;
 import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
-import org.metaborg.sunshine.command.arguments.CommonArguments;
-import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.metaborg.util.resource.FileSelectorUtils;
@@ -31,7 +30,7 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.inject.Inject;
 
 @Parameters(commandDescription = "Parses, analyses, and transforms files in a project")
-public class BuildCommand implements ICommand {
+public abstract class BuildCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(BuildCommand.class);
 
     // @formatter:off
@@ -41,18 +40,19 @@ public class BuildCommand implements ICommand {
     @Parameter(names = { "-s", "--stop-on-errors" }, description = "Stops the build when errors occur") 
     private boolean stopOnErrors;
     
-    @Parameter(names = { "-A", "--no-analysis" },
+    @Parameter(names = { "-A", "--no-analysis" }, hidden = true, 
         description = "Disables analysis. This will also disable transformation and compilation that requires analysis") 
     private boolean noAnalysis;
 
     @Parameter(names = { "-T", "--no-transform" }, description = "Disables transformation")
     private boolean noTransform;
 
-    @Parameter(names = { "-t", "--transform-filter" },
+    @Parameter(names = { "-t", "--transform-filter" }, hidden = true, 
         description = "Regex filter for filtering which files get transformed")
     private String transformFilterRegex;
 
-    @Parameter(names = { "-g", "--transform-goal" }, description = "Transform goals (names of builders to invoke)")
+    @Parameter(names = { "-n", "--transform-goal" }, 
+        description = "Named transform goals to run (names of builders to invoke)")
     private List<String> namedTransformGoals;
 
     @Parameter(names = { "-C", "--no-compile-goal" }, description = "Disables compile goal (on-save handler)")
@@ -65,18 +65,16 @@ public class BuildCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final CommonArguments arguments;
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
 
 
     @Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, CommonArguments arguments,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
         ProjectPathDelegate projectPathDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
-        this.arguments = arguments;
         this.projectPathDelegate = projectPathDelegate;
     }
 
@@ -85,10 +83,16 @@ public class BuildCommand implements ICommand {
     }
 
 
-    @Override public int run() throws MetaborgException {
-        final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
-        final IProject project = projectPathDelegate.project();
+    protected int run(Iterable<ILanguageImpl> impls) throws MetaborgException {
+        try {
+            final IProject project = projectPathDelegate.project();
+            return run(impls, project);
+        } finally {
+            projectPathDelegate.removeProject();
+        }
+    }
 
+    private int run(Iterable<ILanguageImpl> impls, IProject project) throws MetaborgException {
         try {
             runner.clean(new CleanInput(project, null), null, null).schedule().block();
         } catch(InterruptedException e) {
@@ -99,7 +103,7 @@ public class BuildCommand implements ICommand {
         // @formatter:off
         final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
         inputBuilder
-            .addComponents(components)
+            .addLanguages(impls)
             .withSourcesFromDefaultSourceLocations(true)
             .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))
             .withThrowOnErrors(stopOnErrors)

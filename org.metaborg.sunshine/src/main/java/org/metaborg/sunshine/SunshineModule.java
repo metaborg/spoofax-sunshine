@@ -4,47 +4,69 @@ import org.metaborg.core.MetaborgModule;
 import org.metaborg.core.editor.IEditorRegistry;
 import org.metaborg.core.editor.NullEditorRegistry;
 import org.metaborg.core.project.IProjectService;
-import org.metaborg.core.project.ISingleProjectService;
-import org.metaborg.core.project.SingleProjectService;
+import org.metaborg.core.project.ISimpleProjectService;
+import org.metaborg.core.project.SimpleProjectService;
 import org.metaborg.spoofax.core.SpoofaxModule;
 import org.metaborg.spoofax.core.project.IMavenProjectService;
 import org.metaborg.spoofax.core.project.NullMavenProjectService;
-import org.metaborg.sunshine.command.AnalyzeCommand;
-import org.metaborg.sunshine.command.BuildCommand;
-import org.metaborg.sunshine.command.ICommand;
-import org.metaborg.sunshine.command.ParseCommand;
-import org.metaborg.sunshine.command.TransformCommand;
-import org.metaborg.sunshine.command.arguments.CommonArguments;
-import org.metaborg.sunshine.command.arguments.InputDelegate;
-import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
+import org.metaborg.sunshine.arguments.InputDelegate;
+import org.metaborg.sunshine.arguments.LanguagesDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
+import org.metaborg.sunshine.command.base.ICommand;
+import org.metaborg.sunshine.command.local.LocalAnalyzeCommand;
+import org.metaborg.sunshine.command.local.LocalBuildCommand;
+import org.metaborg.sunshine.command.local.LocalParseCommand;
+import org.metaborg.sunshine.command.local.LocalTransformCommand;
+import org.metaborg.sunshine.command.local.ServerCommand;
+import org.metaborg.sunshine.command.remote.LoadLanguageCommand;
+import org.metaborg.sunshine.command.remote.RemoteAnalyzeCommand;
+import org.metaborg.sunshine.command.remote.RemoteBuildCommand;
+import org.metaborg.sunshine.command.remote.RemoteParseCommand;
+import org.metaborg.sunshine.command.remote.RemoteTransformCommand;
+import org.metaborg.sunshine.common.LanguageLoader;
 
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
+import com.google.inject.name.Names;
 
 public class SunshineModule extends SpoofaxModule {
     @Override protected void configure() {
         super.configure();
 
-        final MapBinder<String, ICommand> commands = MapBinder.newMapBinder(binder(), String.class, ICommand.class);
-        commands.addBinding("parse").to(ParseCommand.class).in(Singleton.class);
-        commands.addBinding("analyze").to(AnalyzeCommand.class).in(Singleton.class);
-        commands.addBinding("transform").to(TransformCommand.class).in(Singleton.class);
-        commands.addBinding("build").to(BuildCommand.class).in(Singleton.class);
+        bind(LanguageLoader.class).in(Singleton.class);
 
-        bind(CommonArguments.class).in(Singleton.class);
-        bind(ProjectPathDelegate.class).in(Singleton.class);
-        bind(InputDelegate.class).in(Singleton.class);
+        final MapBinder<String, ICommand> localCommands =
+            MapBinder.newMapBinder(binder(), String.class, ICommand.class, Names.named("local"));
+        localCommands.addBinding("parse").to(LocalParseCommand.class).in(Singleton.class);
+        localCommands.addBinding("analyze").to(LocalAnalyzeCommand.class).in(Singleton.class);
+        localCommands.addBinding("transform").to(LocalTransformCommand.class).in(Singleton.class);
+        localCommands.addBinding("build").to(LocalBuildCommand.class).in(Singleton.class);
+        localCommands.addBinding("server").to(ServerCommand.class).in(Singleton.class);
 
-        bind(Main.class).in(Singleton.class);
+        // Don't use Singleton scope for remote commands, delegates, and runners, such that a new object is instantiated
+        // every time, to prevent leftover values from lingering in server mode.
+        final MapBinder<String, ICommand> remoteCommands =
+            MapBinder.newMapBinder(binder(), String.class, ICommand.class, Names.named("remote"));
+        remoteCommands.addBinding("parse").to(RemoteParseCommand.class);
+        remoteCommands.addBinding("analyze").to(RemoteAnalyzeCommand.class);
+        remoteCommands.addBinding("transform").to(RemoteTransformCommand.class);
+        remoteCommands.addBinding("build").to(RemoteBuildCommand.class);
+        remoteCommands.addBinding("load").to(LoadLanguageCommand.class);
+
+        bind(LanguagesDelegate.class);
+        bind(ProjectPathDelegate.class);
+        bind(InputDelegate.class);
+
+        bind(Runner.class);
     }
 
     /**
      * Overrides {@link MetaborgModule#bindProject()} for non-dummy implementation of project service.
      */
     @Override protected void bindProject() {
-        bind(SingleProjectService.class).in(Singleton.class);
-        bind(ISingleProjectService.class).to(SingleProjectService.class);
-        bind(IProjectService.class).to(SingleProjectService.class);
+        bind(SimpleProjectService.class).in(Singleton.class);
+        bind(ISimpleProjectService.class).to(SimpleProjectService.class);
+        bind(IProjectService.class).to(SimpleProjectService.class);
     }
 
     /**

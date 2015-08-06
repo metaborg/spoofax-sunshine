@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.base;
 
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
@@ -11,10 +11,8 @@ import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
-import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
-import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.transform.CompileGoal;
@@ -22,9 +20,8 @@ import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.core.transform.TransformResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.transform.StrategoTransformerCommon;
-import org.metaborg.sunshine.command.arguments.CommonArguments;
-import org.metaborg.sunshine.command.arguments.InputDelegate;
-import org.metaborg.sunshine.command.arguments.ProjectPathDelegate;
+import org.metaborg.sunshine.arguments.InputDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.terms.IStrategoTerm;
@@ -35,13 +32,13 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
-@Parameters
-public class TransformCommand implements ICommand {
+@Parameters(commandDescription = "Transforms a single file and prints the transformation result")
+public abstract class TransformCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(TransformCommand.class);
 
     // @formatter:off
     @Parameter(names = { "-n", "--named-goal" }, 
-        description = "Transform goals (names of builders to invoke). Excludes -c/--compile-goal")
+        description = "Names transform goal to run (names of builders to invoke). Excludes -c/--compile-goal")
     private String namedGoal;
     
     @Parameter(names = { "-c", "--compile-goal" }, 
@@ -56,21 +53,19 @@ public class TransformCommand implements ICommand {
 
     private final StrategoTransformerCommon strategoTransformerCommon;
 
-    private final CommonArguments arguments;
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
     @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-        StrategoTransformerCommon strategoTransformerCommon, CommonArguments arguments,
-        ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
+        StrategoTransformerCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate,
+        InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
         this.strategoTransformerCommon = strategoTransformerCommon;
-        this.arguments = arguments;
         this.projectPathDelegate = projectPathDelegate;
         this.inputDelegate = inputDelegate;
     }
@@ -87,13 +82,19 @@ public class TransformCommand implements ICommand {
         return true;
     }
 
-    @Override public int run() throws MetaborgException {
-        final Iterable<ILanguageComponent> components = arguments.discoverLanguages();
-        final Iterable<ILanguageImpl> impls = LanguageUtils.toImpls(components);
-        final IProject project = projectPathDelegate.project();
-        final IdentifiedResource identifiedResource = inputDelegate.inputIdentifiedResource(project.location(), impls);
-        final FileObject resource = identifiedResource.resource;
+    protected int run(Iterable<ILanguageImpl> impls) throws MetaborgException {
+        try {
+            final IProject project = projectPathDelegate.project();
+            final IdentifiedResource identifiedResource =
+                inputDelegate.inputIdentifiedResource(project.location(), impls);
+            final FileObject resource = identifiedResource.resource;
+            return run(impls, project, resource);
+        } finally {
+            projectPathDelegate.removeProject();
+        }
+    }
 
+    private int run(Iterable<ILanguageImpl> impls, IProject project, FileObject resource) throws MetaborgException {
         try {
             runner.clean(new CleanInput(project, null), null, null).schedule().block();
         } catch(InterruptedException e) {
@@ -104,7 +105,7 @@ public class TransformCommand implements ICommand {
         // @formatter:off
         final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
         inputBuilder
-            .addComponents(components)
+            .addLanguages(impls)
             .withDefaultIncludePaths(false)
             .addSource(resource)
             .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))

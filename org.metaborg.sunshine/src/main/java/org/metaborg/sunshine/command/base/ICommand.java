@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command;
+package org.metaborg.sunshine.command.base;
 
 import org.metaborg.core.MetaborgException;
 
