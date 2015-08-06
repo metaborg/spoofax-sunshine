@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.metaborg.sunshine2</artifactId>
+  <packaging>jar</packaging>
+  <description>Command-line parsing, analysis, and transformations for Spoofax languages</description>
+  <url>https://github.com/metaborg/sunshine</url>
+
+  <parent>
+    <groupId>org.metaborg</groupId>
+    <artifactId>org.metaborg.maven.parent</artifactId>
+    <version>1.5.0-SNAPSHOT</version>
+    <relativePath>../../spoofax-deploy/org.metaborg.maven.parent</relativePath>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.metaborg</groupId>
+      <artifactId>org.metaborg.core</artifactId>
+      <version>${metaborg-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.metaborg</groupId>
+      <artifactId>org.metaborg.spoofax.core</artifactId>
+      <version>${metaborg-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.metaborg</groupId>
+      <artifactId>org.metaborg.spoofax.meta.core</artifactId>
+      <version>${metaborg-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+      <version>1.48</version>
+    </dependency>
+    <dependency>
+      <groupId>com.martiansoftware</groupId>
+      <artifactId>nailgun-server</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-vfs2</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-multibindings</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.metaborg.sunshine.drivers.Main</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <developers>
+    <developer>
+      <name>Vlad Vergu</name>
+      <email>v.a.vergu@tudelft.nl</email>
+      <organization>Delft University of Technology</organization>
+      <organizationUrl>http://www.ewi.tudelft.nl/en</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git@github.com:metaborg/spoofax-sunshine.git</connection>
+    <developerConnection>scm:git:git@github.com:metaborg/spoofax-sunshine.git</developerConnection>
+    <url>https://github.com/metaborg/spoofax-sunshine</url>
+  </scm>
+</project>
