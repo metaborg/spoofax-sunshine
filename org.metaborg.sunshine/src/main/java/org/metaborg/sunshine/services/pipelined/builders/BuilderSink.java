@@ -15,10 +15,10 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.resource.ResourceService;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
+import org.metaborg.spoofax.core.menu.MenuService;
+import org.metaborg.spoofax.core.menu.StrategoTransformAction;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeUtils;
-import org.metaborg.spoofax.core.transform.menu.Action;
-import org.metaborg.spoofax.core.transform.menu.MenusFacet;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
@@ -81,7 +81,13 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
         final ILanguageImpl language = languageIdentifierService.identify(file);
-        final Action action = language.facet(MenusFacet.class).action(builderName);
+        final StrategoTransformAction action;
+        try {
+            action = (StrategoTransformAction) ServiceRegistry.INSTANCE().getService(MenuService.class)
+                .action(language, builderName);
+        } catch(MetaborgException e) {
+            throw new MetaborgRuntimeException("Builder could not be found", e);
+        }
 
         if(action == null) {
             logger.error("Builder {} could not be found", builderName);
@@ -98,7 +104,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         }
     }
 
-    private IStrategoTerm invoke(Action action, IStrategoTerm input) {
+    private IStrategoTerm invoke(StrategoTransformAction action, IStrategoTerm input) {
         final ServiceRegistry services = ServiceRegistry.INSTANCE();
         final IStrategoRuntimeService runtimeService = services.getService(IStrategoRuntimeService.class);
         final ILanguageService languageService = services.getService(ILanguageService.class);
@@ -121,7 +127,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         return result;
     }
 
-    private void processResult(Action action, IStrategoTerm result) {
+    private void processResult(StrategoTransformAction action, IStrategoTerm result) {
         if(isWriteFile(result)) {
             try {
                 final FileObject resultFile =

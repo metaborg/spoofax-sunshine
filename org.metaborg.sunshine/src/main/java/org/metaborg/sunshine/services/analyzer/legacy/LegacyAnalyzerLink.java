@@ -15,9 +15,9 @@ import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
 import org.metaborg.core.resource.ResourceService;
 import org.metaborg.core.syntax.ParseResult;
+import org.metaborg.spoofax.core.analysis.AnalysisFacet;
 import org.metaborg.spoofax.core.analysis.StrategoAnalysisService;
 import org.metaborg.spoofax.core.context.SpoofaxContext;
-import org.metaborg.spoofax.core.stratego.StrategoFacet;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -92,7 +92,7 @@ public class LegacyAnalyzerLink extends
 
         IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result, fileTerm, projectTerm);
         runtime.setCurrent(inputTerm);
-        String function = lang.facet(StrategoFacet.class).analysisStrategy();
+        String function = lang.facet(AnalysisFacet.class).strategyName;
         boolean success;
         try {
             success = runtime.invoke(function);
