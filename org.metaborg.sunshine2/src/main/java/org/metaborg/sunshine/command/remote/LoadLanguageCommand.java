@@ -34,9 +34,14 @@ public class LoadLanguageCommand implements ICommand {
         final Iterable<ILanguageComponent> components = languagesDelegate.discoverLanguages();
         final Iterable<ILanguageImpl> impls = LanguageUtils.toImpls(components);
 
-        logger.info("Discovered {} languages: ", Iterables.size(impls));
+        logger.info("Discovered {} language component(s): ", Iterables.size(components));
+        for(ILanguageComponent component : components) {
+            logger.info("  {}", component.toString());
+        }
+
+        logger.info("Belonging to {} language implementation(s): ", Iterables.size(impls));
         for(ILanguageImpl impl : impls) {
-            logger.info(impl.toString());
+            logger.info("  {}", impl.toString());
         }
 
         return 0;
