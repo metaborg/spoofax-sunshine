@@ -9,10 +9,10 @@ import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.analysis.AnalysisResult;
 import org.metaborg.core.analysis.IAnalysisService;
 import org.metaborg.core.context.ContextIdentifier;
+import org.metaborg.core.context.IContext;
+import org.metaborg.core.context.IContextFactory;
 import org.metaborg.core.language.ILanguageImpl;
-import org.metaborg.core.resource.ResourceService;
 import org.metaborg.core.syntax.ParseResult;
-import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.connectors.ALinkManyToMany;
@@ -73,9 +73,10 @@ public class AnalyzerLink extends
         final Collection<AnalysisResult<IStrategoTerm, IStrategoTerm>> results =
             Lists.newArrayList(lang2files.keySet().size());
         for(ILanguageImpl lang : lang2files.keySet()) {
-            results.add(analyzer.analyze(lang2files.get(lang), new SpoofaxContext(ServiceRegistry.INSTANCE()
-                .getService(ResourceService.class), new ContextIdentifier(projectDir, lang), ServiceRegistry.INSTANCE()
-                .injector())));
+            final IContext context =
+                ServiceRegistry.INSTANCE().getService(IContextFactory.class)
+                    .create(new ContextIdentifier(projectDir, lang));
+            results.add(analyzer.analyze(lang2files.get(lang), context));
         }
         return results;
     }

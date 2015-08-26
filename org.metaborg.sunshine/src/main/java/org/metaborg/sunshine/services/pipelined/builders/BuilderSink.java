@@ -9,12 +9,12 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.context.ContextIdentifier;
+import org.metaborg.core.context.IContext;
+import org.metaborg.core.context.IContextFactory;
 import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageIdentifierService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageService;
-import org.metaborg.core.resource.ResourceService;
-import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.menu.MenuService;
 import org.metaborg.spoofax.core.menu.StrategoTransformAction;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
@@ -83,8 +83,9 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         final ILanguageImpl language = languageIdentifierService.identify(file);
         final StrategoTransformAction action;
         try {
-            action = (StrategoTransformAction) ServiceRegistry.INSTANCE().getService(MenuService.class)
-                .action(language, builderName);
+            action =
+                (StrategoTransformAction) ServiceRegistry.INSTANCE().getService(MenuService.class)
+                    .action(language, builderName);
         } catch(MetaborgException e) {
             throw new MetaborgRuntimeException("Builder could not be found", e);
         }
@@ -112,11 +113,10 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         final ILanguageComponent component = Iterables.get(languageImpl.components(), 0);
         final IStrategoTerm result;
         try {
-            final HybridInterpreter interpreter =
-                runtimeService.runtime(component,
-                    new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
-                        new ContextIdentifier(lauchConfig.projectDir, languageImpl), ServiceRegistry.INSTANCE()
-                            .injector()));
+            final IContext context =
+                ServiceRegistry.INSTANCE().getService(IContextFactory.class)
+                    .create(new ContextIdentifier(lauchConfig.projectDir, languageImpl));
+            final HybridInterpreter interpreter = runtimeService.runtime(component, context);
             result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
         } catch(MetaborgException e) {
             final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";

@@ -9,15 +9,15 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.context.ContextIdentifier;
+import org.metaborg.core.context.IContext;
+import org.metaborg.core.context.IContextFactory;
 import org.metaborg.core.language.ILanguageIdentifierService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
-import org.metaborg.core.resource.ResourceService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.analysis.AnalysisFacet;
 import org.metaborg.spoofax.core.analysis.StrategoAnalysisService;
-import org.metaborg.spoofax.core.context.SpoofaxContext;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -72,11 +72,12 @@ public class LegacyAnalyzerLink extends
         final IStrategoString fileTerm;
         final IStrategoString projectTerm;
         try {
+            final IContext context =
+                ServiceRegistry.INSTANCE().getService(IContextFactory.class)
+                    .create(new ContextIdentifier(launch.projectDir, lang));
             runtime =
-                serviceRegistry.getService(StrategoRuntimeService.class).runtime(
-                    Iterables.get(lang.components(), 0),
-                    new SpoofaxContext(ServiceRegistry.INSTANCE().getService(ResourceService.class),
-                        new ContextIdentifier(launch.projectDir, lang), serviceRegistry.injector()));
+                serviceRegistry.getService(StrategoRuntimeService.class).runtime(Iterables.get(lang.components(), 0),
+                    context);
             fileTerm =
                 termFactory.makeString(launch.projectDir.getName().getRelativeName(parseResult.source.getName()));
             projectTerm = termFactory.makeString(launch.projectDir.getName().getPath());
