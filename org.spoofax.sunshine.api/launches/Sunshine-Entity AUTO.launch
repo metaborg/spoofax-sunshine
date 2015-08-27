@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/org.metaborg.sunshine/src/org/metaborg/sunshine/drivers/Main.java"/>
+<listEntry value="/org.metaborg.sunshine.api/src/main/java/org/metaborg/sunshine/drivers/Main.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -9,8 +9,8 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.metaborg.sunshine.drivers.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--lang entity&#10;--jar /Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/include/entity.jar&#10;--jar /Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/include/entity-java.jar&#10;--table /Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/include/Entity.tbl&#10;--ssymb Start&#10;--ext ent&#10;--observer analysis-default-cmd&#10;&#10;--project /Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/test&#10;--builder generate-java&#10;--build-on example.ent&#10;--non-incremental"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.metaborg.sunshine"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--auto-lang /Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/&#10;&#10;--project /Users/vladvergu/Documents/workspaces/strategoxt-dev/entity/test&#10;--builder &quot;Generate Java&quot;&#10;--build-on example.ent&#10;--non-incremental"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.metaborg.sunshine.api"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea:org.spoofax.sunshine…,org.metaborg.runtime... -server -Xss16m -Xms1G -Xmx2G"/>
 </launchConfiguration>
