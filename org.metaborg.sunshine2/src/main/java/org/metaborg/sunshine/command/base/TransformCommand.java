@@ -7,6 +7,7 @@ import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
+import org.metaborg.core.build.CleanInputBuilder;
 import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
@@ -19,6 +20,7 @@ import org.metaborg.core.transform.CompileGoal;
 import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.core.transform.TransformResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
+import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.spoofax.core.transform.StrategoTransformerCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
@@ -96,7 +98,14 @@ public abstract class TransformCommand implements ICommand {
 
     private int run(Iterable<ILanguageImpl> impls, IProject project, FileObject resource) throws MetaborgException {
         try {
-            runner.clean(new CleanInput(project, null), null, null).schedule().block();
+            final CleanInputBuilder inputBuilder = new CleanInputBuilder(project);
+            // @formatter:off
+            final CleanInput input = inputBuilder
+                .withSelector(new SpoofaxIgnoresSelector())
+                .build(dependencyService)
+                ;
+            // @formatter:on
+            runner.clean(input, null, null).schedule().block();
         } catch(InterruptedException e) {
             logger.error("Clean was cancelled", e);
             return -1;

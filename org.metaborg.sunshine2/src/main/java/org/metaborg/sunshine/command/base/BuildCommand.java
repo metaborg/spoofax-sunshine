@@ -8,6 +8,7 @@ import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
+import org.metaborg.core.build.CleanInputBuilder;
 import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
@@ -94,7 +95,14 @@ public abstract class BuildCommand implements ICommand {
 
     private int run(Iterable<ILanguageImpl> impls, IProject project) throws MetaborgException {
         try {
-            runner.clean(new CleanInput(project, null), null, null).schedule().block();
+            final CleanInputBuilder inputBuilder = new CleanInputBuilder(project);
+            // @formatter:off
+            final CleanInput input = inputBuilder
+                .withSelector(new SpoofaxIgnoresSelector())
+                .build(dependencyService)
+                ;
+            // @formatter:on
+            runner.clean(input, null, null).schedule().block();
         } catch(InterruptedException e) {
             logger.error("Clean was cancelled", e);
             return -1;
