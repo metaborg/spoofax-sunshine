@@ -21,7 +21,7 @@ import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.core.transform.TransformResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
-import org.metaborg.spoofax.core.transform.StrategoTransformerCommon;
+import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
@@ -53,7 +53,7 @@ public abstract class TransformCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final StrategoTransformerCommon strategoTransformerCommon;
+    private final StrategoCommon strategoTransformerCommon;
 
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
@@ -61,8 +61,7 @@ public abstract class TransformCommand implements ICommand {
 
     @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-        StrategoTransformerCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate,
-        InputDelegate inputDelegate) {
+        StrategoCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
@@ -155,7 +154,7 @@ public abstract class TransformCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = strategoTransformerCommon.resultToString(result.result);
+        final String ppResult = strategoTransformerCommon.builderResultToString(result.result);
         System.out.println(ppResult);
 
         return 0;

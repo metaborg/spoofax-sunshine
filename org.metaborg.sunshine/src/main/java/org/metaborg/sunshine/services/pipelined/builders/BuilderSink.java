@@ -18,7 +18,7 @@ import org.metaborg.core.language.ILanguageService;
 import org.metaborg.spoofax.core.menu.MenuService;
 import org.metaborg.spoofax.core.menu.StrategoTransformAction;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
-import org.metaborg.spoofax.core.stratego.StrategoRuntimeUtils;
+import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
 import org.metaborg.sunshine.pipeline.ISinkOne;
@@ -117,7 +117,8 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                 ServiceRegistry.INSTANCE().getService(IContextFactory.class)
                     .create(new ContextIdentifier(lauchConfig.projectDir, languageImpl));
             final HybridInterpreter interpreter = runtimeService.runtime(component, context);
-            result = StrategoRuntimeUtils.invoke(interpreter, input, action.strategy);
+            result =
+                ServiceRegistry.INSTANCE().getService(StrategoCommon.class).invoke(interpreter, input, action.strategy);
         } catch(MetaborgException e) {
             final String msg = "Cannot get Stratego interpreter, or Stratego invocation failed";
             logger.error(msg, e);

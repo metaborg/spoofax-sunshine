@@ -8,7 +8,7 @@ import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
+import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.ParseCommand;
@@ -20,10 +20,10 @@ public class RemoteParseCommand extends ParseCommand {
 
 
     @Inject public RemoteParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, TermPrettyPrinter termPrettyPrinter,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, StrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate, ILanguageService languageService) {
-        super(sourceTextService, dependencyService, languagePathService, runner, termPrettyPrinter,
-            projectPathDelegate, inputDelegate);
+        super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, projectPathDelegate,
+            inputDelegate);
         this.languageService = languageService;
     }
 

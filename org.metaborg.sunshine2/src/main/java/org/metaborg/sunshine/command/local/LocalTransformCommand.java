@@ -8,7 +8,7 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.spoofax.core.transform.StrategoTransformerCommon;
+import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
@@ -23,8 +23,8 @@ public class LocalTransformCommand extends TransformCommand {
 
     @Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-        StrategoTransformerCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate,
-        InputDelegate inputDelegate, LanguagesDelegate languagesDelegate) {
+        StrategoCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate,
+        LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoTransformerCommon,
             projectPathDelegate, inputDelegate);
         this.languagesDelegate = languagesDelegate;

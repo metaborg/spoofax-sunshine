@@ -67,5 +67,5 @@ public class BuilderInputTerm {
 
     public FileObject getProject() {
         return project;
-    };
+    }
 }

@@ -15,7 +15,7 @@ import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
+import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
@@ -46,20 +46,20 @@ public abstract class ParseCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final TermPrettyPrinter termPrettyPrinter;
+    private final StrategoCommon strategoCommon;
 
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
     @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, TermPrettyPrinter termPrettyPrinter,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, StrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
-        this.termPrettyPrinter = termPrettyPrinter;
+        this.strategoCommon = strategoCommon;
         this.projectPathDelegate = projectPathDelegate;
         this.inputDelegate = inputDelegate;
     }
@@ -121,7 +121,7 @@ public abstract class ParseCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = Tools.asJavaString(termPrettyPrinter.prettyPrint(result.result));
+        final String ppResult = Tools.asJavaString(strategoCommon.prettyPrint(result.result));
         System.out.println(ppResult);
 
         return 0;

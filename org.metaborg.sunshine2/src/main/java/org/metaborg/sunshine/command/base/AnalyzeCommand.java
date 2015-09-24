@@ -19,7 +19,7 @@ import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
-import org.metaborg.spoofax.core.terms.TermPrettyPrinter;
+import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
@@ -40,7 +40,7 @@ public abstract class AnalyzeCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final TermPrettyPrinter termPrettyPrinter;
+    private final StrategoCommon strategoCommon;
 
 
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
@@ -48,13 +48,13 @@ public abstract class AnalyzeCommand implements ICommand {
 
 
     public AnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, TermPrettyPrinter termPrettyPrinter,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, StrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
-        this.termPrettyPrinter = termPrettyPrinter;
+        this.strategoCommon = strategoCommon;
         this.projectPathDelegate = projectPathDelegate;
         this.inputDelegate = inputDelegate;
     }
@@ -136,7 +136,7 @@ public abstract class AnalyzeCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = Tools.asJavaString(termPrettyPrinter.prettyPrint(fileResult.result));
+        final String ppResult = Tools.asJavaString(strategoCommon.prettyPrint(fileResult.result));
         System.out.println(ppResult);
 
         return 0;
