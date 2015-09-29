@@ -9,6 +9,7 @@ import java.util.Collection;
 import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
 import org.metaborg.core.source.AffectedSourceHelper;
+import org.metaborg.core.source.ISourceRegion;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.sunshine.services.messages.MessageSink;
 
@@ -83,14 +84,13 @@ public class MessageEmitter {
     private static String print(IMessage message, String sourceText) {
         final StringBuilder sb = new StringBuilder();
         sb.append(message.severity());
-        if(message.source() != null) {
-            sb.append(" in ");
-            sb.append(message.source().getName().getPath());
-            sb.append(" (at line " + message.region().startRow() + ")\n");
-        } else {
-            sb.append(" at line " + message.region().startRow() + "\n");
+        sb.append(" in ");
+        sb.append(message.source().getName().getPath());
+        final ISourceRegion region = message.region();
+        if(region != null) {
+            sb.append(" (at line " + region.startRow() + ")\n");
+            sb.append(AffectedSourceHelper.affectedSourceText(region, sourceText, "\t"));
         }
-        sb.append(AffectedSourceHelper.affectedSourceText(message.region(), sourceText, "\t"));
         sb.append(message);
         sb.append("\n");
         if(message.exception() != null) {
