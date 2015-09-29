@@ -19,7 +19,7 @@ import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
-import org.metaborg.spoofax.core.stratego.StrategoCommon;
+import org.metaborg.spoofax.core.stratego.IStrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
@@ -40,7 +40,7 @@ public abstract class AnalyzeCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final StrategoCommon strategoCommon;
+    private final IStrategoCommon strategoCommon;
 
 
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
@@ -48,7 +48,7 @@ public abstract class AnalyzeCommand implements ICommand {
 
 
     public AnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, StrategoCommon strategoCommon,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;

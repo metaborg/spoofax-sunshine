@@ -8,7 +8,7 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.spoofax.core.stratego.StrategoCommon;
+import org.metaborg.spoofax.core.stratego.IStrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
@@ -22,7 +22,7 @@ public class LocalAnalyzeCommand extends AnalyzeCommand {
 
 
     @Inject public LocalAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, StrategoCommon strategoCommon,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate, LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, projectPathDelegate,
             inputDelegate);

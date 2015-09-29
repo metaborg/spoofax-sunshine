@@ -15,7 +15,7 @@ import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.syntax.ParseResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.spoofax.core.stratego.StrategoCommon;
+import org.metaborg.spoofax.core.stratego.IStrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
@@ -46,14 +46,14 @@ public abstract class ParseCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final StrategoCommon strategoCommon;
+    private final IStrategoCommon strategoCommon;
 
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
     @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, StrategoCommon strategoCommon,
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
