@@ -16,7 +16,7 @@ import org.metaborg.core.language.ILanguageIdentifierService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageService;
 import org.metaborg.spoofax.core.menu.MenuService;
-import org.metaborg.spoofax.core.menu.StrategoTransformAction;
+import org.metaborg.spoofax.core.menu.TransformAction;
 import org.metaborg.spoofax.core.stratego.IStrategoRuntimeService;
 import org.metaborg.spoofax.core.stratego.StrategoCommon;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
@@ -81,10 +81,10 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     @Override public void sink(Diff<BuilderInputTerm> product) {
         final FileObject file = product.getPayload().getFile();
         final ILanguageImpl language = languageIdentifierService.identify(file);
-        final StrategoTransformAction action;
+        final TransformAction action;
         try {
             action =
-                (StrategoTransformAction) ServiceRegistry.INSTANCE().getService(MenuService.class)
+                (TransformAction) ServiceRegistry.INSTANCE().getService(MenuService.class)
                     .action(language, builderName);
         } catch(MetaborgException e) {
             throw new MetaborgRuntimeException("Builder could not be found", e);
@@ -105,7 +105,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         }
     }
 
-    private IStrategoTerm invoke(StrategoTransformAction action, IStrategoTerm input) {
+    private IStrategoTerm invoke(TransformAction action, IStrategoTerm input) {
         final ServiceRegistry services = ServiceRegistry.INSTANCE();
         final IStrategoRuntimeService runtimeService = services.getService(IStrategoRuntimeService.class);
         final ILanguageService languageService = services.getService(ILanguageService.class);
@@ -128,7 +128,7 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
         return result;
     }
 
-    private void processResult(StrategoTransformAction action, IStrategoTerm result) {
+    private void processResult(TransformAction action, IStrategoTerm result) {
         if(isWriteFile(result)) {
             try {
                 final FileObject resultFile =

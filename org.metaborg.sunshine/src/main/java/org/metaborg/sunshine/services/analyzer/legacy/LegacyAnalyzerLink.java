@@ -16,8 +16,8 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
 import org.metaborg.core.syntax.ParseResult;
-import org.metaborg.spoofax.core.analysis.SpoofaxAnalysisFacet;
-import org.metaborg.spoofax.core.analysis.SpoofaxAnalysisCommon;
+import org.metaborg.spoofax.core.analysis.AnalysisFacet;
+import org.metaborg.spoofax.core.analysis.AnalysisCommon;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -93,7 +93,7 @@ public class LegacyAnalyzerLink extends
 
         IStrategoTuple inputTerm = termFactory.makeTuple(parseResult.result, fileTerm, projectTerm);
         runtime.setCurrent(inputTerm);
-        String function = lang.facet(SpoofaxAnalysisFacet.class).strategyName;
+        String function = lang.facet(AnalysisFacet.class).strategyName;
         boolean success;
         try {
             success = runtime.invoke(function);
@@ -117,11 +117,11 @@ public class LegacyAnalyzerLink extends
         IStrategoTerm ast = resultTuple.getSubterm(0);
         FileObject file = parseResult.source;
         Collection<IMessage> messages = new HashSet<IMessage>();
-        messages.addAll(SpoofaxAnalysisCommon.messages(file, MessageSeverity.ERROR,
+        messages.addAll(AnalysisCommon.messages(file, MessageSeverity.ERROR,
             (IStrategoList) resultTuple.getSubterm(1)));
-        messages.addAll(SpoofaxAnalysisCommon.messages(file, MessageSeverity.WARNING,
+        messages.addAll(AnalysisCommon.messages(file, MessageSeverity.WARNING,
             (IStrategoList) resultTuple.getSubterm(2)));
-        messages.addAll(SpoofaxAnalysisCommon.messages(file, MessageSeverity.NOTE,
+        messages.addAll(AnalysisCommon.messages(file, MessageSeverity.NOTE,
             (IStrategoList) resultTuple.getSubterm(3)));
         return new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(ast, file, null, messages, parseResult);
     }
