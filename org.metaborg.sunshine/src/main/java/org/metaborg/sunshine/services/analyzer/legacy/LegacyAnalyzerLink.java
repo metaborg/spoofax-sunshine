@@ -16,8 +16,8 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.messages.IMessage;
 import org.metaborg.core.messages.MessageSeverity;
 import org.metaborg.core.syntax.ParseResult;
-import org.metaborg.spoofax.core.analysis.AnalysisFacet;
 import org.metaborg.spoofax.core.analysis.AnalysisCommon;
+import org.metaborg.spoofax.core.analysis.AnalysisFacet;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.ServiceRegistry;
@@ -26,7 +26,6 @@ import org.metaborg.sunshine.pipeline.diff.Diff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spoofax.interpreter.core.InterpreterException;
-import org.spoofax.interpreter.terms.IStrategoList;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 import org.spoofax.interpreter.terms.IStrategoTuple;
@@ -117,12 +116,10 @@ public class LegacyAnalyzerLink extends
         IStrategoTerm ast = resultTuple.getSubterm(0);
         FileObject file = parseResult.source;
         Collection<IMessage> messages = new HashSet<IMessage>();
-        messages.addAll(AnalysisCommon.messages(file, MessageSeverity.ERROR,
-            (IStrategoList) resultTuple.getSubterm(1)));
-        messages.addAll(AnalysisCommon.messages(file, MessageSeverity.WARNING,
-            (IStrategoList) resultTuple.getSubterm(2)));
-        messages.addAll(AnalysisCommon.messages(file, MessageSeverity.NOTE,
-            (IStrategoList) resultTuple.getSubterm(3)));
+        final AnalysisCommon common = ServiceRegistry.INSTANCE().getService(AnalysisCommon.class);
+        messages.addAll(common.messages(file, MessageSeverity.ERROR, resultTuple.getSubterm(1)));
+        messages.addAll(common.messages(file, MessageSeverity.WARNING, resultTuple.getSubterm(2)));
+        messages.addAll(common.messages(file, MessageSeverity.NOTE, resultTuple.getSubterm(3)));
         return new AnalysisFileResult<IStrategoTerm, IStrategoTerm>(ast, file, null, messages, parseResult);
     }
 }
