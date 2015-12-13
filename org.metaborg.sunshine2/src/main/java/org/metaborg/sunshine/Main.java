@@ -1,8 +1,9 @@
 package org.metaborg.sunshine;
 
-import org.metaborg.spoofax.meta.core.SpoofaxMetaModule;
+import org.metaborg.core.MetaborgException;
+import org.metaborg.spoofax.core.Spoofax;
+import org.metaborg.spoofax.meta.core.SpoofaxMeta;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.martiansoftware.nailgun.NGContext;
 
@@ -10,8 +11,10 @@ public class Main {
     private static Injector injector;
 
 
-    public static void main(String[] args) {
-        injector = Guice.createInjector(new SunshineModule()).createChildInjector(new SpoofaxMetaModule());
+    public static void main(String[] args) throws MetaborgException {
+        final Spoofax spoofax = new Spoofax(new SunshineModule());
+        final SpoofaxMeta spoofaxMeta = new SpoofaxMeta(spoofax);
+        injector = spoofaxMeta.injector();
 
         run(args, false);
     }
