@@ -26,7 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.spoofax.interpreter.terms.IStrategoAppl;
 import org.spoofax.interpreter.terms.IStrategoString;
 import org.spoofax.interpreter.terms.IStrategoTerm;
+import org.spoofax.interpreter.terms.ITermFactory;
+import org.spoofax.terms.TermFactory;
 import org.strategoxt.HybridInterpreter;
+import org.strategoxt.lang.Context;
+import org.strategoxt.stratego_aterm.aterm_escape_strings_0_0;
+import org.strategoxt.stratego_aterm.pp_aterm_box_0_0;
+import org.strategoxt.stratego_gpp.box2text_string_0_1;
 
 public class BuilderSink implements ISinkOne<BuilderInputTerm> {
     private static final Logger logger = LoggerFactory.getLogger(BuilderSink.class.getName());
@@ -122,7 +128,12 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
                 if(resultTerm.getTermType() == IStrategoTerm.STRING) {
                     resultContents = ((IStrategoString) resultTerm).stringValue();
                 } else {
-                    resultContents = resultTerm.toString();
+					final IStrategoString pp = prettyPrint(resultTerm);
+					if (pp != null) {
+						resultContents = pp.stringValue();
+					} else {
+						resultContents = resultTerm.toString();
+					}
                 }
 
                 try(OutputStream stream = resultFile.getContent().getOutputStream()) {
@@ -151,4 +162,15 @@ public class BuilderSink implements ISinkOne<BuilderInputTerm> {
             }
         }
     }
+
+	private IStrategoString prettyPrint(IStrategoTerm term) {
+		final ITermFactory termFactory = new TermFactory();
+		final Context context = new Context(termFactory);
+		org.strategoxt.stratego_aterm.Main.init(context);
+		term = aterm_escape_strings_0_0.instance.invoke(context, term);
+		term = pp_aterm_box_0_0.instance.invoke(context, term);
+		term = box2text_string_0_1.instance.invoke(context, term,
+				termFactory.makeInt(120));
+		return (IStrategoString) term;
+	}
 }
