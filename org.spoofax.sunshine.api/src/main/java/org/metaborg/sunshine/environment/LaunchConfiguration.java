@@ -30,6 +30,7 @@ public class LaunchConfiguration {
         this.parseTableManager = new ParseTableManager(termFactory);
         this.mainArguments = mainArguments;
         this.projectDir = resourceService.resolve(mainArguments.project);
+
         try {
             this.cacheDir = this.projectDir.resolveFile(".cache");
             if(!cacheDir.exists()) {

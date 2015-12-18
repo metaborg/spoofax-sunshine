@@ -1,19 +1,14 @@
 package org.metaborg.sunshine;
 
-import org.apache.commons.vfs2.FileSystemManager;
 import org.metaborg.spoofax.core.SpoofaxModule;
-import org.metaborg.spoofax.core.resource.IResourceService;
-import org.metaborg.spoofax.core.resource.ResourceService;
 import org.metaborg.spoofax.core.stratego.StrategoRuntimeService;
 import org.metaborg.sunshine.drivers.SunshineMainDriver;
 import org.metaborg.sunshine.environment.LaunchConfiguration;
 import org.metaborg.sunshine.environment.SunshineMainArguments;
 import org.metaborg.sunshine.prims.SunshineLibrary;
-import org.metaborg.sunshine.services.filesource.SunshineFileSystemManagerProvider;
 import org.metaborg.sunshine.statistics.Statistics;
 import org.spoofax.interpreter.library.IOperatorRegistry;
 
-import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 
@@ -22,11 +17,6 @@ public class SunshineModule extends SpoofaxModule {
 
     public SunshineModule(SunshineMainArguments args) {
         this.args = args;
-    }
-
-    @Override protected void bindResource() {
-        bind(IResourceService.class).to(ResourceService.class).in(Singleton.class);
-        bind(FileSystemManager.class).toProvider(SunshineFileSystemManagerProvider.class).in(Singleton.class);
     }
 
     @Override protected void bindOther() {

@@ -8,7 +8,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.metaborg.spoofax.core.language.AllLanguagesFileSelector;
 import org.metaborg.spoofax.core.language.ILanguageIdentifierService;
-import org.metaborg.spoofax.core.language.ILanguageService;
 import org.metaborg.spoofax.core.resource.IResourceChange;
 import org.metaborg.spoofax.core.resource.IResourceService;
 import org.metaborg.spoofax.core.resource.OfflineResourceChangeMonitor;
@@ -30,15 +29,15 @@ public class FileSource implements ISourceMany<FileObject> {
     private final Collection<ISinkMany<FileObject>> sinks;
     private final OfflineResourceChangeMonitor monitor;
 
-    public FileSource(FileObject directory, ILanguageService languageService) {
+    public FileSource(FileObject directory) {
         this.sinks = new HashSet<ISinkMany<FileObject>>();
         final ServiceRegistry services = ServiceRegistry.INSTANCE();
         final IResourceService resourceService = services.getService(IResourceService.class);
         final ILanguageIdentifierService languageIdentifierService =
             services.getService(ILanguageIdentifierService.class);
         this.monitor =
-            new OfflineResourceChangeMonitor(resourceService.root(), resourceService.userStorage(),
-                new AllLanguagesFileSelector(languageIdentifierService), resourceService);
+            new OfflineResourceChangeMonitor(directory, resourceService.userStorage(), new AllLanguagesFileSelector(
+                languageIdentifierService), resourceService);
         try {
             monitor.read();
         } catch(FileSystemException e) {
@@ -82,10 +81,10 @@ public class FileSource implements ISourceMany<FileObject> {
                     diff.add(new Diff<FileObject>(change.resource(), DiffKind.MODIFICATION));
                     break;
                 case Rename:
-                    if(change.renamedFrom() != null) {
+                    if(change.from() != null) {
                         diff.add(new Diff<FileObject>(change.resource(), DiffKind.ADDITION));
                     }
-                    if(change.renamedTo() != null) {
+                    if(change.to() != null) {
                         diff.add(new Diff<FileObject>(change.resource(), DiffKind.DELETION));
                     }
                     break;
