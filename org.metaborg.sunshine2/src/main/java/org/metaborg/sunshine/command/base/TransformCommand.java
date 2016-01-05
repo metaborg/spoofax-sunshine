@@ -3,7 +3,8 @@ package org.metaborg.sunshine.command.base;
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
-import org.metaborg.core.analysis.AnalysisFileResult;
+import org.metaborg.core.action.CompileGoal;
+import org.metaborg.core.action.EndNamedGoal;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
@@ -16,8 +17,6 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
-import org.metaborg.core.transform.CompileGoal;
-import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.core.transform.TransformResult;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
@@ -53,7 +52,7 @@ public abstract class TransformCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    private final IStrategoCommon strategoTransformerCommon;
+    private final IStrategoCommon common;
 
     @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
@@ -66,7 +65,7 @@ public abstract class TransformCommand implements ICommand {
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
-        this.strategoTransformerCommon = strategoTransformerCommon;
+        this.common = strategoTransformerCommon;
         this.projectPathDelegate = projectPathDelegate;
         this.inputDelegate = inputDelegate;
     }
@@ -123,7 +122,7 @@ public abstract class TransformCommand implements ICommand {
         if(compileGoal) {
             inputBuilder.addTransformGoal(new CompileGoal());
         } else if(namedGoal != null) {
-            inputBuilder.addTransformGoal(new NamedGoal(namedGoal));
+            inputBuilder.addTransformGoal(new EndNamedGoal(namedGoal));
         }
 
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
@@ -136,8 +135,7 @@ public abstract class TransformCommand implements ICommand {
                 logger.error("Transformation failed");
                 return -1;
             } else {
-                final Iterable<TransformResult<AnalysisFileResult<IStrategoTerm, IStrategoTerm>, IStrategoTerm>> results =
-                    output.transformResults();
+                final Iterable<TransformResult<IStrategoTerm, IStrategoTerm>> results = output.transformResults();
                 final int resultSize = Iterables.size(results);
                 if(resultSize == 1) {
                     result = Iterables.get(results, 0);
@@ -154,7 +152,7 @@ public abstract class TransformCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = strategoTransformerCommon.builderResultToString(result.result);
+        final String ppResult = common.toString(result.result);
         System.out.println(ppResult);
 
         return 0;

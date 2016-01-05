@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.commons.vfs2.FileSelector;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
+import org.metaborg.core.action.CompileGoal;
+import org.metaborg.core.action.EndNamedGoal;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
@@ -16,8 +18,6 @@ import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
-import org.metaborg.core.transform.CompileGoal;
-import org.metaborg.core.transform.NamedGoal;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
@@ -133,7 +133,7 @@ public abstract class BuildCommand implements ICommand {
 
         if(namedTransformGoals != null) {
             for(String name : namedTransformGoals) {
-                inputBuilder.addTransformGoal(new NamedGoal(name));
+                inputBuilder.addTransformGoal(new EndNamedGoal(name));
             }
         }
 
