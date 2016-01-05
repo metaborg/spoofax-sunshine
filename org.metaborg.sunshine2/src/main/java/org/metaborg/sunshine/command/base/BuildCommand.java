@@ -6,7 +6,7 @@ import org.apache.commons.vfs2.FileSelector;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.action.CompileGoal;
-import org.metaborg.core.action.NamedGoal;
+import org.metaborg.core.action.EndNamedGoal;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
@@ -133,7 +133,7 @@ public abstract class BuildCommand implements ICommand {
 
         if(namedTransformGoals != null) {
             for(String name : namedTransformGoals) {
-                inputBuilder.addTransformGoal(new NamedGoal(name));
+                inputBuilder.addTransformGoal(new EndNamedGoal(name));
             }
         }
 
