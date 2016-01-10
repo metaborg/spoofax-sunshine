@@ -8,7 +8,7 @@
   <artifactId>org.metaborg.sunshine2</artifactId>
   <packaging>jar</packaging>
   <description>Command-line parsing, analysis, and transformations for Spoofax languages</description>
-  <url>https://github.com/metaborg/sunshine</url>
+  <url>https://github.com/metaborg/spoofax-sunshine</url>
 
   <parent>
     <groupId>org.metaborg</groupId>
@@ -131,8 +131,8 @@
 
   <developers>
     <developer>
-      <name>Vlad Vergu</name>
-      <email>v.a.vergu@tudelft.nl</email>
+      <name>Gabriël Konat</name>
+      <email>g.d.p.konat@tudelft.nl</email>
       <organization>Delft University of Technology</organization>
       <organizationUrl>http://www.ewi.tudelft.nl/en</organizationUrl>
     </developer>
