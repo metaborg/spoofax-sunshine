@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.metaborg.core.MetaborgException;
+import org.metaborg.sunshine.arguments.MainArguments;
 import org.metaborg.sunshine.command.base.ICommand;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
@@ -29,8 +30,8 @@ public class Runner {
 
     public int run(String[] args, boolean remote) {
         final Map<String, ICommand> commands = remote ? remoteCommands : localCommands;
-
-        final JCommander jc = new JCommander();
+        final MainArguments arguments = new MainArguments();
+        final JCommander jc = new JCommander(arguments);
         for(Entry<String, ICommand> entry : commands.entrySet()) {
             jc.addCommand(entry.getKey(), entry.getValue());
         }
@@ -43,6 +44,17 @@ public class Runner {
             jc.usage(sb);
             System.err.println(sb.toString());
             return -1;
+        }
+
+        if(arguments.help) {
+            final StringBuilder sb = new StringBuilder();
+            jc.usage(sb);
+            System.err.println(sb.toString());
+            return 0;
+        }
+
+        if(arguments.exit) {
+            return 0;
         }
 
         final ICommand command = commands.get(jc.getParsedCommand());
