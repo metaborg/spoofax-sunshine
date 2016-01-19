@@ -1,9 +1,7 @@
 package org.metaborg.sunshine.command.remote;
 
 import org.metaborg.core.MetaborgException;
-import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.dependency.INewDependencyService;
-import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.build.paths.INewLanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageService;
@@ -13,7 +11,6 @@ import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.stratego.IStrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
-import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.TransformCommand;
 
 import com.google.inject.Inject;
