@@ -55,7 +55,7 @@ public class SunshineModule extends SpoofaxModule {
         remoteCommands.addBinding("load").to(LoadLanguageCommand.class);
 
         bind(LanguagesDelegate.class);
-        bind(ProjectPathDelegate.class);
+//        bind(ProjectPathDelegate.class);
         bind(LanguageSpecPathDelegate.class);
         bind(InputDelegate.class);
 
