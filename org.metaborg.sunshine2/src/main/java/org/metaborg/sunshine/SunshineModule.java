@@ -7,8 +7,8 @@ import org.metaborg.core.project.IProjectService;
 import org.metaborg.core.project.ISimpleProjectService;
 import org.metaborg.core.project.SimpleProjectService;
 import org.metaborg.spoofax.core.SpoofaxModule;
-import org.metaborg.spoofax.core.project.IMavenProjectService;
-import org.metaborg.spoofax.core.project.NullMavenProjectService;
+import org.metaborg.spoofax.core.project.ILegacyMavenProjectService;
+import org.metaborg.spoofax.core.project.NullLegacyMavenProjectService;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
@@ -74,7 +74,7 @@ public class SunshineModule extends SpoofaxModule {
      * Overrides {@link SpoofaxModule#bindMavenProject()} for null implementation of Maven project service.
      */
     @Override protected void bindMavenProject() {
-        bind(IMavenProjectService.class).to(NullMavenProjectService.class).in(Singleton.class);
+        bind(ILegacyMavenProjectService.class).to(NullLegacyMavenProjectService.class).in(Singleton.class);
     }
 
     /**
