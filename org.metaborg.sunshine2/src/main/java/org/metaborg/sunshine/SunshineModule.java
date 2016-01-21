@@ -12,7 +12,6 @@ import org.metaborg.spoofax.core.project.NullMavenProjectService;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
-import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.ICommand;
 import org.metaborg.sunshine.command.local.LocalAnalyzeCommand;
 import org.metaborg.sunshine.command.local.LocalBuildCommand;
