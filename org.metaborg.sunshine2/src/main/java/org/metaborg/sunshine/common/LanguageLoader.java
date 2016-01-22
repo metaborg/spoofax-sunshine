@@ -35,7 +35,7 @@ public class LanguageLoader {
                 languageLocations.add(location);
             }
         } catch(Exception e) {
-            final String message = String.format("Discovering languages failed unexpectedly");
+            final String message = "Discovering languages failed unexpectedly";
             throw new MetaborgException(message, e);
         }
 

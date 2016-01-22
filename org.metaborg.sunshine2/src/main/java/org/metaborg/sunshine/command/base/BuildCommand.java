@@ -81,7 +81,6 @@ public abstract class BuildCommand implements ICommand {
 
     protected int run(Iterable<ILanguageImpl> impls) throws MetaborgException {
         try {
-//            final IProject project = projectPathDelegate.project();
             final ILanguageSpec languageSpec = languageSpecPathDelegate.languageSpec();
             return run(impls, languageSpec);
         } finally {
@@ -90,7 +89,6 @@ public abstract class BuildCommand implements ICommand {
     }
 
     private int run(Iterable<ILanguageImpl> impls, ILanguageSpec languageSpec) throws MetaborgException {
-//    private int run(Iterable<ILanguageImpl> impls, IProject project) throws MetaborgException {
         try {
             final CleanInputBuilder inputBuilder = new CleanInputBuilder(languageSpec);
             // @formatter:off

@@ -90,7 +90,6 @@ public abstract class TransformCommand implements ICommand {
     }
 
     private int run(Iterable<ILanguageImpl> impls, ILanguageSpec languageSpec, FileObject resource) throws MetaborgException {
-//    private int run(Iterable<ILanguageImpl> impls, IProject project, FileObject resource) throws MetaborgException {
         try {
             final CleanInputBuilder inputBuilder = new CleanInputBuilder(languageSpec);
             // @formatter:off
