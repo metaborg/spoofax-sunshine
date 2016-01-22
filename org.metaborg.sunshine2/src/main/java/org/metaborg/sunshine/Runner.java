@@ -54,6 +54,7 @@ public class Runner {
         }
 
         if(arguments.exit) {
+            logger.info("Exitting immediately for testing purposes");
             return 0;
         }
 
