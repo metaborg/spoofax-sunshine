@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws MetaborgException {
         final Spoofax spoofax = new Spoofax(new SunshineModule());
         final SpoofaxMeta spoofaxMeta = new SpoofaxMeta(spoofax);
-        injector = spoofaxMeta.injector();
+        injector = spoofaxMeta.injector;
 
         run(args, false);
     }
