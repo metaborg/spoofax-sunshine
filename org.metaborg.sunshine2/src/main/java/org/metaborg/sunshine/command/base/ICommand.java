@@ -3,7 +3,7 @@ package org.metaborg.sunshine.command.base;
 import org.metaborg.core.MetaborgException;
 
 public interface ICommand {
-    public boolean validate();
+    boolean validate();
 
-    public abstract int run() throws MetaborgException;
+    int run() throws MetaborgException;
 }

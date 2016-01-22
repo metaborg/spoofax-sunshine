@@ -7,20 +7,15 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.action.CompileGoal;
 import org.metaborg.core.action.EndNamedGoal;
-import org.metaborg.core.build.BuildInput;
-import org.metaborg.core.build.BuildInputBuilder;
-import org.metaborg.core.build.CleanInput;
-import org.metaborg.core.build.CleanInputBuilder;
-import org.metaborg.core.build.ConsoleBuildMessagePrinter;
-import org.metaborg.core.build.IBuildOutput;
-import org.metaborg.core.build.dependency.IDependencyService;
-import org.metaborg.core.build.paths.ILanguagePathService;
+import org.metaborg.core.build.*;
+import org.metaborg.core.build.dependency.INewDependencyService;
+import org.metaborg.core.build.paths.INewLanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
-import org.metaborg.core.project.IProject;
+import org.metaborg.core.project.ILanguageSpec;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
-import org.metaborg.sunshine.arguments.ProjectPathDelegate;
+import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.metaborg.util.resource.FileSelectorUtils;
@@ -62,21 +57,21 @@ public abstract class BuildCommand implements ICommand {
 
 
     private final ISourceTextService sourceTextService;
-    private final IDependencyService dependencyService;
-    private final ILanguagePathService languagePathService;
+    private final INewDependencyService dependencyService;
+    private final INewLanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
+    @ParametersDelegate private final LanguageSpecPathDelegate languageSpecPathDelegate;
 
 
-    @Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-        ProjectPathDelegate projectPathDelegate) {
+    @Inject public BuildCommand(ISourceTextService sourceTextService, INewDependencyService dependencyService,
+        INewLanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
+                                LanguageSpecPathDelegate languageSpecPathDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
         this.runner = runner;
-        this.projectPathDelegate = projectPathDelegate;
+        this.languageSpecPathDelegate = languageSpecPathDelegate;
     }
 
     @Override public boolean validate() {
@@ -86,16 +81,16 @@ public abstract class BuildCommand implements ICommand {
 
     protected int run(Iterable<ILanguageImpl> impls) throws MetaborgException {
         try {
-            final IProject project = projectPathDelegate.project();
-            return run(impls, project);
+            final ILanguageSpec languageSpec = languageSpecPathDelegate.languageSpec();
+            return run(impls, languageSpec);
         } finally {
-            projectPathDelegate.removeProject();
+            languageSpecPathDelegate.removeProject();
         }
     }
 
-    private int run(Iterable<ILanguageImpl> impls, IProject project) throws MetaborgException {
+    private int run(Iterable<ILanguageImpl> impls, ILanguageSpec languageSpec) throws MetaborgException {
         try {
-            final CleanInputBuilder inputBuilder = new CleanInputBuilder(project);
+            final CleanInputBuilder inputBuilder = new CleanInputBuilder(languageSpec);
             // @formatter:off
             final CleanInput input = inputBuilder
                 .withSelector(new SpoofaxIgnoresSelector())
@@ -109,7 +104,7 @@ public abstract class BuildCommand implements ICommand {
         }
 
         // @formatter:off
-        final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
+        final NewBuildInputBuilder inputBuilder = new NewBuildInputBuilder(languageSpec);
         inputBuilder
             .addLanguages(impls)
             .withSourcesFromDefaultSourceLocations(true)
