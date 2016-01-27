@@ -6,8 +6,8 @@ import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.analysis.AnalysisFileResult;
 import org.metaborg.core.analysis.AnalysisResult;
 import org.metaborg.core.build.*;
-import org.metaborg.core.build.dependency.INewDependencyService;
-import org.metaborg.core.build.paths.INewLanguagePathService;
+import org.metaborg.core.build.dependency.IDependencyService;
+import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.project.ILanguageSpec;
@@ -31,8 +31,8 @@ public abstract class AnalyzeCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(AnalyzeCommand.class);
 
     private final ISourceTextService sourceTextService;
-    private final INewDependencyService dependencyService;
-    private final INewLanguagePathService languagePathService;
+    private final IDependencyService dependencyService;
+    private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
     private final IStrategoCommon strategoCommon;
@@ -42,8 +42,8 @@ public abstract class AnalyzeCommand implements ICommand {
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
-    public AnalyzeCommand(ISourceTextService sourceTextService, INewDependencyService dependencyService,
-                          INewLanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
+    public AnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+                          ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                           LanguageSpecPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
@@ -87,7 +87,7 @@ public abstract class AnalyzeCommand implements ICommand {
         }
 
         // @formatter:off
-        final NewBuildInputBuilder inputBuilder = new NewBuildInputBuilder(languageSpec);
+        final BuildInputBuilder inputBuilder = new BuildInputBuilder(languageSpec);
         inputBuilder
             .addLanguages(impls)
             .withDefaultIncludePaths(false)

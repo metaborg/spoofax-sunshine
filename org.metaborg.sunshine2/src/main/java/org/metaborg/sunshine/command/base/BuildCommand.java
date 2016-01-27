@@ -8,8 +8,8 @@ import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.action.CompileGoal;
 import org.metaborg.core.action.EndNamedGoal;
 import org.metaborg.core.build.*;
-import org.metaborg.core.build.dependency.INewDependencyService;
-import org.metaborg.core.build.paths.INewLanguagePathService;
+import org.metaborg.core.build.dependency.IDependencyService;
+import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.project.ILanguageSpec;
 import org.metaborg.core.source.ISourceTextService;
@@ -57,15 +57,15 @@ public abstract class BuildCommand implements ICommand {
 
 
     private final ISourceTextService sourceTextService;
-    private final INewDependencyService dependencyService;
-    private final INewLanguagePathService languagePathService;
+    private final IDependencyService dependencyService;
+    private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
     @ParametersDelegate private final LanguageSpecPathDelegate languageSpecPathDelegate;
 
 
-    @Inject public BuildCommand(ISourceTextService sourceTextService, INewDependencyService dependencyService,
-        INewLanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
+    @Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+                                ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
                                 LanguageSpecPathDelegate languageSpecPathDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
@@ -104,7 +104,7 @@ public abstract class BuildCommand implements ICommand {
         }
 
         // @formatter:off
-        final NewBuildInputBuilder inputBuilder = new NewBuildInputBuilder(languageSpec);
+        final BuildInputBuilder inputBuilder = new BuildInputBuilder(languageSpec);
         inputBuilder
             .addLanguages(impls)
             .withSourcesFromDefaultSourceLocations(true)

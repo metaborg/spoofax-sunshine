@@ -1,8 +1,8 @@
 package org.metaborg.sunshine.command.remote;
 
 import org.metaborg.core.MetaborgException;
-import org.metaborg.core.build.dependency.INewDependencyService;
-import org.metaborg.core.build.paths.INewLanguagePathService;
+import org.metaborg.core.build.dependency.IDependencyService;
+import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.language.LanguageUtils;
@@ -19,8 +19,8 @@ public class RemoteAnalyzeCommand extends AnalyzeCommand {
     private final ILanguageService languageService;
 
 
-    @Inject public RemoteAnalyzeCommand(ISourceTextService sourceTextService, INewDependencyService dependencyService,
-                                        INewLanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
+    @Inject public RemoteAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+                                        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                         LanguageSpecPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, languageSpecPathDelegate,
             inputDelegate);

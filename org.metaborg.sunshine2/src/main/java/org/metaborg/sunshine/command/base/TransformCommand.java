@@ -6,8 +6,8 @@ import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.action.CompileGoal;
 import org.metaborg.core.action.EndNamedGoal;
 import org.metaborg.core.build.*;
-import org.metaborg.core.build.dependency.INewDependencyService;
-import org.metaborg.core.build.paths.INewLanguagePathService;
+import org.metaborg.core.build.dependency.IDependencyService;
+import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.project.ILanguageSpec;
@@ -43,8 +43,8 @@ public abstract class TransformCommand implements ICommand {
     // @formatter:on
 
     private final ISourceTextService sourceTextService;
-    private final INewDependencyService dependencyService;
-    private final INewLanguagePathService languagePathService;
+    private final IDependencyService dependencyService;
+    private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
     private final IStrategoCommon common;
@@ -53,8 +53,8 @@ public abstract class TransformCommand implements ICommand {
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
-    @Inject public TransformCommand(ISourceTextService sourceTextService, INewDependencyService dependencyService,
-                                    INewLanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
+    @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+                                    ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
                                     IStrategoCommon strategoTransformerCommon, LanguageSpecPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
@@ -105,7 +105,7 @@ public abstract class TransformCommand implements ICommand {
         }
 
         // @formatter:off
-        final NewBuildInputBuilder inputBuilder = new NewBuildInputBuilder(languageSpec);
+        final BuildInputBuilder inputBuilder = new BuildInputBuilder(languageSpec);
         inputBuilder
             .addLanguages(impls)
             .withDefaultIncludePaths(false)

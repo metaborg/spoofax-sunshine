@@ -1,8 +1,8 @@
 package org.metaborg.sunshine.command.remote;
 
 import org.metaborg.core.MetaborgException;
-import org.metaborg.core.build.dependency.INewDependencyService;
-import org.metaborg.core.build.paths.INewLanguagePathService;
+import org.metaborg.core.build.dependency.IDependencyService;
+import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.language.LanguageUtils;
@@ -17,8 +17,8 @@ public class RemoteBuildCommand extends BuildCommand {
     private final ILanguageService languageService;
 
 
-    @Inject public RemoteBuildCommand(ISourceTextService sourceTextService, INewDependencyService dependencyService,
-                                      INewLanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
+    @Inject public RemoteBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+                                      ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
                                       LanguageSpecPathDelegate languageSpecPathDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, languageSpecPathDelegate);
         this.languageService = languageService;

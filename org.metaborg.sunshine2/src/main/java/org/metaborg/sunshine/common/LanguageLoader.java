@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.language.ILanguageComponent;
-import org.metaborg.core.language.INewLanguageDiscoveryService;
+import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.resource.IResourceService;
 
 import com.google.common.collect.Iterables;
@@ -14,10 +14,10 @@ import com.google.inject.Inject;
 
 public class LanguageLoader {
     private final IResourceService resourceService;
-    private final INewLanguageDiscoveryService languageDiscoveryService;
+    private final ILanguageDiscoveryService languageDiscoveryService;
 
 
-    @Inject public LanguageLoader(IResourceService resourceService, INewLanguageDiscoveryService languageDiscoveryService) {
+    @Inject public LanguageLoader(IResourceService resourceService, ILanguageDiscoveryService languageDiscoveryService) {
         this.resourceService = resourceService;
         this.languageDiscoveryService = languageDiscoveryService;
     }
