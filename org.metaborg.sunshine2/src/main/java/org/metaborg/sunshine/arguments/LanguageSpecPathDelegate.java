@@ -5,11 +5,11 @@ import com.google.inject.Inject;
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
-import org.metaborg.core.project.ILanguageSpec;
-import org.metaborg.core.project.ILanguageSpecService;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.project.ISimpleProjectService;
 import org.metaborg.core.resource.IResourceService;
+import org.metaborg.meta.core.project.ILanguageSpec;
+import org.metaborg.meta.core.project.ILanguageSpecService;
 
 public class LanguageSpecPathDelegate {
     // @formatter:off
