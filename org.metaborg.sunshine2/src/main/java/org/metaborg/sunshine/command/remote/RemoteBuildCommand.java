@@ -8,7 +8,7 @@ import org.metaborg.core.language.ILanguageService;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.BuildCommand;
 
 import com.google.inject.Inject;
@@ -19,7 +19,7 @@ public class RemoteBuildCommand extends BuildCommand {
 
     @Inject public RemoteBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                       ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-                                      LanguageSpecPathDelegate languageSpecPathDelegate, ILanguageService languageService) {
+                                      ProjectPathDelegate languageSpecPathDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, languageSpecPathDelegate);
         this.languageService = languageService;
     }

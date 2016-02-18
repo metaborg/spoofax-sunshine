@@ -10,8 +10,8 @@ import org.metaborg.spoofax.core.SpoofaxModule;
 import org.metaborg.spoofax.core.project.ILegacyMavenProjectService;
 import org.metaborg.spoofax.core.project.NullLegacyMavenProjectService;
 import org.metaborg.sunshine.arguments.InputDelegate;
-import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.ICommand;
 import org.metaborg.sunshine.command.local.LocalAnalyzeCommand;
 import org.metaborg.sunshine.command.local.LocalBuildCommand;
@@ -54,7 +54,7 @@ public class SunshineModule extends SpoofaxModule {
         remoteCommands.addBinding("load").to(LoadLanguageCommand.class);
 
         bind(LanguagesDelegate.class);
-        bind(LanguageSpecPathDelegate.class);
+        bind(ProjectPathDelegate.class);
         bind(InputDelegate.class);
 
         bind(Runner.class);

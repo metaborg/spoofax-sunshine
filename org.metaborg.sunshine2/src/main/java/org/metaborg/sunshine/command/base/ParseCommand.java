@@ -3,18 +3,21 @@ package org.metaborg.sunshine.command.base;
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
-import org.metaborg.core.build.*;
+import org.metaborg.core.build.BuildInput;
+import org.metaborg.core.build.BuildInputBuilder;
+import org.metaborg.core.build.ConsoleBuildMessagePrinter;
+import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
+import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.syntax.ParseResult;
-import org.metaborg.meta.core.project.ILanguageSpec;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.stratego.IStrategoCommon;
 import org.metaborg.sunshine.arguments.InputDelegate;
-import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.core.Tools;
@@ -45,13 +48,13 @@ public abstract class ParseCommand implements ICommand {
 
     private final IStrategoCommon strategoCommon;
 
-    @ParametersDelegate private final LanguageSpecPathDelegate projectPathDelegate;
+    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
     @ParametersDelegate private final InputDelegate inputDelegate;
 
 
     @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-                                ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
-                                LanguageSpecPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
+        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
+        ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
@@ -68,19 +71,19 @@ public abstract class ParseCommand implements ICommand {
 
     protected int run(Iterable<ILanguageImpl> impls) throws MetaborgException {
         try {
-            final ILanguageSpec languageSpec = projectPathDelegate.languageSpec();
+            final IProject project = projectPathDelegate.project();
             final IdentifiedResource identifiedResource =
-                inputDelegate.inputIdentifiedResource(languageSpec.location(), impls);
+                inputDelegate.inputIdentifiedResource(project.location(), impls);
             final FileObject resource = identifiedResource.resource;
-            return run(impls, languageSpec, resource);
+            return run(impls, project, resource);
         } finally {
             projectPathDelegate.removeProject();
         }
     }
 
-    private int run(Iterable<ILanguageImpl> impls, ILanguageSpec languageSpec, FileObject resource) throws MetaborgException {
+    private int run(Iterable<ILanguageImpl> impls, IProject project, FileObject resource) throws MetaborgException {
         // @formatter:off
-        final BuildInputBuilder inputBuilder = new BuildInputBuilder(languageSpec);
+        final BuildInputBuilder inputBuilder = new BuildInputBuilder(project);
         inputBuilder
             .addLanguages(impls)
             .withDefaultIncludePaths(false)

@@ -8,8 +8,8 @@ import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
-import org.metaborg.sunshine.arguments.LanguageSpecPathDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
+import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.BuildCommand;
 
 import com.beust.jcommander.ParametersDelegate;
@@ -21,7 +21,7 @@ public class LocalBuildCommand extends BuildCommand {
 
     @Inject public LocalBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                      ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-                                     LanguageSpecPathDelegate languageSpecPathDelegate, LanguagesDelegate languagesDelegate) {
+                                     ProjectPathDelegate languageSpecPathDelegate, LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, languageSpecPathDelegate);
         this.languagesDelegate = languagesDelegate;
     }

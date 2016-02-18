@@ -1,17 +1,16 @@
 package org.metaborg.sunshine.arguments;
 
-import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.project.ISimpleProjectService;
 import org.metaborg.core.resource.IResourceService;
-import org.metaborg.meta.core.project.ILanguageSpec;
-import org.metaborg.meta.core.project.ILanguageSpecService;
 
-public class LanguageSpecPathDelegate {
+import com.beust.jcommander.Parameter;
+import com.google.inject.Inject;
+
+public class ProjectPathDelegate {
     // @formatter:off
     @Parameter(names = { "-p", "--project" }, required = true, description = "Path to the project. "
         + "Can be an absolute path, or a relative path to the current directory")
@@ -20,16 +19,13 @@ public class LanguageSpecPathDelegate {
 
     private final IResourceService resourceService;
     private final ISimpleProjectService projectService;
-    private final ILanguageSpecService languageSpecService;
 
     private IProject project;
-    private ILanguageSpec languageSpec;
 
 
-    @Inject public LanguageSpecPathDelegate(IResourceService resourceService, ISimpleProjectService projectService, ILanguageSpecService languageSpecService) {
+    @Inject public ProjectPathDelegate(IResourceService resourceService, ISimpleProjectService projectService) {
         this.resourceService = resourceService;
         this.projectService = projectService;
-        this.languageSpecService = languageSpecService;
     }
 
 
@@ -42,26 +38,18 @@ public class LanguageSpecPathDelegate {
         }
     }
 
-    private IProject project() throws MetaborgException {
+    public IProject project() throws MetaborgException {
         if(this.project == null) {
             final FileObject location = projectLocation();
-            this.project = projectService.create(location);
+            project = projectService.create(location);
         }
-        return this.project;
-    }
-
-    public ILanguageSpec languageSpec() throws MetaborgException {
-        if (this.languageSpec == null) {
-            this.languageSpec = this.languageSpecService.get(project());
-        }
-        return this.languageSpec;
+        return project;
     }
 
     public void removeProject() throws MetaborgException {
-        if(this.project != null) {
-            projectService.remove(this.project);
-            this.project = null;
-            this.languageSpec = null;
+        if(project != null) {
+            projectService.remove(project);
+            project = null;
         }
     }
 }

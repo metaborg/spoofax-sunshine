@@ -2,7 +2,6 @@ package org.metaborg.sunshine;
 
 import org.metaborg.core.MetaborgException;
 import org.metaborg.spoofax.core.Spoofax;
-import org.metaborg.spoofax.meta.core.SpoofaxMeta;
 
 import com.google.inject.Injector;
 import com.martiansoftware.nailgun.NGContext;
@@ -13,8 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws MetaborgException {
         final Spoofax spoofax = new Spoofax(new SunshineModule());
-        final SpoofaxMeta spoofaxMeta = new SpoofaxMeta(spoofax);
-        injector = spoofaxMeta.injector;
+        injector = spoofax.injector;
 
         run(args, false);
     }
