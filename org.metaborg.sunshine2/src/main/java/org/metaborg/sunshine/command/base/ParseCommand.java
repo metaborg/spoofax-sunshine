@@ -5,12 +5,12 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
-import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.IdentifiedResource;
+import org.metaborg.core.messages.StreamMessagePrinter;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.core.syntax.ParseResult;
@@ -88,7 +88,7 @@ public abstract class ParseCommand implements ICommand {
             .addLanguages(impls)
             .withDefaultIncludePaths(false)
             .addSource(resource)
-            .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))
+            .withMessagePrinter(new StreamMessagePrinter(sourceTextService, true, true, logger))
             .withAnalysis(false)
             .withTransformation(false)
             ;

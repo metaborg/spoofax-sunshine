@@ -11,11 +11,11 @@ import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
 import org.metaborg.core.build.CleanInputBuilder;
-import org.metaborg.core.build.ConsoleBuildMessagePrinter;
 import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
+import org.metaborg.core.messages.StreamMessagePrinter;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
@@ -113,7 +113,7 @@ public abstract class BuildCommand implements ICommand {
         inputBuilder
             .addLanguages(impls)
             .withSourcesFromDefaultSourceLocations(true)
-            .withMessagePrinter(new ConsoleBuildMessagePrinter(sourceTextService, true, true, logger))
+            .withMessagePrinter(new StreamMessagePrinter(sourceTextService, true, true, logger))
             .withThrowOnErrors(stopOnErrors)
             .withAnalysis(!noAnalysis)
             .withTransformation(!noTransform)
