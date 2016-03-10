@@ -104,7 +104,7 @@ public abstract class AnalyzeCommand implements ICommand {
 
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
 
-        final AnalysisFileResult<IStrategoTerm, IStrategoTerm> fileResult;
+        final ISpoofaxAnalyzeUnit fileResult;
         try {
             final IBuildOutput<IStrategoTerm, IStrategoTerm, IStrategoTerm> output =
                 runner.build(input, null, null).schedule().block().result();

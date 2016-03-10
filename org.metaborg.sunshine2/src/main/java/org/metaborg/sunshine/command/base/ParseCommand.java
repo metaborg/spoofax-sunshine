@@ -96,7 +96,7 @@ public abstract class ParseCommand implements ICommand {
 
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
 
-        final ParseResult<IStrategoTerm> result;
+        final ISpoofaxParseUnit result;
         try {
             final IBuildOutput<IStrategoTerm, IStrategoTerm, IStrategoTerm> output =
                 runner.build(input, null, null).schedule().block().result();
@@ -104,7 +104,7 @@ public abstract class ParseCommand implements ICommand {
                 logger.error("Parsing failed");
                 return -1;
             } else {
-                final Iterable<ParseResult<IStrategoTerm>> results = output.parseResults();
+                final Iterable<ISpoofaxParseUnit> results = output.parseResults();
                 final int resultSize = Iterables.size(results);
                 if(resultSize == 1) {
                     result = Iterables.get(results, 0);
