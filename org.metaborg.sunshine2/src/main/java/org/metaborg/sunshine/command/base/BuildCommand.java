@@ -11,13 +11,13 @@ import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
 import org.metaborg.core.build.CleanInputBuilder;
-import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.messages.StreamMessagePrinter;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
+import org.metaborg.spoofax.core.build.ISpoofaxBuildOutput;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
@@ -144,7 +144,7 @@ public abstract class BuildCommand implements ICommand {
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
 
         try {
-            final IBuildOutput<?, ?, ?> output = runner.build(input, null, null).schedule().block().result();
+            final ISpoofaxBuildOutput output = runner.build(input, null, null).schedule().block().result();
             if(!output.success()) {
                 logger.error("Build failed");
                 return -1;
