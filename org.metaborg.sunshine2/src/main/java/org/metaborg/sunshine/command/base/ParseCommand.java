@@ -5,7 +5,6 @@ import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
-import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
@@ -13,15 +12,15 @@ import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.messages.StreamMessagePrinter;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
-import org.metaborg.core.syntax.ParseResult;
+import org.metaborg.spoofax.core.build.ISpoofaxBuildOutput;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.stratego.IStrategoCommon;
+import org.metaborg.spoofax.core.unit.ISpoofaxParseUnit;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.core.Tools;
-import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -96,21 +95,20 @@ public abstract class ParseCommand implements ICommand {
 
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
 
-        final ParseResult<IStrategoTerm> result;
+        final ISpoofaxParseUnit result;
         try {
-            final IBuildOutput<IStrategoTerm, IStrategoTerm, IStrategoTerm> output =
-                runner.build(input, null, null).schedule().block().result();
+            final ISpoofaxBuildOutput output = runner.build(input, null, null).schedule().block().result();
             if(!output.success()) {
                 logger.error("Parsing failed");
                 return -1;
             } else {
-                final Iterable<ParseResult<IStrategoTerm>> results = output.parseResults();
+                final Iterable<ISpoofaxParseUnit> results = output.parseResults();
                 final int resultSize = Iterables.size(results);
                 if(resultSize == 1) {
                     result = Iterables.get(results, 0);
                 } else {
-                    throw new MetaborgException(
-                        String.format("%s parse results were returned instead of 1", resultSize));
+                    final String message = logger.format("{} parse results were returned instead of 1", resultSize);
+                    throw new MetaborgException(message);
                 }
             }
         } catch(MetaborgRuntimeException e) {
@@ -121,7 +119,7 @@ public abstract class ParseCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = Tools.asJavaString(strategoCommon.prettyPrint(result.result));
+        final String ppResult = Tools.asJavaString(strategoCommon.prettyPrint(result.ast()));
         System.out.println(ppResult);
 
         return 0;

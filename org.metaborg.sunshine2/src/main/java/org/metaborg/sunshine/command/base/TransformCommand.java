@@ -9,7 +9,6 @@ import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
 import org.metaborg.core.build.CleanInputBuilder;
-import org.metaborg.core.build.IBuildOutput;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
@@ -17,15 +16,15 @@ import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.messages.StreamMessagePrinter;
 import org.metaborg.core.project.IProject;
 import org.metaborg.core.source.ISourceTextService;
-import org.metaborg.core.transform.TransformResult;
+import org.metaborg.spoofax.core.build.ISpoofaxBuildOutput;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.spoofax.core.stratego.IStrategoCommon;
+import org.metaborg.spoofax.core.unit.ISpoofaxTransformUnit;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
-import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -128,21 +127,20 @@ public abstract class TransformCommand implements ICommand {
 
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);
 
-        final TransformResult<?, IStrategoTerm> result;
+        final ISpoofaxTransformUnit<?> result;
         try {
-            final IBuildOutput<IStrategoTerm, IStrategoTerm, IStrategoTerm> output =
-                runner.build(input, null, null).schedule().block().result();
+            final ISpoofaxBuildOutput output = runner.build(input, null, null).schedule().block().result();
             if(!output.success()) {
                 logger.error("Transformation failed");
                 return -1;
             } else {
-                final Iterable<TransformResult<IStrategoTerm, IStrategoTerm>> results = output.transformResults();
+                final Iterable<ISpoofaxTransformUnit<?>> results = output.transformResults();
                 final int resultSize = Iterables.size(results);
                 if(resultSize == 1) {
                     result = Iterables.get(results, 0);
                 } else {
-                    throw new MetaborgException(
-                        String.format("%s transform results were returned instead of 1", resultSize));
+                    final String message = logger.format("{} transform results were returned instead of 1", resultSize);
+                    throw new MetaborgException(message);
                 }
             }
         } catch(MetaborgRuntimeException e) {
@@ -153,7 +151,7 @@ public abstract class TransformCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = common.toString(result.result);
+        final String ppResult = common.toString(result.ast());
         System.out.println(ppResult);
 
         return 0;
