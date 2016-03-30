@@ -126,8 +126,13 @@ public abstract class AnalyzeCommand implements ICommand {
             return -1;
         }
 
-        final String ppResult = Tools.asJavaString(strategoCommon.prettyPrint(result.ast()));
-        System.out.println(ppResult);
+        if(!result.hasAst()) {
+            System.err.println("Analysis succeeded but produced no AST, printing empty tuple");
+            System.out.println("()");
+        } else {
+            final String ppResult = Tools.asJavaString(strategoCommon.prettyPrint(result.ast()));
+            System.out.println(ppResult);
+        }
 
         return 0;
     }
