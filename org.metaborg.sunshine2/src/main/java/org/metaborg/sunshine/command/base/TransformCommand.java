@@ -32,6 +32,8 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
+import spoofax.core.cmd.command.ICommand;
+
 @Parameters(commandDescription = "Transforms a single file and prints the transformation result")
 public abstract class TransformCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(TransformCommand.class);
@@ -53,8 +55,8 @@ public abstract class TransformCommand implements ICommand {
 
     private final IStrategoCommon common;
 
-    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
-    @ParametersDelegate private final InputDelegate inputDelegate;
+    @ParametersDelegate private ProjectPathDelegate projectPathDelegate;
+    @ParametersDelegate private InputDelegate inputDelegate;
 
 
     @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,

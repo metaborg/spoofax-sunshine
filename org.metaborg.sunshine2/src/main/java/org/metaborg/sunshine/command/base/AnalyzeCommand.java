@@ -29,6 +29,8 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
 
+import spoofax.core.cmd.command.ICommand;
+
 @Parameters(commandDescription = "Analyzes a single file and prints the analyzed AST")
 public abstract class AnalyzeCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(AnalyzeCommand.class);
@@ -41,8 +43,8 @@ public abstract class AnalyzeCommand implements ICommand {
     private final IStrategoCommon strategoCommon;
 
 
-    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
-    @ParametersDelegate private final InputDelegate inputDelegate;
+    @ParametersDelegate private ProjectPathDelegate projectPathDelegate;
+    @ParametersDelegate private InputDelegate inputDelegate;
 
 
     public AnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,

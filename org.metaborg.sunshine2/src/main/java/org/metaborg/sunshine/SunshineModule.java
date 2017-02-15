@@ -10,7 +10,6 @@ import org.metaborg.spoofax.core.SpoofaxModule;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
-import org.metaborg.sunshine.command.base.ICommand;
 import org.metaborg.sunshine.command.local.LocalAnalyzeCommand;
 import org.metaborg.sunshine.command.local.LocalBuildCommand;
 import org.metaborg.sunshine.command.local.LocalParseCommand;
@@ -26,6 +25,8 @@ import org.metaborg.sunshine.common.LanguageLoader;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
+
+import spoofax.core.cmd.command.ICommand;
 
 public class SunshineModule extends SpoofaxModule {
     @Override protected void configure() {

@@ -30,6 +30,8 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 import com.google.inject.Inject;
 
+import spoofax.core.cmd.command.ICommand;
+
 @Parameters(commandDescription = "Parses, analyses, and transforms files in a project")
 public abstract class BuildCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(BuildCommand.class);
@@ -66,7 +68,7 @@ public abstract class BuildCommand implements ICommand {
     private final ILanguagePathService languagePathService;
     private final ISpoofaxProcessorRunner runner;
 
-    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
+    @ParametersDelegate private ProjectPathDelegate projectPathDelegate;
 
 
     @Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,

@@ -18,7 +18,7 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.inject.Inject;
 
 public class LocalParseCommand extends ParseCommand {
-    @ParametersDelegate private final LanguagesDelegate languagesDelegate;
+    @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
     @Inject public LocalParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
