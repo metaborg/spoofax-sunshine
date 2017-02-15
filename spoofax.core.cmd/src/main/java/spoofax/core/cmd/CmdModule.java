@@ -6,6 +6,7 @@ import com.google.inject.multibindings.MapBinder;
 
 import spoofax.core.cmd.command.ICommand;
 import spoofax.core.cmd.delegate.LanguageDelegate;
+import spoofax.core.cmd.delegate.LanguagesDelegate;
 import spoofax.core.cmd.delegate.ProjectPathDelegate;
 import spoofax.core.cmd.parameter.MainParameters;
 
@@ -47,6 +48,7 @@ public class CmdModule extends AbstractModule {
      */
     protected void bindDelegates() {
         bind(LanguageDelegate.class);
+        bind(LanguagesDelegate.class);
         bind(ProjectPathDelegate.class);
     }
 }
