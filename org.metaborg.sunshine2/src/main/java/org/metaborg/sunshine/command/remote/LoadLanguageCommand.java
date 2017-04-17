@@ -5,7 +5,6 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
-import org.metaborg.sunshine.command.base.ICommand;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 
@@ -14,11 +13,13 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
+import spoofax.core.cmd.command.ICommand;
+
 @Parameters(commandDescription = "Discovers and loads languages")
 public class LoadLanguageCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(LoadLanguageCommand.class);
 
-    @ParametersDelegate private final LanguagesDelegate languagesDelegate;
+    @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
     @Inject public LoadLanguageCommand(LanguagesDelegate languagesDelegate) {

@@ -18,7 +18,7 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.inject.Inject;
 
 public class LocalTransformCommand extends TransformCommand {
-    @ParametersDelegate private final LanguagesDelegate languagesDelegate;
+    @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
     @Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,

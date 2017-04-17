@@ -1,16 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
 <configuration>
   <appender
-    name="stderr"
+    name="stdout"
     class="ch.qos.logback.core.ConsoleAppender"
   >
-    <target>System.err</target>
+    <target>System.out</target>
     <encoder>
       <pattern>%d{HH:mm:ss} %-5level - %msg%n</pattern>
     </encoder>
   </appender>
 
   <root level="info">
-    <appender-ref ref="stderr" />
+    <appender-ref ref="stdout" />
   </root>
 
   <logger

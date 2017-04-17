@@ -1,4 +1,4 @@
-package org.metaborg.sunshine.command.base;
+package spoofax.core.cmd.command;
 
 import org.metaborg.core.MetaborgException;
 

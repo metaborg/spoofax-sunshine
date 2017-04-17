@@ -28,6 +28,8 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
+import spoofax.core.cmd.command.ICommand;
+
 @Parameters(commandDescription = "Parses a single file and prints the parsed AST")
 public abstract class ParseCommand implements ICommand {
     private static final ILogger logger = LoggerUtils.logger(ParseCommand.class);
@@ -47,8 +49,8 @@ public abstract class ParseCommand implements ICommand {
 
     private final IStrategoCommon strategoCommon;
 
-    @ParametersDelegate private final ProjectPathDelegate projectPathDelegate;
-    @ParametersDelegate private final InputDelegate inputDelegate;
+    @ParametersDelegate private ProjectPathDelegate projectPathDelegate;
+    @ParametersDelegate private InputDelegate inputDelegate;
 
 
     @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,

@@ -16,7 +16,7 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.inject.Inject;
 
 public class LocalBuildCommand extends BuildCommand {
-    @ParametersDelegate private final LanguagesDelegate languagesDelegate;
+    @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
     @Inject public LocalBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,

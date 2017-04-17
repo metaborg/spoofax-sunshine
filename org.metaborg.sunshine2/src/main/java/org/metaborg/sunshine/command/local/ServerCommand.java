@@ -2,12 +2,13 @@ package org.metaborg.sunshine.command.local;
 
 import org.metaborg.core.MetaborgException;
 import org.metaborg.sunshine.Main;
-import org.metaborg.sunshine.command.base.ICommand;
 
 import com.beust.jcommander.Parameters;
 import com.martiansoftware.nailgun.Alias;
 import com.martiansoftware.nailgun.AliasManager;
 import com.martiansoftware.nailgun.NGServer;
+
+import spoofax.core.cmd.command.ICommand;
 
 @Parameters(commandDescription = "Starts up a Nailgun server with Sunshine loaded. "
     + "Use 'ng sunshine' to send commands to the server.")

@@ -18,7 +18,7 @@ import com.beust.jcommander.ParametersDelegate;
 import com.google.inject.Inject;
 
 public class LocalAnalyzeCommand extends AnalyzeCommand {
-    @ParametersDelegate private final LanguagesDelegate languagesDelegate;
+    @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
     @Inject public LocalAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
