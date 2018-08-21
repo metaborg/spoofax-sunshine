@@ -1,10 +1,14 @@
 package org.metaborg.sunshine.command.base;
 
+import java.util.stream.StreamSupport;
+
 import org.apache.commons.vfs2.FileObject;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
 import org.metaborg.core.action.CompileGoal;
 import org.metaborg.core.action.EndNamedGoal;
+import org.metaborg.core.action.IActionService;
+import org.metaborg.core.action.ITransformAction;
 import org.metaborg.core.build.BuildInput;
 import org.metaborg.core.build.BuildInputBuilder;
 import org.metaborg.core.build.CleanInput;
@@ -51,6 +55,7 @@ public abstract class TransformCommand implements ICommand {
     private final ISourceTextService sourceTextService;
     private final IDependencyService dependencyService;
     private final ILanguagePathService languagePathService;
+    private final IActionService actionService;
     private final ISpoofaxProcessorRunner runner;
 
     private final IStrategoCommon common;
@@ -60,12 +65,13 @@ public abstract class TransformCommand implements ICommand {
 
 
     @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
+        ILanguagePathService languagePathService, IActionService actionService, ISpoofaxProcessorRunner runner,
         IStrategoCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate,
         InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;
+        this.actionService = actionService;
         this.runner = runner;
         this.common = strategoTransformerCommon;
         this.projectPathDelegate = projectPathDelegate;
@@ -124,7 +130,14 @@ public abstract class TransformCommand implements ICommand {
         if(compileGoal) {
             inputBuilder.addTransformGoal(new CompileGoal());
         } else if(namedGoal != null) {
-            inputBuilder.addTransformGoal(new EndNamedGoal(namedGoal));
+            EndNamedGoal goal = new EndNamedGoal(namedGoal);
+            // If all actions of the named goal are meant for a parsed AST, turn off analysis
+            if(StreamSupport.stream(impls.spliterator(), false)
+                    .flatMap(impl -> StreamSupport.stream(actionService.actions(impl, goal).spliterator(), false))
+                    .map(ITransformAction::flags).allMatch(f -> f.parsed)) {
+                inputBuilder.withAnalysis(false);
+            }
+            inputBuilder.addTransformGoal(goal);
         }
 
         final BuildInput input = inputBuilder.build(dependencyService, languagePathService);

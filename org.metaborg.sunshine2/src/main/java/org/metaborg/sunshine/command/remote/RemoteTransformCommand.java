@@ -1,6 +1,7 @@
 package org.metaborg.sunshine.command.remote;
 
 import org.metaborg.core.MetaborgException;
+import org.metaborg.core.action.IActionService;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageImpl;
@@ -20,10 +21,11 @@ public class RemoteTransformCommand extends TransformCommand {
 
 
     @Inject public RemoteTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-                                          ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-                                          IStrategoCommon strategoTransformerCommon, ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,
+                                          ILanguagePathService languagePathService, IActionService actionService,
+                                          ISpoofaxProcessorRunner runner, IStrategoCommon strategoTransformerCommon,
+                                          ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,
                                           ILanguageService languageService) {
-        super(sourceTextService, dependencyService, languagePathService, runner, strategoTransformerCommon,
+        super(sourceTextService, dependencyService, languagePathService, actionService, runner, strategoTransformerCommon,
                 languageSpecPathDelegate, inputDelegate);
         this.languageService = languageService;
     }
