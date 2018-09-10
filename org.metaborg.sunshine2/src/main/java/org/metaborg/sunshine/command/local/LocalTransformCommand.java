@@ -1,6 +1,7 @@
 package org.metaborg.sunshine.command.local;
 
 import org.metaborg.core.MetaborgException;
+import org.metaborg.core.action.IActionService;
 import org.metaborg.core.build.dependency.IDependencyService;
 import org.metaborg.core.build.paths.ILanguagePathService;
 import org.metaborg.core.language.ILanguageComponent;
@@ -22,10 +23,11 @@ public class LocalTransformCommand extends TransformCommand {
 
 
     @Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-                                         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-                                         IStrategoCommon strategoTransformerCommon, ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,
+                                         ILanguagePathService languagePathService, IActionService actionService,
+                                         ISpoofaxProcessorRunner runner, IStrategoCommon strategoTransformerCommon,
+                                         ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,
                                          LanguagesDelegate languagesDelegate) {
-        super(sourceTextService, dependencyService, languagePathService, runner, strategoTransformerCommon,
+        super(sourceTextService, dependencyService, languagePathService, actionService, runner, strategoTransformerCommon,
                 languageSpecPathDelegate, inputDelegate);
         this.languagesDelegate = languagesDelegate;
     }
