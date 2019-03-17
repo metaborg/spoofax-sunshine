@@ -24,6 +24,7 @@ import org.metaborg.spoofax.core.build.ISpoofaxBuildOutput;
 import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.spoofax.core.stratego.IStrategoCommon;
+import org.metaborg.spoofax.core.transform.ISpoofaxTransformAction;
 import org.metaborg.spoofax.core.unit.ISpoofaxTransformUnit;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
@@ -55,7 +56,7 @@ public abstract class TransformCommand implements ICommand {
     private final ISourceTextService sourceTextService;
     private final IDependencyService dependencyService;
     private final ILanguagePathService languagePathService;
-    private final IActionService actionService;
+    private final IActionService<ISpoofaxTransformAction> actionService;
     private final ISpoofaxProcessorRunner runner;
 
     private final IStrategoCommon common;
@@ -65,7 +66,7 @@ public abstract class TransformCommand implements ICommand {
 
 
     @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, IActionService actionService, ISpoofaxProcessorRunner runner,
+        ILanguagePathService languagePathService, IActionService<ISpoofaxTransformAction> actionService, ISpoofaxProcessorRunner runner,
         IStrategoCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate,
         InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;
