@@ -1,6 +1,7 @@
 package spoofax.core.cmd.delegate;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -12,7 +13,6 @@ import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.core.resource.IResourceService;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 public abstract class ALanguageLoader {
     private final IResourceService resourceService;
@@ -29,7 +29,7 @@ public abstract class ALanguageLoader {
 
 
     public Iterable<ILanguageComponent> discoverComponents() throws MetaborgException {
-        final Collection<ILanguageComponent> components = Lists.newLinkedList();
+        final Collection<ILanguageComponent> components = new LinkedList<>();
         for(String path : paths()) {
             final FileObject location = resourceService.resolve(path);
             try {
