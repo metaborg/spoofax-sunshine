@@ -18,6 +18,7 @@ import org.metaborg.spoofax.core.stratego.IStrategoCommon;
 import org.metaborg.spoofax.core.unit.ISpoofaxParseUnit;
 import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
+import org.metaborg.util.iterators.Iterables2;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 import org.spoofax.interpreter.core.Tools;
@@ -25,7 +26,6 @@ import org.spoofax.interpreter.core.Tools;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
-import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
@@ -105,9 +105,9 @@ public abstract class ParseCommand implements ICommand {
                 return -1;
             } else {
                 final Iterable<ISpoofaxParseUnit> results = output.parseResults();
-                final int resultSize = Iterables.size(results);
+                final int resultSize = Iterables2.size(results);
                 if(resultSize == 1) {
-                    result = Iterables.get(results, 0);
+                    result = results.iterator().next();
                 } else {
                     final String message = logger.format("{} parse results were returned instead of 1", resultSize);
                     throw new MetaborgException(message);
