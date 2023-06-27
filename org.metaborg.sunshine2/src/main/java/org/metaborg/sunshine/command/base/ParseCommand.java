@@ -26,7 +26,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 import com.google.common.collect.Iterables;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
 

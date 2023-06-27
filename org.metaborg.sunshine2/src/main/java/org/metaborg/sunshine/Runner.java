@@ -10,8 +10,8 @@ import org.metaborg.util.log.LoggerUtils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import spoofax.core.cmd.command.ICommand;
 

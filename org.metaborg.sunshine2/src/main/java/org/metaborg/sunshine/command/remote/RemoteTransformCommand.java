@@ -14,7 +14,7 @@ import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.TransformCommand;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class RemoteTransformCommand extends TransformCommand {
     private final ILanguageService languageService;
