@@ -5,12 +5,12 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageImpl;
 import org.metaborg.core.language.LanguageUtils;
 import org.metaborg.sunshine.arguments.LanguagesDelegate;
+import org.metaborg.util.iterators.Iterables2;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
 
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
-import com.google.common.collect.Iterables;
 import javax.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
@@ -35,12 +35,12 @@ public class LoadLanguageCommand implements ICommand {
         final Iterable<ILanguageComponent> components = languagesDelegate.discoverLanguages();
         final Iterable<ILanguageImpl> impls = LanguageUtils.toImpls(components);
 
-        logger.info("Discovered {} language component(s): ", Iterables.size(components));
+        logger.info("Discovered {} language component(s): ", Iterables2.size(components));
         for(ILanguageComponent component : components) {
             logger.info("  {}", component.toString());
         }
 
-        logger.info("Belonging to {} language implementation(s): ", Iterables.size(impls));
+        logger.info("Belonging to {} language implementation(s): ", Iterables2.size(impls));
         for(ILanguageImpl impl : impls) {
             logger.info("  {}", impl.toString());
         }
