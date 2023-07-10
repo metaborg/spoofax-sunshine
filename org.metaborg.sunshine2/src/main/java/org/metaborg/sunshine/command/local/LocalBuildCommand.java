@@ -13,7 +13,7 @@ import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.BuildCommand;
 
 import com.beust.jcommander.ParametersDelegate;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class LocalBuildCommand extends BuildCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;

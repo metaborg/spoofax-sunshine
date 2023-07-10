@@ -10,7 +10,7 @@ import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class InputDelegate {
     // @formatter:off

@@ -11,7 +11,7 @@ import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.BuildCommand;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class RemoteBuildCommand extends BuildCommand {
     private final ILanguageService languageService;

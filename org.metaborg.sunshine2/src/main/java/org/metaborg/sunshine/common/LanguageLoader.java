@@ -11,7 +11,7 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.resource.IResourceService;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class LanguageLoader {
     private final IResourceService resourceService;

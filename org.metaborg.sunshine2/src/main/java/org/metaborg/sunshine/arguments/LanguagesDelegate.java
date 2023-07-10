@@ -7,7 +7,7 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.sunshine.common.LanguageLoader;
 
 import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class LanguagesDelegate {
     // @formatter:off

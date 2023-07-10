@@ -8,7 +8,7 @@ import org.metaborg.core.project.ISimpleProjectService;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
+import javax.inject.Inject;
 
 public class ProjectPathDelegate {
     // @formatter:off
