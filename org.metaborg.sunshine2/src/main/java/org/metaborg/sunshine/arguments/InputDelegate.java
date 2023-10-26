@@ -10,7 +10,6 @@ import org.metaborg.core.language.IdentifiedResource;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
-import javax.inject.Inject;
 
 public class InputDelegate {
     // @formatter:off
@@ -24,7 +23,7 @@ public class InputDelegate {
     private final ILanguageIdentifierService languageIdentifierService;
 
 
-    @Inject public InputDelegate(IResourceService resourceService, ILanguageIdentifierService languageIdentifierService) {
+    @jakarta.inject.Inject @javax.inject.Inject public InputDelegate(IResourceService resourceService, ILanguageIdentifierService languageIdentifierService) {
         this.resourceService = resourceService;
         this.languageIdentifierService = languageIdentifierService;
     }

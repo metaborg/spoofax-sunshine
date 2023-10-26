@@ -26,7 +26,6 @@ import org.spoofax.interpreter.core.Tools;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
-import javax.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
 
@@ -53,7 +52,7 @@ public abstract class ParseCommand implements ICommand {
     @ParametersDelegate private InputDelegate inputDelegate;
 
 
-    @Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;

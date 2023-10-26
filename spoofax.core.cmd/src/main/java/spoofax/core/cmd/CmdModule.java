@@ -1,7 +1,7 @@
 package spoofax.core.cmd;
 
 import com.google.inject.AbstractModule;
-import javax.inject.Singleton;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 
 import spoofax.core.cmd.command.ICommand;

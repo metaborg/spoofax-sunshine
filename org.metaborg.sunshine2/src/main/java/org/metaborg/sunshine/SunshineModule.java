@@ -22,7 +22,7 @@ import org.metaborg.sunshine.command.remote.RemoteParseCommand;
 import org.metaborg.sunshine.command.remote.RemoteTransformCommand;
 import org.metaborg.sunshine.common.LanguageLoader;
 
-import javax.inject.Singleton;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
 

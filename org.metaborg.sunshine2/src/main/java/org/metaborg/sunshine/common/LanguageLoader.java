@@ -11,14 +11,13 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.resource.IResourceService;
 
-import javax.inject.Inject;
 
 public class LanguageLoader {
     private final IResourceService resourceService;
     private final ILanguageDiscoveryService languageDiscoveryService;
 
 
-    @Inject public LanguageLoader(IResourceService resourceService,
+    @jakarta.inject.Inject @javax.inject.Inject public LanguageLoader(IResourceService resourceService,
         ILanguageDiscoveryService languageDiscoveryService) {
         this.resourceService = resourceService;
         this.languageDiscoveryService = languageDiscoveryService;

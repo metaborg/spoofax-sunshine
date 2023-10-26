@@ -34,7 +34,6 @@ import org.metaborg.util.log.LoggerUtils;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
-import javax.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
 
@@ -64,7 +63,7 @@ public abstract class TransformCommand implements ICommand {
     @ParametersDelegate private InputDelegate inputDelegate;
 
 
-    @Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public TransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, IActionService actionService, ISpoofaxProcessorRunner runner,
         IStrategoCommon strategoTransformerCommon, ProjectPathDelegate projectPathDelegate,
         InputDelegate inputDelegate) {

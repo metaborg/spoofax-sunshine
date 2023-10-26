@@ -11,7 +11,6 @@ import org.metaborg.util.log.LoggerUtils;
 
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
-import javax.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
 
@@ -22,7 +21,7 @@ public class LoadLanguageCommand implements ICommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @Inject public LoadLanguageCommand(LanguagesDelegate languagesDelegate) {
+    @jakarta.inject.Inject @javax.inject.Inject public LoadLanguageCommand(LanguagesDelegate languagesDelegate) {
         this.languagesDelegate = languagesDelegate;
     }
 

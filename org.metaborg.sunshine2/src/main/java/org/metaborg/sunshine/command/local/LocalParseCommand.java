@@ -15,13 +15,12 @@ import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.ParseCommand;
 
 import com.beust.jcommander.ParametersDelegate;
-import javax.inject.Inject;
 
 public class LocalParseCommand extends ParseCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @Inject public LocalParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public LocalParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                      ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                      ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate, LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, projectPathDelegate,

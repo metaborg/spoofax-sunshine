@@ -14,13 +14,12 @@ import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.TransformCommand;
 
-import javax.inject.Inject;
 
 public class RemoteTransformCommand extends TransformCommand {
     private final ILanguageService languageService;
 
 
-    @Inject public RemoteTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public RemoteTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                           ILanguagePathService languagePathService, IActionService actionService,
                                           ISpoofaxProcessorRunner runner, IStrategoCommon strategoTransformerCommon,
                                           ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,

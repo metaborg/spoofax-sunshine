@@ -10,8 +10,6 @@ import org.metaborg.util.log.LoggerUtils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import spoofax.core.cmd.command.ICommand;
 
@@ -22,8 +20,8 @@ public class Runner {
     private final Map<String, ICommand> remoteCommands;
 
 
-    @Inject public Runner(@Named("local") Map<String, ICommand> localCommands,
-        @Named("remote") Map<String, ICommand> remoteCommands) {
+    @jakarta.inject.Inject @javax.inject.Inject public Runner(@jakarta.inject.Named("local") @javax.inject.Named("local") Map<String, ICommand> localCommands,
+        @jakarta.inject.Named("remote") @javax.inject.Named("remote") Map<String, ICommand> remoteCommands) {
         this.localCommands = localCommands;
         this.remoteCommands = remoteCommands;
     }

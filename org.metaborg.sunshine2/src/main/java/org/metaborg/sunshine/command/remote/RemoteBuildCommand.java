@@ -11,13 +11,12 @@ import org.metaborg.spoofax.core.processing.ISpoofaxProcessorRunner;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.BuildCommand;
 
-import javax.inject.Inject;
 
 public class RemoteBuildCommand extends BuildCommand {
     private final ILanguageService languageService;
 
 
-    @Inject public RemoteBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public RemoteBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                       ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
                                       ProjectPathDelegate languageSpecPathDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, languageSpecPathDelegate);

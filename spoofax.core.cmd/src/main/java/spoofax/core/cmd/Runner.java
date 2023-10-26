@@ -9,7 +9,6 @@ import org.metaborg.util.log.LoggerUtils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import javax.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
 import spoofax.core.cmd.parameter.MainParameters;
@@ -21,7 +20,7 @@ public class Runner {
     private final MainParameters mainParameters;
 
 
-    @Inject public Runner(Map<String, ICommand> commands, MainParameters mainParameters) {
+    @jakarta.inject.Inject @javax.inject.Inject public Runner(Map<String, ICommand> commands, MainParameters mainParameters) {
         this.commands = commands;
         this.mainParameters = mainParameters;
     }
