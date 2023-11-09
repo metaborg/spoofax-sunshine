@@ -16,13 +16,12 @@ import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.TransformCommand;
 
 import com.beust.jcommander.ParametersDelegate;
-import com.google.inject.Inject;
 
 public class LocalTransformCommand extends TransformCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                          ILanguagePathService languagePathService, IActionService actionService,
                                          ISpoofaxProcessorRunner runner, IStrategoCommon strategoTransformerCommon,
                                          ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,

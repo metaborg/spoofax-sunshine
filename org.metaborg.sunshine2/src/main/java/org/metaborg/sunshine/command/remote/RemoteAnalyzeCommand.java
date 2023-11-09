@@ -13,13 +13,12 @@ import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.AnalyzeCommand;
 
-import com.google.inject.Inject;
 
 public class RemoteAnalyzeCommand extends AnalyzeCommand {
     private final ILanguageService languageService;
 
 
-    @Inject public RemoteAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public RemoteAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                         ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, languageSpecPathDelegate,

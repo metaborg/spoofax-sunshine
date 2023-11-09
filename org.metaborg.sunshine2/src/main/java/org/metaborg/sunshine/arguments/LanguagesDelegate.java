@@ -7,7 +7,6 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.sunshine.common.LanguageLoader;
 
 import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
 
 public class LanguagesDelegate {
     // @formatter:off
@@ -20,7 +19,7 @@ public class LanguagesDelegate {
     private final LanguageLoader languageLoader;
 
 
-    @Inject public LanguagesDelegate(LanguageLoader languageLoader) {
+    @jakarta.inject.Inject @javax.inject.Inject public LanguagesDelegate(LanguageLoader languageLoader) {
         this.languageLoader = languageLoader;
     }
 

@@ -6,7 +6,6 @@ import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
 
 public class LanguagesDelegate extends ALanguageLoader {
     // @formatter:off
@@ -16,7 +15,7 @@ public class LanguagesDelegate extends ALanguageLoader {
     // @formatter:on
 
 
-    @Inject public LanguagesDelegate(IResourceService resourceService,
+    @jakarta.inject.Inject @javax.inject.Inject public LanguagesDelegate(IResourceService resourceService,
         ILanguageDiscoveryService languageDiscoveryService) {
         super(resourceService, languageDiscoveryService);
     }

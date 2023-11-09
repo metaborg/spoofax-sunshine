@@ -28,7 +28,6 @@ import org.metaborg.util.resource.FileSelectorUtils;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
-import com.google.inject.Inject;
 
 import spoofax.core.cmd.command.ICommand;
 
@@ -71,7 +70,7 @@ public abstract class BuildCommand implements ICommand {
     @ParametersDelegate private ProjectPathDelegate projectPathDelegate;
 
 
-    @Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
         ProjectPathDelegate projectPathDelegate) {
         this.sourceTextService = sourceTextService;

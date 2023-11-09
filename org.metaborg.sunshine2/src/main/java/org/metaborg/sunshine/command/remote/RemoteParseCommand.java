@@ -13,13 +13,12 @@ import org.metaborg.sunshine.arguments.InputDelegate;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.sunshine.command.base.ParseCommand;
 
-import com.google.inject.Inject;
 
 public class RemoteParseCommand extends ParseCommand {
     private final ILanguageService languageService;
 
 
-    @Inject public RemoteParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject @javax.inject.Inject public RemoteParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                       ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                       ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, projectPathDelegate,

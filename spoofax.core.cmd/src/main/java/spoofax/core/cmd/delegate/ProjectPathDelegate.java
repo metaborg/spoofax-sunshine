@@ -8,7 +8,6 @@ import org.metaborg.core.project.ISimpleProjectService;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
-import com.google.inject.Inject;
 
 public class ProjectPathDelegate {
     // @formatter:off
@@ -23,7 +22,7 @@ public class ProjectPathDelegate {
     private IProject project;
 
 
-    @Inject public ProjectPathDelegate(IResourceService resourceService, ISimpleProjectService projectService) {
+    @jakarta.inject.Inject @javax.inject.Inject public ProjectPathDelegate(IResourceService resourceService, ISimpleProjectService projectService) {
         this.resourceService = resourceService;
         this.projectService = projectService;
     }

@@ -1,6 +1,8 @@
 package org.metaborg.sunshine.common;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.apache.commons.vfs2.FileObject;
@@ -9,16 +11,13 @@ import org.metaborg.core.language.ILanguageComponent;
 import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.resource.IResourceService;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 
 public class LanguageLoader {
     private final IResourceService resourceService;
     private final ILanguageDiscoveryService languageDiscoveryService;
 
 
-    @Inject public LanguageLoader(IResourceService resourceService,
+    @jakarta.inject.Inject @javax.inject.Inject public LanguageLoader(IResourceService resourceService,
         ILanguageDiscoveryService languageDiscoveryService) {
         this.resourceService = resourceService;
         this.languageDiscoveryService = languageDiscoveryService;
@@ -26,7 +25,7 @@ public class LanguageLoader {
 
 
     public Set<ILanguageComponent> discoverLanguages(Iterable<String> paths) throws MetaborgException {
-        final Collection<FileObject> languageLocations = Lists.newLinkedList();
+        final Collection<FileObject> languageLocations = new LinkedList<>();
         try {
             for(String path : paths) {
                 final FileObject location = resourceService.resolve(path);
@@ -41,7 +40,7 @@ public class LanguageLoader {
             throw new MetaborgException(message, e);
         }
 
-        final Set<ILanguageComponent> components = Sets.newHashSet();
+        final Set<ILanguageComponent> components = new HashSet<ILanguageComponent>();
         for(FileObject location : languageLocations) {
             components.addAll(languageDiscoveryService.scanComponentsInDirectory(location));
         }

@@ -1,11 +1,11 @@
 package spoofax.core.cmd.delegate;
 
+import java.util.Arrays;
+
 import org.metaborg.core.language.ILanguageDiscoveryService;
 import org.metaborg.core.resource.IResourceService;
 
 import com.beust.jcommander.Parameter;
-import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 
 public class LanguageDelegate extends ALanguageLoader {
     // @formatter:off
@@ -15,13 +15,13 @@ public class LanguageDelegate extends ALanguageLoader {
     // @formatter:on
 
 
-    @Inject public LanguageDelegate(IResourceService resourceService,
+    @jakarta.inject.Inject @javax.inject.Inject public LanguageDelegate(IResourceService resourceService,
         ILanguageDiscoveryService languageDiscoveryService) {
         super(resourceService, languageDiscoveryService);
     }
 
 
     @Override protected Iterable<String> paths() {
-        return Lists.newArrayList(path);
+        return Arrays.asList(path);
     }
 }
