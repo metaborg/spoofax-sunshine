@@ -23,7 +23,7 @@ import org.metaborg.spoofax.core.resource.SpoofaxIgnoresSelector;
 import org.metaborg.sunshine.arguments.ProjectPathDelegate;
 import org.metaborg.util.log.ILogger;
 import org.metaborg.util.log.LoggerUtils;
-import org.metaborg.util.resource.FileSelectorUtils;
+import mb.util.vfs2.resource.FileSelectorUtils;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
