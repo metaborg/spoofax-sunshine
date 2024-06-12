@@ -49,7 +49,7 @@ public abstract class BuildCommand implements ICommand {
     @Parameter(names = { "-T", "--no-transform" }, description = "Disables transformation")
     private boolean noTransform;
 
-    @Parameter(names = { "-t", "--transform-filter" }, hidden = true, 
+    @Parameter(names = { "-t", "--transform-filter" },
         description = "Regex filter for filtering which files get transformed")
     private String transformFilterRegex;
 
