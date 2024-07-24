@@ -52,7 +52,7 @@ public abstract class ParseCommand implements ICommand {
     @ParametersDelegate private InputDelegate inputDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public ParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
         ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate) {
         this.sourceTextService = sourceTextService;

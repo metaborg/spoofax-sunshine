@@ -16,7 +16,7 @@ public class RemoteBuildCommand extends BuildCommand {
     private final ILanguageService languageService;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public RemoteBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public RemoteBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                       ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
                                       ProjectPathDelegate languageSpecPathDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, languageSpecPathDelegate);

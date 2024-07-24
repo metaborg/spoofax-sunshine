@@ -19,7 +19,7 @@ public class LanguagesDelegate {
     private final LanguageLoader languageLoader;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LanguagesDelegate(LanguageLoader languageLoader) {
+    @jakarta.inject.Inject public LanguagesDelegate(LanguageLoader languageLoader) {
         this.languageLoader = languageLoader;
     }
 

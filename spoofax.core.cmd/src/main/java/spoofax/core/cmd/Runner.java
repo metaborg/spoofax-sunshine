@@ -20,7 +20,7 @@ public class Runner {
     private final MainParameters mainParameters;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public Runner(Map<String, ICommand> commands, MainParameters mainParameters) {
+    @jakarta.inject.Inject public Runner(Map<String, ICommand> commands, MainParameters mainParameters) {
         this.commands = commands;
         this.mainParameters = mainParameters;
     }

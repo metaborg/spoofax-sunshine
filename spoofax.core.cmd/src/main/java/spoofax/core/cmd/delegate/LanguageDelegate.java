@@ -15,7 +15,7 @@ public class LanguageDelegate extends ALanguageLoader {
     // @formatter:on
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LanguageDelegate(IResourceService resourceService,
+    @jakarta.inject.Inject public LanguageDelegate(IResourceService resourceService,
         ILanguageDiscoveryService languageDiscoveryService) {
         super(resourceService, languageDiscoveryService);
     }

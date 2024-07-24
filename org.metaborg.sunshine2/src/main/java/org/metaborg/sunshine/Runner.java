@@ -20,8 +20,8 @@ public class Runner {
     private final Map<String, ICommand> remoteCommands;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public Runner(@jakarta.inject.Named("local") @javax.inject.Named("local") Map<String, ICommand> localCommands,
-        @jakarta.inject.Named("remote") @javax.inject.Named("remote") Map<String, ICommand> remoteCommands) {
+    @jakarta.inject.Inject public Runner(@jakarta.inject.Named("local") Map<String, ICommand> localCommands,
+        @jakarta.inject.Named("remote") Map<String, ICommand> remoteCommands) {
         this.localCommands = localCommands;
         this.remoteCommands = remoteCommands;
     }
