@@ -23,7 +23,7 @@ public class InputDelegate {
     private final ILanguageIdentifierService languageIdentifierService;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public InputDelegate(IResourceService resourceService, ILanguageIdentifierService languageIdentifierService) {
+    @jakarta.inject.Inject public InputDelegate(IResourceService resourceService, ILanguageIdentifierService languageIdentifierService) {
         this.resourceService = resourceService;
         this.languageIdentifierService = languageIdentifierService;
     }

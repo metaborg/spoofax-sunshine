@@ -21,7 +21,7 @@ public class LocalTransformCommand extends TransformCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public LocalTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                          ILanguagePathService languagePathService, IActionService actionService,
                                          ISpoofaxProcessorRunner runner, IStrategoCommon strategoTransformerCommon,
                                          ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,

@@ -21,7 +21,7 @@ public class LoadLanguageCommand implements ICommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LoadLanguageCommand(LanguagesDelegate languagesDelegate) {
+    @jakarta.inject.Inject public LoadLanguageCommand(LanguagesDelegate languagesDelegate) {
         this.languagesDelegate = languagesDelegate;
     }
 

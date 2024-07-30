@@ -18,7 +18,7 @@ public class LocalBuildCommand extends BuildCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LocalBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public LocalBuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                      ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
                                      ProjectPathDelegate languageSpecPathDelegate, LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, languageSpecPathDelegate);

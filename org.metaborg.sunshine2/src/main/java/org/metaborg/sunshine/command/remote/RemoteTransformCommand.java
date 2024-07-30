@@ -19,7 +19,7 @@ public class RemoteTransformCommand extends TransformCommand {
     private final ILanguageService languageService;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public RemoteTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public RemoteTransformCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                           ILanguagePathService languagePathService, IActionService actionService,
                                           ISpoofaxProcessorRunner runner, IStrategoCommon strategoTransformerCommon,
                                           ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate,

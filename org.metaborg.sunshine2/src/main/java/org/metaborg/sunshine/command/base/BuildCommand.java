@@ -2,6 +2,7 @@ package org.metaborg.sunshine.command.base;
 
 import java.util.List;
 
+import jakarta.inject.Inject;
 import org.apache.commons.vfs2.FileSelector;
 import org.metaborg.core.MetaborgException;
 import org.metaborg.core.MetaborgRuntimeException;
@@ -70,9 +71,9 @@ public abstract class BuildCommand implements ICommand {
     @ParametersDelegate private ProjectPathDelegate projectPathDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
-        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
-        ProjectPathDelegate projectPathDelegate) {
+    @Inject public BuildCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+                                ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner,
+                                ProjectPathDelegate projectPathDelegate) {
         this.sourceTextService = sourceTextService;
         this.dependencyService = dependencyService;
         this.languagePathService = languagePathService;

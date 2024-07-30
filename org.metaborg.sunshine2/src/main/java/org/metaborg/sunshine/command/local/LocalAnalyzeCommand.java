@@ -20,7 +20,7 @@ public class LocalAnalyzeCommand extends AnalyzeCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LocalAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public LocalAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                        ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                        ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate, LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, languageSpecPathDelegate,

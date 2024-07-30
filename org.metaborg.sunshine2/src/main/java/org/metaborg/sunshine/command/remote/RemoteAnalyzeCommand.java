@@ -18,7 +18,7 @@ public class RemoteAnalyzeCommand extends AnalyzeCommand {
     private final ILanguageService languageService;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public RemoteAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public RemoteAnalyzeCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                         ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                         ProjectPathDelegate languageSpecPathDelegate, InputDelegate inputDelegate, ILanguageService languageService) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, languageSpecPathDelegate,

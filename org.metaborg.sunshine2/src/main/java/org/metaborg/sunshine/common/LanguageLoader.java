@@ -17,7 +17,7 @@ public class LanguageLoader {
     private final ILanguageDiscoveryService languageDiscoveryService;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LanguageLoader(IResourceService resourceService,
+    @jakarta.inject.Inject public LanguageLoader(IResourceService resourceService,
         ILanguageDiscoveryService languageDiscoveryService) {
         this.resourceService = resourceService;
         this.languageDiscoveryService = languageDiscoveryService;

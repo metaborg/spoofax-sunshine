@@ -20,7 +20,7 @@ public class LocalParseCommand extends ParseCommand {
     @ParametersDelegate private LanguagesDelegate languagesDelegate;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public LocalParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
+    @jakarta.inject.Inject public LocalParseCommand(ISourceTextService sourceTextService, IDependencyService dependencyService,
                                      ILanguagePathService languagePathService, ISpoofaxProcessorRunner runner, IStrategoCommon strategoCommon,
                                      ProjectPathDelegate projectPathDelegate, InputDelegate inputDelegate, LanguagesDelegate languagesDelegate) {
         super(sourceTextService, dependencyService, languagePathService, runner, strategoCommon, projectPathDelegate,

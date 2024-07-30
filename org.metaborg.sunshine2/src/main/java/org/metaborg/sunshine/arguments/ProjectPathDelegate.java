@@ -22,7 +22,7 @@ public class ProjectPathDelegate {
     private IProject project;
 
 
-    @jakarta.inject.Inject @javax.inject.Inject public ProjectPathDelegate(IResourceService resourceService, ISimpleProjectService projectService) {
+    @jakarta.inject.Inject public ProjectPathDelegate(IResourceService resourceService, ISimpleProjectService projectService) {
         this.resourceService = resourceService;
         this.projectService = projectService;
     }
